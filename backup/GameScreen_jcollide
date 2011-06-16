@@ -1,0 +1,101 @@
+package com.jumpandrun;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.GL10;
+
+import de.sciss.jcollider.Control;
+import de.sciss.jcollider.GraphElem;
+import de.sciss.jcollider.Server;
+import de.sciss.jcollider.ServerOptions;
+import de.sciss.jcollider.Synth;
+import de.sciss.jcollider.SynthDef;
+import de.sciss.jcollider.UGen;
+import de.sciss.jcollider.UGenChannel;
+import de.sciss.jcollider.UGenInfo;
+
+public class GameScreen extends DefaultScreen {
+	Map map;
+	MapRenderer renderer;
+
+	private Server s;
+
+	public GameScreen(Game game) {
+		super(game);
+
+		try {
+			s = new Server("default");
+			s.boot();
+			s.start();
+			s.startAliveThread();
+			UGenInfo.readBinaryDefinitions();
+			createDefs();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	@Override
+	public void show() {
+		map = new Map();
+		renderer = new MapRenderer(map);
+	}
+
+	@Override
+	public void render(float delta) {
+		delta = Math.min(0.06f, Gdx.graphics.getDeltaTime());
+		map.update(delta);
+		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		renderer.render(delta);
+		// Gdx.app.log("", renderer.map.bob.accel.x + " " +
+		// renderer.map.bob.vel.x);
+		if (map.bob.state == Player.JUMP) {
+			ding(800);
+		} else {
+			ding(40 + (Math.abs(renderer.map.bob.accel.x)* 30000000));
+			// synth.set("freq", 40 + (Math.abs(renderer.map.bob.accel.x)*
+			// 3000));
+		}
+
+		if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+			game.setScreen(new MainMenu(game));
+		}
+	}
+
+	@Override
+	public void hide() {
+		System.out.println("dispose game screen");
+
+		s.dispose();
+		renderer.dispose();
+	}
+
+	void createDefs() throws IOException {
+		// simple filtered noise perc
+		GraphElem f;
+		Control c = Control.kr(new String[] { "freq" }, new float[] { 400f });
+		UGenChannel freq = c.getChannel(0);
+		f = UGen.ar("Resonz", UGen.array(UGen.ar("WhiteNoise"), UGen.ar("WhiteNoise")), freq, UGen.ir(0.1f));
+		f = UGen.ar("*", f, UGen.ar("Lag", UGen.ar("pow", UGen.ar("Line", UGen.ir(1), UGen.ir(0), UGen.ir(1)), UGen.ir(2)), UGen.ir(0.1f)));
+		f = UGen.ar("Out", UGen.ir(0), f);
+		new SynthDef("test", f).send(s);
+	}
+
+	void ding(float freq) {
+			try {
+				Synth.head(s.getDefaultGroup(), "test", new String[] { "freq" }, new float[] { freq });
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
+}
+
