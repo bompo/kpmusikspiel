@@ -44,16 +44,16 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	Fixture playerSensorFixture;
 	PerspectiveCamera cam;
 	Array<MovingPlatform> platforms = new Array<MovingPlatform>();
-	Array<Body> boxes = new Array<Body>();
+	Array<Block> boxes = new Array<Block>();
 	MovingPlatform groundedPlatform = null;
 	float stillTime = 0;
 	long lastGroundTime = 0;
 	SpriteBatch batch;
 	BitmapFont font;
 
-	public static RhythmAudio ra = new RhythmAudio();
-	public RhythmValue rv1;
-	public RhythmValue rv2;
+//	public static RhythmAudio ra = new RhythmAudio();
+//	public RhythmValue rv1;
+//	public RhythmValue rv2;
 	
 	float startTime = 0;
 	float delta = 0;
@@ -86,10 +86,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	float angleXBack = 0;
 	float angleYBack = 0;
 	float angleXFront = 0;
-	float angleYFront = 0;
-	Vector3 xAxis = new Vector3(1, 0, 0);
-	Vector3 yAxis = new Vector3(0, 1, 0);
-	Vector3 zAxis = new Vector3(0, 0, 1);
+	float angleYFront = 0;	
+	Vector3 tmpVector3 = new Vector3();
+	Vector2 tmpVector2 = new Vector2();
+	
+	Body box;
+	Block block;
 
 	public GameScreen(Game game) {
 		super(game);
@@ -129,17 +131,15 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		frameBuffer = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);		
 		frameBufferVert = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);
-		
-		Gdx.gl20.glDepthMask(true);
 	}
 
 	@Override
 	public void show() {
 		
-		ra.loadMidi("./data/test.mid");
-		ra.play();
-		rv1 = new RhythmValue(RhythmValue.type.SINE, 20, ra);
-		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
+//		ra.loadMidi("./data/test.mid");
+//		ra.play();
+//		rv1 = new RhythmValue(RhythmValue.type.SINE, 20, ra);
+//		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
 	}
 	
 	public Body createBox(BodyType type, float width, float height, float density) {
@@ -208,10 +208,13 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		player.setTransform(10.0f, 4.0f, 0);
 		player.setFixedRotation(true);
 		
+		//tell box2d about those blocks...
 		for(Block block:map.blocks) {	
-			Body box = createBox(BodyType.StaticBody, 1, 1, 3);
-			box.setTransform(block.x*2 , block.y*-1*2, 0);
-			boxes.add(box);			
+			box = createBox(BodyType.StaticBody, 1, 1, 3);
+			box.setTransform(block.position.x , block.position.y, 0);
+			
+			block.body = box;
+			boxes.add(block);			
 		}	
 	}
 	
@@ -442,15 +445,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		transShader.setUniformMatrix("VPMatrix", cam.combined);
 		
 		//render boxes
-		for (Body box : boxes) {
-			if(cam.frustum.pointInFrustum(new Vector3(box.getTransform().getPosition().x, box.getTransform().getPosition().y, 0))) {
-				tmp.idt();
+		for (int i =0; i<boxes.size ; ++i) {
+			block = boxes.get(i);
+			if(cam.frustum.pointInFrustum(tmpVector3.set(block.position.x, block.position.y, 0))) {
 				model.idt();
 				
-				tmp.setToScaling(1f, 1f, 1f);
-				model.mul(tmp);
-	
-				tmp.setToTranslation(box.getTransform().getPosition().x, box.getTransform().getPosition().y, 0);
+				tmp.setToTranslation(block.position.x, block.position.y, 0);
 				model.mul(tmp);
 	
 				tmp.setToScaling(0.95f, 0.95f, 0.95f);
@@ -474,12 +474,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToScaling(1f, 1f, 1f);
 			model.mul(tmp);
 			
-			tmp.setToTranslation(player.getTransform().getPosition().x, player.getTransform().getPosition().y-0.8f, 0);
+			tmp.setToTranslation(player.getPosition().x, player.getPosition().y-0.8f, 0);
 			model.mul(tmp);
 			
-			tmp.setToRotation(xAxis, angleXBack);
+			tmp.setToRotation(Vector3.X, angleXBack);
 			model.mul(tmp);
-			tmp.setToRotation(yAxis, angleYBack);
+			tmp.setToRotation(Vector3.Y, angleYBack);
 			model.mul(tmp);
 
 			tmp.setToScaling(0.5f, 0.5f, 0.5f);
@@ -509,9 +509,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		
 		if (keycode == Keys.R) {
-			for(Body box:boxes) {
-				box.setTransform(box.getTransform().getPosition().x+delta,box.getTransform().getPosition().y+delta*(MathUtils.sin(startTime)*delta*500f),0);
-			}
+//			for(Body box:boxes) {
+//				box.setTransform(box.getTransform().getPosition().x+delta,box.getTransform().getPosition().y+delta*(MathUtils.sin(startTime)*delta*500f),0);
+//			}
 		}
 		return false;
 	}
@@ -533,7 +533,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public void hide() {
 		System.out.println("dispose game screen");
-		ra.stop();
+//		ra.stop();
 	}
 
 	public float MidiToFrequenc(float note) {

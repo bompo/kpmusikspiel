@@ -34,7 +34,7 @@ public class Map {
 					Dispenser dispenser = new Dispenser(x, pixmap.getHeight() - 1 - y);
 					dispensers.add(dispenser);					
 				} else if(pix == TILE) {
-					blocks.add(new Block(x,y));
+					blocks.add(new Block(x*2,y*-1*2));
 				}
 			}
 		}	
