@@ -16,7 +16,7 @@ public class DesktopStarter extends Game {
 		//fullscreen
 		//config.setFromDisplayMode(JoglApplicationConfiguration.getDesktopDisplayMode());
 		config.samples = 4;
-		config.useGL20 = false;
+		config.useGL20 = true;
 		config.r = 5;
 		config.g = 6;
 		config.b = 5;

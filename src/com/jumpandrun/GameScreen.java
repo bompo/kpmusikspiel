@@ -4,13 +4,19 @@ import java.util.List;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -32,13 +38,13 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	
 	final static float MAX_VELOCITY = 7f;		
 	boolean jump = false;	
-	static World world;
+	World world;
 	Body player;
 	Fixture playerPhysicsFixture;
 	Fixture playerSensorFixture;
-	OrthographicCamera cam;
-	Box2DDebugRenderer renderer;
+	PerspectiveCamera cam;
 	Array<MovingPlatform> platforms = new Array<MovingPlatform>();
+	Array<Body> boxes = new Array<Body>();
 	MovingPlatform groundedPlatform = null;
 	float stillTime = 0;
 	long lastGroundTime = 0;
@@ -49,26 +55,79 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	public RhythmValue rv1;
 	public RhythmValue rv2;
 	
-	double startTime = 0;
+	float startTime = 0;
+	float delta = 0;
 	boolean oldValueRv2 = false;
 
 	private boolean jumping = false;
+	
+	// GLES20
+	Matrix4 model = new Matrix4().idt();
+	Matrix4 tmp = new Matrix4().idt();
+	private ShaderProgram transShader;
+	private ShaderProgram bloomShader;
+	Mesh blockModel;
+	Mesh playerModel;
+	Mesh targetModel;
+	Mesh quadModel;
+	Mesh wireCubeModel;
+	Mesh sphereModel;
+	Mesh sphereSliceModel;
+	FrameBuffer frameBuffer;
+	FrameBuffer frameBufferVert;
+	
+	float angleXBack = 0;
+	float angleYBack = 0;
+	float angleXFront = 0;
+	float angleYFront = 0;
+	Vector3 xAxis = new Vector3(1, 0, 0);
+	Vector3 yAxis = new Vector3(0, 1, 0);
+	Vector3 zAxis = new Vector3(0, 0, 1);
 
 	public GameScreen(Game game) {
 		super(game);
 		
-		renderer = new Box2DDebugRenderer();
+		map = new Map();
+		
 		world = new World(new Vector2(0, -20), true);
-		cam = new OrthographicCamera(28, 20);
+		
+		cam = new PerspectiveCamera(60, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cam.position.set(0, 0,-5f);
+		cam.direction.set(0, 0, -1);
+		cam.up.set(0, 1, 0);
+		cam.near = 1f;
+		cam.far = 1000;
+		
 		createWorld();
 		Gdx.input.setInputProcessor(this);
 		batch = new SpriteBatch();
 		font = new BitmapFont();
+		
+		blockModel = Resources.getInstance().blockModel;
+		playerModel = Resources.getInstance().playerModel;
+		targetModel = Resources.getInstance().targetModel;
+		quadModel = Resources.getInstance().quadModel;
+		wireCubeModel = Resources.getInstance().wireCubeModel;
+		sphereModel = Resources.getInstance().sphereModel;
+		sphereSliceModel = Resources.getInstance().sphereSliceModel;
+		
+		transShader = Resources.getInstance().transShader;
+		bloomShader = Resources.getInstance().bloomShader;
+		
+		initRender();
+	}
+	
+	public void initRender() {
+		Gdx.gl20.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		
+		frameBuffer = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);		
+		frameBufferVert = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);
+		
+		Gdx.gl20.glDepthMask(true);
 	}
 
 	@Override
 	public void show() {
-		map = new Map();
 		
 		ra.loadMidi("./data/test.mid");
 		ra.play();
@@ -76,7 +135,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
 	}
 	
-	public static Body createBox(BodyType type, float width, float height, float density) {
+	public Body createBox(BodyType type, float width, float height, float density) {
 		BodyDef def = new BodyDef();
 		def.type = type;
 		Body box = world.createBody(def);
@@ -89,7 +148,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		return box;
 	}	
  
-	public static Body createEdge(BodyType type, float x1, float y1, float x2, float y2, float density) {
+	public Body createEdge(BodyType type, float x1, float y1, float x2, float y2, float density) {
 		BodyDef def = new BodyDef();
 		def.type = type;
 		Body box = world.createBody(def);
@@ -103,7 +162,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		return box;
 	}
  
-	public static Body createCircle(BodyType type, float radius, float density) {
+	public Body createCircle(BodyType type, float radius, float density) {
 		BodyDef def = new BodyDef();
 		def.type = type;
 		Body box = world.createBody(def);
@@ -138,35 +197,18 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	}
 	
 	private void createWorld() {
-		float y1 = 1; //(float)Math.random() * 0.1f + 1;
-		float y2 = y1;
-		for(int i = 0; i < 50; i++) {
-			Body ground = createEdge(BodyType.StaticBody, -50 + i * 2, y1, -50 + i * 2 + 2, y2, 0);			
-			y1 = y2;
-			y2 = 1; //(float)Math.random() + 1;
-		}			
- 
-		Body box = createBox(BodyType.StaticBody, 1, 1, 0);
-		box.setTransform(30, 3, 0);
-		box = createBox(BodyType.StaticBody, 1.2f, 1.2f, 0);
-		box.setTransform(5, 2.4f, 0);
 		player = createPlayer();
 		player.setTransform(10.0f, 4.0f, 0);
-		player.setFixedRotation(true);						
- 
-		for(int i = 0; i < 20; i++) {
-			box = createBox(BodyType.DynamicBody, (float)Math.random(), (float)Math.random(), 3);
-			box.setTransform((float)Math.random() * 10f - (float)Math.random() * 10f, (float)Math.random() * 10 + 6, (float)(Math.random() * 2 * Math.PI));
-		}
- 
-		for(int i = 0; i < 20; i++) {
-			Body circle = createCircle(BodyType.DynamicBody, (float)Math.random() * 0.5f, 3);
-			circle.setTransform((float)Math.random() * 10f - (float)Math.random() * 10f, (float)Math.random() * 10 + 6, (float)(Math.random() * 2 * Math.PI));
-		}
- 
-		platforms.add(new MovingPlatform(-2, 3, 2, 0.5f, 2, 0, 4));
-		platforms.add(new MovingPlatform(17, 3, 5, 0.5f, 0, 2, 5));		
-		platforms.add(new MovingPlatform(-7, 5, 2, 0.5f, -2, 2, 8));	
+		player.setFixedRotation(true);
+		
+		
+		Gdx.app.log("", map.blocks.size+"");
+		for(Block block:map.blocks) {	
+			Body box = createBox(BodyType.StaticBody, 1, 1, 3);
+			box.setTransform(block.x*2 , block.y*-1*2, 0);
+			boxes.add(box);
+			
+		}	
 	}
 	
 	private boolean isPlayerGrounded(float deltaTime) {				
@@ -204,13 +246,96 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public void render(float delta) {
 		delta = Math.min(0.06f, Gdx.graphics.getDeltaTime());
+		startTime+=delta;
 		
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		cam.position.set(player.getPosition().x, player.getPosition().y, 0);
+		angleXBack += MathUtils.sin(startTime) * delta * 10f;
+		angleYBack += MathUtils.cos(startTime) * delta * 5f;
+
+		angleXFront += MathUtils.sin(startTime) * delta * 10f;
+		angleYFront += MathUtils.cos(startTime) * delta * 5f;
+		
+		
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		cam.position.set(player.getPosition().x, player.getPosition().y, 15);
 		cam.update();
-		cam.apply(Gdx.gl10);
-		renderer.render(world);
- 
+		
+		if (Resources.getInstance().bloomOnOff) {
+			frameBuffer.begin();
+			renderScene();
+			frameBuffer.end();
+
+			// PostProcessing
+			Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+			Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+			Gdx.gl.glDisable(GL20.GL_BLEND);
+
+			frameBuffer.getColorBufferTexture().bind(0);
+
+			bloomShader.begin();
+			bloomShader.setUniformi("sTexture", 0);
+			bloomShader.setUniformf("bloomFactor", Helper.map((MathUtils.sin(startTime * 3f) * delta * 50f) + 0.5f, 0, 1, 0.50f, 0.55f));
+
+			frameBufferVert.begin();
+			bloomShader.setUniformf("TexelOffsetX", Resources.getInstance().m_fTexelOffset);
+			bloomShader.setUniformf("TexelOffsetY", 0.0f);
+			quadModel.render(bloomShader, GL20.GL_TRIANGLE_STRIP);
+			frameBufferVert.end();
+
+			frameBufferVert.getColorBufferTexture().bind(0);
+
+			frameBuffer.begin();
+			bloomShader.setUniformf("TexelOffsetX", 0.0f);
+			bloomShader.setUniformf("TexelOffsetY", Resources.getInstance().m_fTexelOffset);
+			quadModel.render(bloomShader, GL20.GL_TRIANGLE_STRIP);
+			frameBuffer.end();
+
+			bloomShader.end();
+		}
+
+		// render scene again
+		renderScene();
+		
+		Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+		Gdx.gl.glDisable(GL20.GL_BLEND);
+				
+		if(Resources.getInstance().bloomOnOff) {
+			batch.enableBlending();
+			batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE);
+			batch.begin();
+			batch.draw(frameBuffer.getColorBufferTexture(), 0, 0,800,480,0,0,frameBuffer.getWidth(),frameBuffer.getHeight(),false,true);
+			batch.end();
+		}
+		 
+		physicStuff();	
+		
+
+
+//		if (ra.getPlayedChannels()[6]==true) {
+//			Player.JUMP_VELOCITY = 15;
+//		}
+//		if (ra.getPlayedChannels()[5]==true) {
+//			renderer.renderOffsetX = 0.2f;
+//		}
+//		
+//		renderer.deltaMusic = rv1.getValue();
+//		map.update(delta);
+//		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+//		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+//		renderer.render(delta);
+//		
+//		if (map.bob.state == Player.JUMP) {
+//			if (!jumping) {
+//				jumping = true;
+//			}
+//		} else {
+//			jumping = false;
+//		}
+
+
+	}
+
+	private void physicStuff() {
 		Vector2 vel = player.getLinearVelocity();
 		Vector2 pos = player.getPosition();		
 		boolean grounded = isPlayerGrounded(Gdx.graphics.getDeltaTime());
@@ -286,30 +411,75 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
  
 		// le step...			
 		world.step(Gdx.graphics.getDeltaTime(), 4, 4);
-		player.setAwake(true);	
+		player.setAwake(true);
+	}
 
-//		if (ra.getPlayedChannels()[6]==true) {
-//			Player.JUMP_VELOCITY = 15;
-//		}
-//		if (ra.getPlayedChannels()[5]==true) {
-//			renderer.renderOffsetX = 0.2f;
-//		}
-//		
-//		renderer.deltaMusic = rv1.getValue();
-//		map.update(delta);
-//		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
-//		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-//		renderer.render(delta);
-//		
-//		if (map.bob.state == Player.JUMP) {
-//			if (!jumping) {
-//				jumping = true;
-//			}
-//		} else {
-//			jumping = false;
-//		}
+	private void renderScene() {
+		Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+		
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl.glClearColor(0,0,0,1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+				
+		transShader.begin();
+		transShader.setUniformMatrix("VPMatrix", cam.combined);
+		
+		//render boxes
+		for (Body box : boxes) {
+			tmp.idt();
+			model.idt();
+			
+			tmp.setToScaling(1f, 1f, 1f);
+			model.mul(tmp);
 
+			tmp.setToTranslation(box.getTransform().getPosition().x, box.getTransform().getPosition().y, 0);
+			model.mul(tmp);
 
+			tmp.setToScaling(0.95f, 0.95f, 0.95f);
+			model.mul(tmp);
+	
+			transShader.setUniformMatrix("MMatrix", model);
+			
+			transShader.setUniformf("a_color", Resources.getInstance().blockColor[0], Resources.getInstance().blockColor[1], Resources.getInstance().blockColor[2], Resources.getInstance().blockColor[3]);
+			blockModel.render(transShader, GL20.GL_TRIANGLES);
+
+			transShader.setUniformf("a_color",Resources.getInstance().blockEdgeColor[0], Resources.getInstance().blockEdgeColor[1],Resources.getInstance().blockEdgeColor[2], Resources.getInstance().blockEdgeColor[3]);
+			wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+		}
+		
+		//render player
+		{
+			tmp.idt();
+			model.idt();
+			
+			tmp.setToScaling(1f, 1f, 1f);
+			model.mul(tmp);
+			
+			tmp.setToTranslation(player.getTransform().getPosition().x, player.getTransform().getPosition().y-0.8f, 0);
+			model.mul(tmp);
+			
+			tmp.setToRotation(xAxis, angleXBack);
+			model.mul(tmp);
+			tmp.setToRotation(yAxis, angleYBack);
+			model.mul(tmp);
+
+			tmp.setToScaling(0.5f, 0.5f, 0.5f);
+			model.mul(tmp);
+	
+			transShader.setUniformMatrix("MMatrix", model);
+			transShader.setUniformf("a_color",Resources.getInstance().playerColor[0], Resources.getInstance().playerColor[1], Resources.getInstance().playerColor[2], Resources.getInstance().playerColor[3]);
+			playerModel.render(transShader, GL20.GL_TRIANGLES);
+			
+			tmp.setToScaling(2.0f, 2.0f, 2.0f);
+			model.mul(tmp);
+
+			//render hull			
+			transShader.setUniformMatrix("MMatrix", model);
+			transShader.setUniformf("a_color",Resources.getInstance().playerEdgeColor[0], Resources.getInstance().playerEdgeColor[1], Resources.getInstance().playerEdgeColor[2], Resources.getInstance().playerEdgeColor[3]);
+			playerModel.render(transShader, GL20.GL_LINE_STRIP);
+		}
 	}
 	
 	@Override
@@ -318,6 +488,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		if (keycode == Keys.ESCAPE) {
 			game.setScreen(new MainMenu(game));
+		}
+		
+		if (keycode == Keys.R) {
+			for(Body box:boxes) {
+				box.setTransform(box.getTransform().getPosition().x+delta,box.getTransform().getPosition().y+delta*(MathUtils.sin(startTime)*delta*500f),0);
+			}
 		}
 		return false;
 	}
@@ -339,7 +515,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public void hide() {
 		System.out.println("dispose game screen");
-		renderer.dispose();
 		ra.stop();
 	}
 
@@ -378,4 +553,5 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	}
 
 }
+
 

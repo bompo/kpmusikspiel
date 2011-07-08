@@ -2,7 +2,10 @@ package com.jumpandrun;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class MovingPlatform {
 	Body platform;		
@@ -11,8 +14,8 @@ public class MovingPlatform {
 	float dist = 0;
 	float maxDist = 0;		
 
-	public MovingPlatform(float x, float y, float width, float height, float dx, float dy, float maxDist) {
-		platform = GameScreen.createBox(BodyType.KinematicBody, width, height, 1);			
+	public MovingPlatform(World world, float x, float y, float width, float height, float dx, float dy, float maxDist) {
+		platform = createBox(world, BodyType.KinematicBody, width, height, 1);			
 		pos.x = x;
 		pos.y = y;
 		dir.x = dx;
@@ -32,5 +35,18 @@ public class MovingPlatform {
 
 		platform.setLinearVelocity(dir);			
 	}
+	
+	public Body createBox(World world, BodyType type, float width, float height, float density) {
+		BodyDef def = new BodyDef();
+		def.type = type;
+		Body box = world.createBody(def);
+ 
+		PolygonShape poly = new PolygonShape();
+		poly.setAsBox(width, height);
+		box.createFixture(poly, density);
+		poly.dispose();
+ 
+		return box;
+	}	
 	
 }

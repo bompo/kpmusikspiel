@@ -20,6 +20,27 @@ public class Resources {
 	public Mesh sphereModel;
 	public Mesh sphereSliceModel;
 
+	public float[] clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+	public float[] backgroundWireColor = { 1.0f, 0.8f, 0.8f, 0.07f };
+	public float[] wireCubeColor = { 1.0f, 0.1f, 0.1f, 0.04f };
+	public float[] wireCubeEdgeColor = { 1.0f, 0.1f, 0.1f, 0.5f };
+	public float[] blockColor = { 1.0f, 0.1f, 0.1f, 0.2f };
+	public float[] blockEdgeColor = { 1.0f, 0.1f, 0.1f, 0.8f };
+	public float[] movableBlockColor = { 1.0f, 0.8f, 0.1f, 0.8f };
+	public float[] movableBlockEdgeColor = { 1.0f, 0.8f, 0.1f, 0.2f };
+	public float[] switchBlockColor = { 0.2f, 0.2f, 0.2f, 0.8f };
+	public float[] switchBlockEdgeColor = { 0.2f, 0.2f, 0.2f, 0.2f };
+	public float[] playerColor = { 1.0f, 1.0f, 0.0f, 0.4f };
+	public float[] playerEdgeColor = { 1.0f, 1.0f, 0.0f, 0.4f };
+	public float[] portalColor = { 1f, 1f, 0f, 0.3f };
+	public float[] portalColor2 = { 0.03f, 0.3f, 0.73f, 0.3f };
+	public float[] portalColor3 = { 0f, 1f, 1f, 0.3f };
+	public float[] portalColor4 = { 0f, 0.8f, 0.4f, 0.3f }; 
+	public float[] portalColor5 = { 0.89f, 0.21f, 0.15f, 0.3f };
+	public float[] portalEdgeColor = { 1.0f, 1.0f, 1.0f, 0.5f };
+	public float[] targetColor = { 0.0f, 1.0f, 0.1f, 0.5f };
+	public float[] targetEdgeColor = { 0.0f, 1.0f, 0.1f, 0.4f };
+	
 	public ShaderProgram transShader;
 	public ShaderProgram bloomShader;
 	public int m_i32TexSize = 128;
@@ -39,6 +60,7 @@ public class Resources {
 
 	public Resources() {
 		reInit();
+		initShader();
 	}
 
 	public void reInit() {

@@ -11,6 +11,7 @@ public class Map {
 	static int END = 0xff00ff;
 	static int DISPENSER = 0xff0100;
 	
+	Array<Block> blocks = new Array<Block>();
 	int[][] tiles;	
 	public Player bob;
 	Array<Dispenser> dispensers = new Array<Dispenser>();
@@ -32,8 +33,8 @@ public class Map {
 				if(pix == DISPENSER) {
 					Dispenser dispenser = new Dispenser(x, pixmap.getHeight() - 1 - y);
 					dispensers.add(dispenser);					
-				} else {
-					tiles[x][y] = pix;
+				} else if(pix == TILE) {
+					blocks.add(new Block(x,y));
 				}
 			}
 		}	
