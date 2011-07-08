@@ -428,25 +428,29 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		//render boxes
 		for (Body box : boxes) {
-			tmp.idt();
-			model.idt();
-			
-			tmp.setToScaling(1f, 1f, 1f);
-			model.mul(tmp);
-
-			tmp.setToTranslation(box.getTransform().getPosition().x, box.getTransform().getPosition().y, 0);
-			model.mul(tmp);
-
-			tmp.setToScaling(0.95f, 0.95f, 0.95f);
-			model.mul(tmp);
+			if(cam.frustum.pointInFrustum(new Vector3(box.getTransform().getPosition().x, box.getTransform().getPosition().y, 0))) {
+				tmp.idt();
+				model.idt();
+				
+				tmp.setToScaling(1f, 1f, 1f);
+				model.mul(tmp);
 	
-			transShader.setUniformMatrix("MMatrix", model);
-			
-			transShader.setUniformf("a_color", Resources.getInstance().blockColor[0], Resources.getInstance().blockColor[1], Resources.getInstance().blockColor[2], Resources.getInstance().blockColor[3]);
-			blockModel.render(transShader, GL20.GL_TRIANGLES);
-
-			transShader.setUniformf("a_color",Resources.getInstance().blockEdgeColor[0], Resources.getInstance().blockEdgeColor[1],Resources.getInstance().blockEdgeColor[2], Resources.getInstance().blockEdgeColor[3]);
-			wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+				tmp.setToTranslation(box.getTransform().getPosition().x, box.getTransform().getPosition().y, 0);
+				model.mul(tmp);
+	
+				tmp.setToScaling(0.95f, 0.95f, 0.95f);
+				model.mul(tmp);
+				
+				
+		
+				transShader.setUniformMatrix("MMatrix", model);
+				
+				transShader.setUniformf("a_color", Resources.getInstance().blockColor[0], Resources.getInstance().blockColor[1], Resources.getInstance().blockColor[2], Resources.getInstance().blockColor[3]);
+				blockModel.render(transShader, GL20.GL_TRIANGLES);
+	
+				transShader.setUniformf("a_color",Resources.getInstance().blockEdgeColor[0], Resources.getInstance().blockEdgeColor[1],Resources.getInstance().blockEdgeColor[2], Resources.getInstance().blockEdgeColor[3]);
+				wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+			}
 		}
 		
 		//render player

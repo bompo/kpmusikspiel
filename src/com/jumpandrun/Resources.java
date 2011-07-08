@@ -47,7 +47,7 @@ public class Resources {
 	public float m_fTexelOffset;
 	
 	public Preferences prefs = Gdx.app.getPreferences("kpmusikspiel");
-	public boolean bloomOnOff = true;
+	public boolean bloomOnOff = false;
 
 	public static Resources instance;
 
