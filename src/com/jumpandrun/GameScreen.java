@@ -420,8 +420,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		Gdx.gl.glClearColor(0,0,0,1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 				
 		transShader.begin();
 		transShader.setUniformMatrix("VPMatrix", cam.combined);
@@ -440,9 +438,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	
 				tmp.setToScaling(0.95f, 0.95f, 0.95f);
 				model.mul(tmp);
-				
-				
-		
+						
 				transShader.setUniformMatrix("MMatrix", model);
 				
 				transShader.setUniformf("a_color", Resources.getInstance().blockColor[0], Resources.getInstance().blockColor[1], Resources.getInstance().blockColor[2], Resources.getInstance().blockColor[3]);
@@ -484,6 +480,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			transShader.setUniformf("a_color",Resources.getInstance().playerEdgeColor[0], Resources.getInstance().playerEdgeColor[1], Resources.getInstance().playerEdgeColor[2], Resources.getInstance().playerEdgeColor[3]);
 			playerModel.render(transShader, GL20.GL_LINE_STRIP);
 		}
+		transShader.end();
 	}
 	
 	@Override
