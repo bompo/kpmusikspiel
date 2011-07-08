@@ -58,7 +58,14 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	float startTime = 0;
 	float delta = 0;
 	boolean oldValueRv2 = false;
-
+	
+	//DEBUG values
+	float renderTimeBench = 0;
+	float physicTimeBench = 0;
+	float musicTimeBench = 0;
+	float startTimeBench = 0;
+	float endTimeBench = 0;
+	
 	private boolean jumping = false;
 	
 	// GLES20
@@ -201,13 +208,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		player.setTransform(10.0f, 4.0f, 0);
 		player.setFixedRotation(true);
 		
-		
-		Gdx.app.log("", map.blocks.size+"");
 		for(Block block:map.blocks) {	
 			Body box = createBox(BodyType.StaticBody, 1, 1, 3);
 			box.setTransform(block.x*2 , block.y*-1*2, 0);
-			boxes.add(box);
-			
+			boxes.add(box);			
 		}	
 	}
 	
@@ -254,6 +258,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		angleXFront += MathUtils.sin(startTime) * delta * 10f;
 		angleYFront += MathUtils.cos(startTime) * delta * 5f;
 		
+		startTimeBench = System.nanoTime();		
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		cam.position.set(player.getPosition().x, player.getPosition().y, 15);
@@ -306,9 +311,14 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			batch.draw(frameBuffer.getColorBufferTexture(), 0, 0,800,480,0,0,frameBuffer.getWidth(),frameBuffer.getHeight(),false,true);
 			batch.end();
 		}
-		 
-		physicStuff();	
 		
+		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
+		renderTimeBench = endTimeBench;
+		 
+		startTimeBench = System.nanoTime();
+		physicStuff();	
+		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
+		physicTimeBench = endTimeBench;
 
 
 //		if (ra.getPlayedChannels()[6]==true) {
@@ -333,6 +343,13 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 //		}
 
 
+		batch.begin();
+		font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, 30);
+		font.draw(batch, "box2d: " + physicTimeBench, 10, 50);
+		font.draw(batch, "render: " + renderTimeBench, 10, 70);
+		batch.end();
+
+		
 	}
 
 	private void physicStuff() {
