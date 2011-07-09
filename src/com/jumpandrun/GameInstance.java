@@ -120,14 +120,14 @@ public class GameInstance {
 		Body box = world.createBody(def);
 		 
 		PolygonShape poly = new PolygonShape();		
-		poly.setAsBox(0.45f, 1.4f);
-		playerPhysicsFixture = box.createFixture(poly, 1);
+		poly.setAsBox(0.1f, 0.1f);
+		playerPhysicsFixture = box.createFixture(poly, 0);
 		poly.dispose();			
  
 		CircleShape circle = new CircleShape();		
-		circle.setRadius(0.45f);
-		circle.setPosition(new Vector2(0, -1.4f));
-		playerSensorFixture = box.createFixture(circle, 0);		
+		circle.setRadius(1f);
+		circle.setPosition(new Vector2(0, -0.6f));
+		playerSensorFixture = box.createFixture(circle, 1);		
 		circle.dispose();		
  
 		box.setBullet(true);
