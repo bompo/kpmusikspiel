@@ -269,12 +269,16 @@ public class GameInstance {
 			Contact contact = contactList.get(i);
 			if(contact.isTouching()) {
 				if(contact.getFixtureA().getBody().getUserData() instanceof JumpBlock && contact.getFixtureB().getBody().getUserData() instanceof Player ) {
-					contact.getFixtureB().getBody().applyLinearImpulse(0, 60, player.position.x, player.position.y);
-//					((JumpBlock)contact.getFixtureA().getBody().getUserData()).jump();
+					if(contact.getFixtureA().getBody().getPosition().y < contact.getFixtureB().getBody().getPosition().y-1) {
+						contact.getFixtureB().getBody().applyLinearImpulse(0, 60, player.position.x, player.position.y);
+	//					((JumpBlock)contact.getFixtureA().getBody().getUserData()).jump();
+					}
 				}
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player && contact.getFixtureB().getBody().getUserData() instanceof JumpBlock ) {
+					if(contact.getFixtureA().getBody().getPosition().y-1 > contact.getFixtureB().getBody().getPosition().y) {
 					contact.getFixtureA().getBody().applyLinearImpulse(0, 60, player.position.x, player.position.y);
 //					((JumpBlock)contact.getFixtureB().getBody().getUserData()).jump();
+					}
 				}
 			}
 		}
