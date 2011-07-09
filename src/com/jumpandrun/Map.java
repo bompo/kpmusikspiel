@@ -11,6 +11,9 @@ public class Map {
 	static int START = 0xff0000;
 	static int END = 0xff00ff;
 	static int DISPENSER = 0xff0100;
+	static int ENEMYSPAWNER = 0x00ff00;
+	static int JUMPBLOCK1 = 0x005aff;
+	static int JUMPBLOCK2 = 0x91afe5;
 	
 	Array<Block> blocks = new Array<Block>();
 	int[][] tiles;	
@@ -26,6 +29,12 @@ public class Map {
 					GameInstance.getInstance().createPlayer(x*2,y*-1*2);					
 				} else if(pix == TILE) {
 					GameInstance.getInstance().addBlock(x*2,y*-1*2);		
+				} else if(pix == ENEMYSPAWNER) {
+					GameInstance.getInstance().addEnemySpawner(x*2,y*-1*2);		
+				} else if(pix == JUMPBLOCK1) {
+					GameInstance.getInstance().addJumpBlock(x*2,y*-1*2);		
+				} else if(pix == JUMPBLOCK2) {
+					GameInstance.getInstance().addJumpBlock(x*2,y*-1*2);		
 				}
 			}
 		}	

@@ -1,14 +1,12 @@
 package com.jumpandrun;
 
-import java.util.List;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -19,17 +17,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.WorldManifold;
-import com.badlogic.gdx.utils.Array;
 import com.music.RhythmAudio;
 import com.music.RhythmValue;
 
@@ -41,9 +28,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	SpriteBatch batch;
 	BitmapFont font;
 
-//	public static RhythmAudio ra = new RhythmAudio();
-//	public RhythmValue rv1;
-//	public RhythmValue rv2;
+	public static RhythmAudio ra = new RhythmAudio();
+	public RhythmValue rv1;
+	public RhythmValue rv2;
 	
 	float startTime = 0;
 	float delta = 0;
@@ -119,10 +106,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public void show() {
 		
-//		ra.loadMidi("./data/test.mid");
-//		ra.play();
-//		rv1 = new RhythmValue(RhythmValue.type.SINE, 20, ra);
-//		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
+		ra.loadMidi("./data/test.mid");
+		ra.play();
+		rv1 = new RhythmValue(RhythmValue.type.SINE, 20, ra);
+		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
 	}
 
 
@@ -203,10 +190,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 //		if (ra.getPlayedChannels()[6]==true) {
 //			Player.JUMP_VELOCITY = 15;
 //		}
-//		if (ra.getPlayedChannels()[5]==true) {
-//			renderer.renderOffsetX = 0.2f;
-//		}
-//		
+		if (ra.getPlayedChannels()[5]==true) {
+			GameInstance.getInstance().activateJumpBlocks();
+		}
+		
 //		renderer.deltaMusic = rv1.getValue();
 //		map.update(delta);
 //		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
@@ -245,19 +232,42 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			if(cam.frustum.pointInFrustum(tmpVector3.set(block.position.x, block.position.y, 0))) {
 				model.idt();
 				
-				tmp.setToTranslation(block.position.x, block.position.y, 0);
-				model.mul(tmp);
-	
-				tmp.setToScaling(0.95f, 0.95f, 0.95f);
-				model.mul(tmp);
-						
-				transShader.setUniformMatrix("MMatrix", model);
-				
-				transShader.setUniformf("a_color", Resources.getInstance().blockColor[0], Resources.getInstance().blockColor[1], Resources.getInstance().blockColor[2], Resources.getInstance().blockColor[3]);
-				blockModel.render(transShader, GL20.GL_TRIANGLES);
-	
-				transShader.setUniformf("a_color",Resources.getInstance().blockEdgeColor[0], Resources.getInstance().blockEdgeColor[1],Resources.getInstance().blockEdgeColor[2], Resources.getInstance().blockEdgeColor[3]);
-				wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+
+			
+				if(block instanceof JumpBlock) {
+					//TODO quick hack
+					JumpBlock jumbBlock = (JumpBlock)block;
+					jumbBlock.update();
+					
+					tmp.setToTranslation(jumbBlock.positionAnim.x, jumbBlock.positionAnim.y, 0);
+					model.mul(tmp);
+		
+					tmp.setToScaling(0.95f, 0.95f, 0.95f);
+					model.mul(tmp);
+							
+					transShader.setUniformMatrix("MMatrix", model);
+					
+					transShader.setUniformf("a_color", Resources.getInstance().jumpBlockColor[0], Resources.getInstance().jumpBlockColor[1], Resources.getInstance().jumpBlockColor[2], Resources.getInstance().jumpBlockColor[3]);
+					blockModel.render(transShader, GL20.GL_TRIANGLES);
+		
+					transShader.setUniformf("a_color",Resources.getInstance().jumpBlockEdgeColor[0], Resources.getInstance().jumpBlockEdgeColor[1],Resources.getInstance().jumpBlockEdgeColor[2], Resources.getInstance().jumpBlockEdgeColor[3]);
+					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);			
+				} else {	
+					
+					tmp.setToTranslation(block.position.x, block.position.y, 0);
+					model.mul(tmp);
+		
+					tmp.setToScaling(0.95f, 0.95f, 0.95f);
+					model.mul(tmp);
+							
+					transShader.setUniformMatrix("MMatrix", model);
+					
+					transShader.setUniformf("a_color", Resources.getInstance().blockColor[0], Resources.getInstance().blockColor[1], Resources.getInstance().blockColor[2], Resources.getInstance().blockColor[3]);
+					blockModel.render(transShader, GL20.GL_TRIANGLES);
+		
+					transShader.setUniformf("a_color",Resources.getInstance().blockEdgeColor[0], Resources.getInstance().blockEdgeColor[1],Resources.getInstance().blockEdgeColor[2], Resources.getInstance().blockEdgeColor[3]);
+					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+				}
 			}
 		}
 		
@@ -328,7 +338,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public void hide() {
 		System.out.println("dispose game screen");
-//		ra.stop();
+		ra.stop();
 	}
 
 	public float MidiToFrequenc(float note) {

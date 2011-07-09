@@ -40,6 +40,8 @@ public class Resources {
 	public float[] portalEdgeColor = { 1.0f, 1.0f, 1.0f, 0.5f };
 	public float[] targetColor = { 0.0f, 1.0f, 0.1f, 0.5f };
 	public float[] targetEdgeColor = { 0.0f, 1.0f, 0.1f, 0.4f };
+	public float[] jumpBlockColor = { 1f, 1f, 0f, 0.3f };
+	public float[] jumpBlockEdgeColor = { 1.0f, 1.0f, 1.0f, 0.5f };
 	
 	public ShaderProgram transShader;
 	public ShaderProgram bloomShader;

@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class GameInstance {
 
-	final static float MAX_VELOCITY = 7f;	
+	final static float MAX_VELOCITY = 10f;	
 
 	public static GameInstance instance;
 	
@@ -26,6 +26,7 @@ public class GameInstance {
 	public Array<Block> blocks = new Array<Block>();
 	public World world  = new World(new Vector2(0, -20), true);
 	public Player player;
+	public EnemySpawner enemySpawner;
 	
 
 	float stillTime = 0;
@@ -87,7 +88,20 @@ public class GameInstance {
 		poly.dispose();
  
 		return box;
-	}	
+	}		
+	
+	public void addEnemySpawner(float x, float y) {
+		enemySpawner = new EnemySpawner(x, y);
+	}
+	
+	public void addJumpBlock(float x, float y) {
+		JumpBlock block = new JumpBlock(x,y);
+		box = createBox(BodyType.StaticBody, 1, 1, 3);
+		box.setTransform(block.position.x , block.position.y, 0);
+		
+		block.body = box;
+		blocks.add(block);
+	}
 	
 	public void addBlock(float x, float y) {
 		Block block = new Block(x,y);
@@ -218,7 +232,7 @@ public class GameInstance {
 				player.body.setLinearVelocity(vel.x, 0);			
 				System.out.println("jump before: " + player.body.getLinearVelocity());
 				player.body.setTransform(pos.x, pos.y + 0.01f, 0);
-				player.body.applyLinearImpulse(0, 30, pos.x, pos.y);			
+				player.body.applyLinearImpulse(0, 40, pos.x, pos.y);			
 				System.out.println("jump, " + player.body.getLinearVelocity());				
 			}
 		}					
@@ -228,11 +242,30 @@ public class GameInstance {
 			MovingPlatform platform = platforms.get(i);
 			platform.update(Math.max(1/30.0f, Gdx.graphics.getDeltaTime()));
 		}
+		
+		//update jump plattforms
+		for(int i = 0; i < blocks.size; i++) {
+			Block block = blocks.get(i);
+			if(block instanceof JumpBlock) {
+				if(((JumpBlock) block).jumpAnim > 0) {
+					((JumpBlock) block).jumpAnim -= Gdx.graphics.getDeltaTime()/10.;
+				}
+			}			
+		}
  
 		// le step...			
 		world.step(Gdx.graphics.getDeltaTime(), 4, 4);
 		player.update();
 		player.body.setAwake(true);
 		
+	}
+	
+	public void activateJumpBlocks() {
+		for(int i = 0; i < blocks.size; i++) {
+			Block block = blocks.get(i);
+			if(block instanceof JumpBlock) {
+				((JumpBlock) block).jump();
+			}			
+		}
 	}
 }
