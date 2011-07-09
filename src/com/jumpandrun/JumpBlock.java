@@ -13,13 +13,7 @@ public class JumpBlock extends Block {
 	}
 	
 	public void jump() {
-		jumpAnim = 2.f;
-	}
-	
-	public void update() {
-		body.setTransform(position.x, position.y + jumpAnim, 0);
-		positionAnim.x = body.getPosition().x;
-		positionAnim.y = body.getPosition().y;
+		jumpAnim = 1;
 	}
 
 }

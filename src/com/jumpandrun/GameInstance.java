@@ -101,6 +101,7 @@ public class GameInstance {
 		
 		block.body = box;
 		blocks.add(block);
+		block.body.setUserData(block);
 	}
 	
 	public void addBlock(float x, float y) {
@@ -109,6 +110,7 @@ public class GameInstance {
 		box.setTransform(block.position.x , block.position.y, 0);
 		
 		block.body = box;
+		block.body.setUserData(block);
 		blocks.add(block);
 	}
  
@@ -116,7 +118,7 @@ public class GameInstance {
 		BodyDef def = new BodyDef();
 		def.type = BodyType.DynamicBody;
 		Body box = world.createBody(def);
- 
+		 
 		PolygonShape poly = new PolygonShape();		
 		poly.setAsBox(0.45f, 1.4f);
 		playerPhysicsFixture = box.createFixture(poly, 1);
@@ -135,6 +137,7 @@ public class GameInstance {
 		
 		player = new Player(x, y);
 		player.body = box;
+		player.body.setUserData(player);
 	}
 	
 	public boolean isPlayerGrounded(float deltaTime) {				
@@ -248,8 +251,8 @@ public class GameInstance {
 			Block block = blocks.get(i);
 			if(block instanceof JumpBlock) {
 				if(((JumpBlock) block).jumpAnim > 0) {
-					((JumpBlock) block).jumpAnim -= Gdx.graphics.getDeltaTime()/10.;
-				}
+					((JumpBlock) block).jumpAnim = Math.max(0, ((JumpBlock) block).jumpAnim - Gdx.graphics.getDeltaTime());
+				} 
 			}			
 		}
  
@@ -261,6 +264,21 @@ public class GameInstance {
 	}
 	
 	public void activateJumpBlocks() {
+		List<Contact> contactList = world.getContactList();
+		for(int i = 0; i < contactList.size(); i++) {
+			Contact contact = contactList.get(i);
+			if(contact.isTouching()) {
+				if(contact.getFixtureA().getBody().getUserData() instanceof JumpBlock && contact.getFixtureB().getBody().getUserData() instanceof Player ) {
+					contact.getFixtureB().getBody().applyLinearImpulse(0, 60, player.position.x, player.position.y);
+//					((JumpBlock)contact.getFixtureA().getBody().getUserData()).jump();
+				}
+				if(contact.getFixtureA().getBody().getUserData() instanceof Player && contact.getFixtureB().getBody().getUserData() instanceof JumpBlock ) {
+					contact.getFixtureA().getBody().applyLinearImpulse(0, 60, player.position.x, player.position.y);
+//					((JumpBlock)contact.getFixtureB().getBody().getUserData()).jump();
+				}
+			}
+		}
+		
 		for(int i = 0; i < blocks.size; i++) {
 			Block block = blocks.get(i);
 			if(block instanceof JumpBlock) {
