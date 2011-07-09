@@ -35,19 +35,9 @@ import com.music.RhythmValue;
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
 	Map map;
-	
-	final static float MAX_VELOCITY = 7f;		
-	boolean jump = false;	
-	World world;
-	Body player;
-	Fixture playerPhysicsFixture;
-	Fixture playerSensorFixture;
+		
 	PerspectiveCamera cam;
-	Array<MovingPlatform> platforms = new Array<MovingPlatform>();
-	Array<Block> boxes = new Array<Block>();
-	MovingPlatform groundedPlatform = null;
-	float stillTime = 0;
-	long lastGroundTime = 0;
+
 	SpriteBatch batch;
 	BitmapFont font;
 
@@ -65,8 +55,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	float musicTimeBench = 0;
 	float startTimeBench = 0;
 	float endTimeBench = 0;
-	
-	private boolean jumping = false;
 	
 	// GLES20
 	Matrix4 model = new Matrix4().idt();
@@ -90,15 +78,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	Vector3 tmpVector3 = new Vector3();
 	Vector2 tmpVector2 = new Vector2();
 	
-	Body box;
-	Block block;
 
 	public GameScreen(Game game) {
 		super(game);
 		
 		map = new Map();
-		
-		world = new World(new Vector2(0, -20), true);
 		
 		cam = new PerspectiveCamera(60, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.position.set(0, 0,-5f);
@@ -107,7 +91,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		cam.near = 1f;
 		cam.far = 1000;
 		
-		createWorld();
 		Gdx.input.setInputProcessor(this);
 		batch = new SpriteBatch();
 		font = new BitmapFont();
@@ -141,114 +124,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 //		rv1 = new RhythmValue(RhythmValue.type.SINE, 20, ra);
 //		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
 	}
-	
-	public Body createBox(BodyType type, float width, float height, float density) {
-		BodyDef def = new BodyDef();
-		def.type = type;
-		Body box = world.createBody(def);
- 
-		PolygonShape poly = new PolygonShape();
-		poly.setAsBox(width, height);
-		box.createFixture(poly, density);
-		poly.dispose();
- 
-		return box;
-	}	
- 
-	public Body createEdge(BodyType type, float x1, float y1, float x2, float y2, float density) {
-		BodyDef def = new BodyDef();
-		def.type = type;
-		Body box = world.createBody(def);
- 
-		PolygonShape poly = new PolygonShape();		
-		poly.setAsEdge(new Vector2(0, 0), new Vector2(x2 - x1, y2 - y1));
-		box.createFixture(poly, density);
-		box.setTransform(x1, y1, 0);
-		poly.dispose();
- 
-		return box;
-	}
- 
-	public Body createCircle(BodyType type, float radius, float density) {
-		BodyDef def = new BodyDef();
-		def.type = type;
-		Body box = world.createBody(def);
- 
-		CircleShape poly = new CircleShape();
-		poly.setRadius(radius);
-		box.createFixture(poly, density);
-		poly.dispose();
- 
-		return box;
-	}	
- 
-	private Body createPlayer() {
-		BodyDef def = new BodyDef();
-		def.type = BodyType.DynamicBody;
-		Body box = world.createBody(def);
- 
-		PolygonShape poly = new PolygonShape();		
-		poly.setAsBox(0.45f, 1.4f);
-		playerPhysicsFixture = box.createFixture(poly, 1);
-		poly.dispose();			
- 
-		CircleShape circle = new CircleShape();		
-		circle.setRadius(0.45f);
-		circle.setPosition(new Vector2(0, -1.4f));
-		playerSensorFixture = box.createFixture(circle, 0);		
-		circle.dispose();		
- 
-		box.setBullet(true);
- 
-		return box;
-	}
-	
-	private void createWorld() {
-		player = createPlayer();
-		player.setTransform(10.0f, 4.0f, 0);
-		player.setFixedRotation(true);
-		
-		//tell box2d about those blocks...
-		for(Block block:map.blocks) {	
-			box = createBox(BodyType.StaticBody, 1, 1, 3);
-			box.setTransform(block.position.x , block.position.y, 0);
-			
-			block.body = box;
-			boxes.add(block);			
-		}	
-	}
-	
-	private boolean isPlayerGrounded(float deltaTime) {				
-		groundedPlatform = null;
-		List<Contact> contactList = world.getContactList();
-		for(int i = 0; i < contactList.size(); i++) {
-			Contact contact = contactList.get(i);
-			if(contact.isTouching() && (contact.getFixtureA() == playerSensorFixture ||
-			   contact.getFixtureB() == playerSensorFixture)) {				
- 
-				Vector2 pos = player.getPosition();
-				WorldManifold manifold = contact.getWorldManifold();
-				boolean below = true;
-				for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
-					below &= (manifold.getPoints()[j].y < pos.y - 1.5f);
-				}
- 
-				if(below) {
-					if(contact.getFixtureA().getUserData() != null && contact.getFixtureA().getUserData().equals("p")) {
-						groundedPlatform = (MovingPlatform)contact.getFixtureA().getBody().getUserData();							
-					}
- 
-					if(contact.getFixtureB().getUserData() != null && contact.getFixtureB().getUserData().equals("p")) {
-						groundedPlatform = (MovingPlatform)contact.getFixtureB().getBody().getUserData();
-					}											
-					return true;			
-				}
- 
-				return false;
-			}
-		}
-		return false;
-	}
+
 
 	@Override
 	public void render(float delta) {
@@ -264,7 +140,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		startTimeBench = System.nanoTime();		
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		cam.position.set(player.getPosition().x, player.getPosition().y, 15);
+		cam.position.set(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y, 15);
 		cam.update();
 		
 		if (Resources.getInstance().bloomOnOff) {
@@ -319,7 +195,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		renderTimeBench = endTimeBench;
 		 
 		startTimeBench = System.nanoTime();
-		physicStuff();	
+		GameInstance.getInstance().physicStuff();	
 		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
 		physicTimeBench = endTimeBench;
 
@@ -350,89 +226,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, 30);
 		font.draw(batch, "box2d: " + physicTimeBench, 10, 50);
 		font.draw(batch, "render: " + renderTimeBench, 10, 70);
-		batch.end();
-
-		
-	}
-
-	private void physicStuff() {
-		Vector2 vel = player.getLinearVelocity();
-		Vector2 pos = player.getPosition();		
-		boolean grounded = isPlayerGrounded(Gdx.graphics.getDeltaTime());
-		if(grounded) {
-			lastGroundTime = System.nanoTime();
-		} else {
-			if(System.nanoTime() - lastGroundTime < 100000000) {
-				grounded = true;
-			}
-		}
- 
-		// cap max velocity on x		
-		if(Math.abs(vel.x) > MAX_VELOCITY) {			
-			vel.x = Math.signum(vel.x) * MAX_VELOCITY;
-			player.setLinearVelocity(vel.x, vel.y);
-		}
- 
-		// calculate stilltime & damp
-		if(!Gdx.input.isKeyPressed(Keys.A) && !Gdx.input.isKeyPressed(Keys.D)) {			
-			stillTime += Gdx.graphics.getDeltaTime();
-			player.setLinearVelocity(vel.x * 0.9f, vel.y);
-		}
-		else { 
-			stillTime = 0;
-		}			
- 
-		// disable friction while jumping
-		if(!grounded) {			
-			playerPhysicsFixture.setFriction(0f);
-			playerSensorFixture.setFriction(0f);			
-		} else {
-			if(!Gdx.input.isKeyPressed(Keys.A) && !Gdx.input.isKeyPressed(Keys.D) && stillTime > 0.2) {
-				playerPhysicsFixture.setFriction(100f);
-				playerSensorFixture.setFriction(100f);
-			}
-			else {
-				playerPhysicsFixture.setFriction(0.2f);
-				playerSensorFixture.setFriction(0.2f);
-			}
- 
-			if(groundedPlatform != null && groundedPlatform.dist == 0) {
-				player.applyLinearImpulse(0, -24, pos.x, pos.y);				
-			}
-		}		
- 
-		// apply left impulse, but only if max velocity is not reached yet
-		if(Gdx.input.isKeyPressed(Keys.A) && vel.x > -MAX_VELOCITY) {
-			player.applyLinearImpulse(-2f, 0, pos.x, pos.y);
-		}
- 
-		// apply right impulse, but only if max velocity is not reached yet
-		if(Gdx.input.isKeyPressed(Keys.D) && vel.x < MAX_VELOCITY) {
-			player.applyLinearImpulse(2f, 0, pos.x, pos.y);
-		}
- 
-		// jump, but only when grounded
-		if(jump) {			
-			jump = false;
-			if(grounded) {
-				player.setLinearVelocity(vel.x, 0);			
-				System.out.println("jump before: " + player.getLinearVelocity());
-				player.setTransform(pos.x, pos.y + 0.01f, 0);
-				player.applyLinearImpulse(0, 30, pos.x, pos.y);			
-				System.out.println("jump, " + player.getLinearVelocity());				
-			}
-		}					
- 
-		// update platforms
-		for(int i = 0; i < platforms.size; i++) {
-			MovingPlatform platform = platforms.get(i);
-			platform.update(Math.max(1/30.0f, Gdx.graphics.getDeltaTime()));
-		}
- 
-		// le step...			
-		world.step(Gdx.graphics.getDeltaTime(), 4, 4);
-		player.setAwake(true);
-	}
+		batch.end();		
+	}	
 
 	private void renderScene() {
 		Gdx.gl.glEnable(GL20.GL_CULL_FACE);
@@ -445,8 +240,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		transShader.setUniformMatrix("VPMatrix", cam.combined);
 		
 		//render boxes
-		for (int i =0; i<boxes.size ; ++i) {
-			block = boxes.get(i);
+		for (int i =0; i<GameInstance.getInstance().blocks.size ; ++i) {
+			Block block = GameInstance.getInstance().blocks.get(i);
 			if(cam.frustum.pointInFrustum(tmpVector3.set(block.position.x, block.position.y, 0))) {
 				model.idt();
 				
@@ -474,7 +269,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToScaling(1f, 1f, 1f);
 			model.mul(tmp);
 			
-			tmp.setToTranslation(player.getPosition().x, player.getPosition().y-0.8f, 0);
+			tmp.setToTranslation(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y-0.8f, 0);
 			model.mul(tmp);
 			
 			tmp.setToRotation(Vector3.X, angleXBack);
@@ -502,7 +297,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	
 	@Override
 	public boolean keyDown(int keycode) {
-		if(keycode == Keys.W) jump = true;
+		if(keycode == Keys.W) GameInstance.getInstance().player.jump = true;
 		
 		if (keycode == Keys.ESCAPE) {
 			game.setScreen(new MainMenu(game));
@@ -518,7 +313,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
  
 	@Override
 	public boolean keyUp(int keycode) {
-		if(keycode == Keys.W) jump = false;
+		if(keycode == Keys.W) GameInstance.getInstance().player.jump = false;
 		return false;
 	}
  

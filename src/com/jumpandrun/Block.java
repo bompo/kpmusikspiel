@@ -9,7 +9,7 @@ public class Block {
 	
 	public Vector2 position = new Vector2();
 
-	public Block(int x, int y) {
+	public Block(float x, float y) {
 		position.x = x;
 		position.y = y;
 	}
