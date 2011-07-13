@@ -10,5 +10,8 @@
 	<classpathentry kind="lib" path="libs/mp3spi1.9.4.jar"/>
 	<classpathentry kind="lib" path="libs/tritonus_aos.jar"/>
 	<classpathentry kind="lib" path="libs/tritonus_share.jar"/>
+	<classpathentry kind="lib" path="libs/gdx-backend-lwjgl-natives.jar"/>
+	<classpathentry kind="lib" path="libs/gdx-backend-lwjgl-sources.jar"/>
+	<classpathentry kind="lib" path="libs/gdx-backend-lwjgl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
