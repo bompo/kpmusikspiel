@@ -94,6 +94,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		transShader = Resources.getInstance().transShader;
 		bloomShader = Resources.getInstance().bloomShader;
+
+		ra.loadMidi("./data/test.mid");
+		ra.play();
+		rv1 = new RhythmValue(RhythmValue.type.SINE, 20, ra);
+		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
 		
 		initRender();
 	}
@@ -116,12 +121,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	@Override
-	public void show() {
-		
-		ra.loadMidi("./data/test.mid");
-		ra.play();
-		rv1 = new RhythmValue(RhythmValue.type.SINE, 20, ra);
-		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
+	public void show() {		
 	}
 
 
@@ -243,9 +243,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			Block block = GameInstance.getInstance().blocks.get(i);
 			if(cam.frustum.pointInFrustum(tmpVector3.set(block.position.x, block.position.y, 0))) {
 				model.idt();
-				
-
-			
+						
 				if(block instanceof JumpBlock) {
 					//TODO quick hack
 					JumpBlock jumbBlock = (JumpBlock)block;

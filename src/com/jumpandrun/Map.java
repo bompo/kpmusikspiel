@@ -35,6 +35,8 @@ public class Map {
 					GameInstance.getInstance().addJumpBlock(x*2,y*-1*2);		
 				} else if(pix == JUMPBLOCK2) {
 					GameInstance.getInstance().addJumpBlock(x*2,y*-1*2);		
+				} else if(pix == ENEMYSPAWNER) {
+					GameInstance.getInstance().addEnemySpawner(x*2,y*-1*2);		
 				}
 			}
 		}	
