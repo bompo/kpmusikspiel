@@ -2,6 +2,8 @@ package com.jumpandrun;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL10;
@@ -317,6 +319,16 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 //			for(Body box:boxes) {
 //				box.setTransform(box.getTransform().getPosition().x+delta,box.getTransform().getPosition().y+delta*(MathUtils.sin(startTime)*delta*500f),0);
 //			}
+		}
+		
+		if (keycode == Input.Keys.F) {
+			if(Gdx.app.getType() == ApplicationType.Desktop) {
+				if(!org.lwjgl.opengl.Display.isFullscreen()) {
+					Gdx.graphics.setDisplayMode(Gdx.graphics.getDesktopDisplayMode().width, Gdx.graphics.getDesktopDisplayMode().height, true);		
+				} else {
+					Gdx.graphics.setDisplayMode(800,480, false);		
+				}
+			}
 		}
 		return false;
 	}
