@@ -2,19 +2,23 @@ package com.jumpandrun;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class MainMenu extends DefaultScreen {
+public class MainMenu extends DefaultScreen implements InputProcessor {
 	TextureRegion title;
 	SpriteBatch batch;
 	float time = 0;
 	
 	public MainMenu(Game game) {
 		super(game);
+		Gdx.input.setInputProcessor(this);
 	}
 	
 	@Override 
@@ -44,5 +48,65 @@ public class MainMenu extends DefaultScreen {
 		System.out.println("dispose main menu");
 		batch.dispose();
 		title.getTexture().dispose();
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		if (keycode == Keys.ESCAPE) {
+			Gdx.app.exit();
+		}
+				
+		if (keycode == Input.Keys.F) {
+			if(Gdx.app.getType() == ApplicationType.Desktop) {
+				if(!org.lwjgl.opengl.Display.isFullscreen()) {
+					Gdx.graphics.setDisplayMode(Gdx.graphics.getDesktopDisplayMode().width, Gdx.graphics.getDesktopDisplayMode().height, true);		
+				} else {
+					Gdx.graphics.setDisplayMode(800,480, false);		
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int x, int y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int x, int y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int x, int y, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchMoved(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

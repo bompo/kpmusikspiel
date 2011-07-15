@@ -24,10 +24,9 @@ public class GameInstance {
 	
 	public Array<MovingPlatform> platforms = new Array<MovingPlatform>();
 	public Array<Block> blocks = new Array<Block>();
+	public Array<Enemy> enemies = new Array<Enemy>();
 	public World world  = new World(new Vector2(0, -20), true);
-	public Player player;
-	public EnemySpawner enemySpawner;
-	
+	public Player player;	
 
 	float stillTime = 0;
 	long lastGroundTime = 0;
@@ -67,7 +66,6 @@ public class GameInstance {
 		BodyDef def = new BodyDef();
 		def.type = type;
 		Body box = world.createBody(def);
- 
 		PolygonShape poly = new PolygonShape();		
 		poly.setAsEdge(new Vector2(0, 0), new Vector2(x2 - x1, y2 - y1));
 		box.createFixture(poly, density);
@@ -90,8 +88,16 @@ public class GameInstance {
 		return box;
 	}		
 	
+	
+	
 	public void addEnemySpawner(float x, float y) {
-		enemySpawner = new EnemySpawner(x, y);
+		EnemySpawner enemySpawner = new EnemySpawner(x, y);
+		box = createBox(BodyType.StaticBody, 1, 1, 3);
+		box.setTransform(enemySpawner.position.x , enemySpawner.position.y, 0);
+		
+		enemySpawner.body = box;
+		blocks.add(enemySpawner);
+		enemySpawner.body.setUserData(enemySpawner);		
 	}
 	
 	public void addJumpBlock(float x, float y) {
