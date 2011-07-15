@@ -42,7 +42,7 @@ public class DesktopStarter extends Game {
 		config.height = 480;
 
 		config.fullscreen = false;
-		config.samples = 4;
+		config.samples = 0;
 		config.useGL20 = true;
 		new LwjglApplication(new DesktopStarter(), config);
 	}
