@@ -44,6 +44,8 @@ public class Resources {
 	public float[] jumpBlockEdgeColor = { 1.0f, 1.0f, 1.0f, 0.5f };
 	public float[] enemySpawnerColor = { 0.1f, 1.0f, 1.0f, 0.2f };
 	public float[] enemySpawnerEdgeColor = { 0.1f,1.0f, 1.0f, 0.8f };
+	public float[] enemyColor = { 0.7f, 1.0f, 1.0f, 0.3f };
+	public float[] enemyEdgeColor = { 0.7f, 1.0f, 1.0f, 0.5f };
 	
 	public ShaderProgram transShader;
 	public ShaderProgram bloomShader;

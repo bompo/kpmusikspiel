@@ -35,6 +35,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	public RhythmValue rv2;
 	
 	float startTime = 0;
+	float enemySpawnTime = MathUtils.random(0, 10);
 	float delta = 0;
 	boolean oldValueRv2 = false;
 	
@@ -140,6 +141,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	public void render(float deltaTime) {		
 		startTime+=deltaTime;
 		
+		enemySpawnTime -=deltaTime;
+		if(enemySpawnTime<0) {
+			enemySpawnTime = MathUtils.random(0, 10);
+			GameInstance.getInstance().addEnemy();
+		}
 		
 		angleXBack += MathUtils.sin(startTime)  *delta * 10f;
 		angleYBack += MathUtils.cos(startTime) *delta* 5f;
@@ -303,6 +309,36 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					transShader.setUniformf("a_color",Resources.getInstance().blockEdgeColor[0], Resources.getInstance().blockEdgeColor[1],Resources.getInstance().blockEdgeColor[2], Resources.getInstance().blockEdgeColor[3]);
 					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
 				}
+			}
+		}
+		
+		// render enemies
+		for (int i = 0; i < GameInstance.getInstance().enemies.size; ++i) {
+			Enemy enemy = GameInstance.getInstance().enemies.get(i);
+			if (cam.frustum.sphereInFrustum(tmpVector3.set(enemy.position.x, enemy.position.y, 0), 1f)) {
+				model.idt();
+
+
+
+				tmp.setToTranslation(enemy.position.x, enemy.position.y, 0);
+				model.mul(tmp);
+
+				tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * enemy.angle);
+				model.mul(tmp);
+				
+				tmp.setToScaling(0.95f, 0.95f, 0.95f);
+				model.mul(tmp);
+
+				transShader.setUniformMatrix("MMatrix", model);
+
+				transShader.setUniformf("a_color", Resources.getInstance().enemyColor[0], Resources.getInstance().enemyColor[1],
+						Resources.getInstance().enemyColor[2], Resources.getInstance().enemyColor[3]);
+				blockModel.render(transShader, GL20.GL_TRIANGLES);
+
+				transShader.setUniformf("a_color", Resources.getInstance().enemyEdgeColor[0], Resources.getInstance().enemyEdgeColor[1],
+						Resources.getInstance().enemyEdgeColor[2], Resources.getInstance().enemyEdgeColor[3]);
+				wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+
 			}
 		}
 		

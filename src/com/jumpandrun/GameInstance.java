@@ -118,24 +118,33 @@ public class GameInstance {
 		blocks.add(block);
 	}
 	
-	public void addEnemy(float x, float y) {
-		Enemy enemy = new Enemy(x, y);
-		BodyDef def = new BodyDef();
-		def.type = BodyType.DynamicBody;
-		Body box = world.createBody(def);
-
-		PolygonShape poly = new PolygonShape();		
-		poly.setAsBox(0.1f, 0.1f);
-		Fixture enemyPhysicsFixture = box.createFixture(poly, 0);
-		poly.dispose();			
-
-		box.setBullet(true);
- 
-		box.setFixedRotation(true);
-		box.setTransform(x, y, 0);
+	public void addEnemy() {
+		for(Block block:blocks) {
+			if(block instanceof EnemySpawner) {
+				Enemy enemy = new Enemy(block.position.x, block.position.y-1.5f);
+//				BodyDef def = new BodyDef();
+//				def.type = BodyType.DynamicBody;
+//				Body box = world.createBody(def);
+				
+				Body box = createBox(BodyType.DynamicBody, 1, 1, 5);
+				
+//		
+//				PolygonShape poly = new PolygonShape();		
+//				poly.setAsBox(1f, 1f);
+//				Fixture enemyPhysicsFixture = box.createFixture(poly, 0);
+//				poly.dispose();			
 		
-		enemy.body = box;
-		enemy.body.setUserData(enemy);
+				box.setBullet(true);		 
+				box.setTransform(block.position.x, block.position.y-1.5f, 0);
+				
+//				enemy.enemyPhysicsFixture = enemyPhysicsFixture;
+				enemy.body = box;
+				enemy.body.setUserData(enemy);
+				enemies.add(enemy);
+				Gdx.app.log("", "add enemy " + enemy.body.getPosition().x + " " + enemy.body.getPosition().y );
+			}
+		
+		}
 	}
  
 	public void createPlayer(float x, float y) {
@@ -279,6 +288,13 @@ public class GameInstance {
 				} 
 			}			
 		}
+		
+		//update enemies
+		for(int i = 0; i < enemies.size; i++) {
+			Enemy enemy = enemies.get(i);
+			enemy.update();	
+			enemy.body.setAwake(true);
+		}
  
 		// le step...			
 		world.step(delta, 50, 50);
@@ -292,13 +308,13 @@ public class GameInstance {
 		for(int i = 0; i < contactList.size(); i++) {
 			Contact contact = contactList.get(i);
 			if(contact.isTouching()) {
-				if(contact.getFixtureA().getBody().getUserData() instanceof JumpBlock && contact.getFixtureB().getBody().getUserData() instanceof Player ) {
+				if(contact.getFixtureA().getBody().getUserData() instanceof JumpBlock) {
 					if(contact.getFixtureA().getBody().getPosition().y < contact.getFixtureB().getBody().getPosition().y-1) {
 						contact.getFixtureB().getBody().applyLinearImpulse(0, 60, player.position.x, player.position.y);
 	//					((JumpBlock)contact.getFixtureA().getBody().getUserData()).jump();
 					}
 				}
-				if(contact.getFixtureA().getBody().getUserData() instanceof Player && contact.getFixtureB().getBody().getUserData() instanceof JumpBlock ) {
+				if(contact.getFixtureB().getBody().getUserData() instanceof JumpBlock ) {
 					if(contact.getFixtureA().getBody().getPosition().y-1 > contact.getFixtureB().getBody().getPosition().y) {
 					contact.getFixtureA().getBody().applyLinearImpulse(0, 60, player.position.x, player.position.y);
 //					((JumpBlock)contact.getFixtureB().getBody().getUserData()).jump();

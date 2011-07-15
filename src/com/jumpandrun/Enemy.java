@@ -10,6 +10,7 @@ public class Enemy {
 	public Fixture enemyPhysicsFixture;
 	
 	public Vector2 position = new Vector2();
+	public float angle = 0;
 
 	public Enemy(float x, float y) {
 		position.x = x;
@@ -19,6 +20,7 @@ public class Enemy {
 	public void update() {
 		position.x = body.getPosition().x;
 		position.y = body.getPosition().y;
+		angle = body.getAngle();
 	}
 
 }
