@@ -40,7 +40,8 @@ public class DesktopStarter extends Game {
 
 		config.width = 800;
 		config.height = 480;
-
+		config.useCPUSynch = false;
+		config.vSyncEnabled = false;
 		config.fullscreen = false;
 		config.samples = 0;
 		config.useGL20 = true;

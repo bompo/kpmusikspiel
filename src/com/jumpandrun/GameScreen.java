@@ -66,6 +66,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	float angleYFront = 0;	
 	Vector3 tmpVector3 = new Vector3();
 	Vector2 tmpVector2 = new Vector2();
+
+	private float accumulator = 0;
 	
 
 	public GameScreen(Game game) {
@@ -124,17 +126,26 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	public void show() {		
 	}
 
-
-	@Override
-	public void render(float delta) {
-		delta = Math.min(0.06f, Gdx.graphics.getDeltaTime());
-		startTime+=delta;
+//	@Override
+//	public void render(float deltaTime) {
+//		accumulator += deltaTime;
+//		while(accumulator > 1.0f / 60.0f) { 
+//		fixedTimeStepRender();
+//		accumulator -= 1.0f / 60.0f;
+//		if(accumulator>0) Gdx.app.log("", "framedrop " + accumulator);
+//		}
+//		
+//	}	
+	
+	public void render(float deltaTime) {		
+		startTime+=deltaTime;
 		
-		angleXBack += MathUtils.sin(startTime) * delta * 10f;
-		angleYBack += MathUtils.cos(startTime) * delta * 5f;
+		
+		angleXBack += MathUtils.sin(startTime)  *delta * 10f;
+		angleYBack += MathUtils.cos(startTime) *delta* 5f;
 
-		angleXFront += MathUtils.sin(startTime) * delta * 10f;
-		angleYFront += MathUtils.cos(startTime) * delta * 5f;
+		angleXFront += MathUtils.sin(startTime) *delta* 10f;
+		angleYFront += MathUtils.cos(startTime) *delta* 5f;
 		
 		startTimeBench = System.nanoTime();		
 		
@@ -194,7 +205,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		renderTimeBench = endTimeBench;
 		 
 		startTimeBench = System.nanoTime();
-		GameInstance.getInstance().physicStuff();	
+		GameInstance.getInstance().physicStuff(deltaTime);	
 		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
 		physicTimeBench = endTimeBench;
 
@@ -222,7 +233,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 
 		batch.begin();
-		font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, 30);
 		font.draw(batch, "box2d: " + physicTimeBench, 10, 50);
 		font.draw(batch, "render: " + renderTimeBench, 10, 70);
 		batch.end();		
@@ -241,7 +251,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		//render boxes
 		for (int i =0; i<GameInstance.getInstance().blocks.size ; ++i) {
 			Block block = GameInstance.getInstance().blocks.get(i);
-			if(cam.frustum.pointInFrustum(tmpVector3.set(block.position.x, block.position.y, 0))) {
+			if(cam.frustum.sphereInFrustum(tmpVector3.set(block.position.x, block.position.y, 0),1f)) {
 				model.idt();
 						
 				if(block instanceof JumpBlock) {
@@ -262,6 +272,21 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 					transShader.setUniformf("a_color",Resources.getInstance().jumpBlockEdgeColor[0], Resources.getInstance().jumpBlockEdgeColor[1],Resources.getInstance().jumpBlockEdgeColor[2], Resources.getInstance().jumpBlockEdgeColor[3] + jumbBlock.jumpAnim);
 					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);			
+				} else if(block instanceof EnemySpawner) {	
+					
+					tmp.setToTranslation(block.position.x, block.position.y, 0);
+					model.mul(tmp);
+		
+					tmp.setToScaling(0.95f, 0.95f, 0.95f);
+					model.mul(tmp);
+							
+					transShader.setUniformMatrix("MMatrix", model);
+					
+					transShader.setUniformf("a_color", Resources.getInstance().enemySpawnerColor[0], Resources.getInstance().enemySpawnerColor[1], Resources.getInstance().enemySpawnerColor[2], Resources.getInstance().enemySpawnerColor[3]);
+					blockModel.render(transShader, GL20.GL_TRIANGLES);
+		
+					transShader.setUniformf("a_color",Resources.getInstance().enemySpawnerEdgeColor[0], Resources.getInstance().enemySpawnerEdgeColor[1],Resources.getInstance().enemySpawnerEdgeColor[2], Resources.getInstance().enemySpawnerEdgeColor[3]);
+					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
 				} else {	
 					
 					tmp.setToTranslation(block.position.x, block.position.y, 0);

@@ -86,9 +86,7 @@ public class GameInstance {
 		poly.dispose();
  
 		return box;
-	}		
-	
-	
+	}	
 	
 	public void addEnemySpawner(float x, float y) {
 		EnemySpawner enemySpawner = new EnemySpawner(x, y);
@@ -118,6 +116,26 @@ public class GameInstance {
 		block.body = box;
 		block.body.setUserData(block);
 		blocks.add(block);
+	}
+	
+	public void addEnemy(float x, float y) {
+		Enemy enemy = new Enemy(x, y);
+		BodyDef def = new BodyDef();
+		def.type = BodyType.DynamicBody;
+		Body box = world.createBody(def);
+
+		PolygonShape poly = new PolygonShape();		
+		poly.setAsBox(0.1f, 0.1f);
+		Fixture enemyPhysicsFixture = box.createFixture(poly, 0);
+		poly.dispose();			
+
+		box.setBullet(true);
+ 
+		box.setFixedRotation(true);
+		box.setTransform(x, y, 0);
+		
+		enemy.body = box;
+		enemy.body.setUserData(enemy);
 	}
  
 	public void createPlayer(float x, float y) {
@@ -178,7 +196,7 @@ public class GameInstance {
 		return false;
 	}
 	
-	public void physicStuff() {
+	public void physicStuff(float delta) {
 		Vector2 vel = player.body.getLinearVelocity();
 		Vector2 pos = player.position.tmp();		
 		boolean grounded = isPlayerGrounded(Gdx.graphics.getDeltaTime());
@@ -241,7 +259,7 @@ public class GameInstance {
 				player.body.setLinearVelocity(vel.x, 0);			
 				System.out.println("jump before: " + player.body.getLinearVelocity());
 				player.body.setTransform(pos.x, pos.y + 0.01f, 0);
-				player.body.applyLinearImpulse(0, 40, pos.x, pos.y);			
+				player.body.applyLinearImpulse(0, 80, pos.x, pos.y);			
 				System.out.println("jump, " + player.body.getLinearVelocity());				
 			}
 		}					
@@ -263,7 +281,7 @@ public class GameInstance {
 		}
  
 		// le step...			
-		world.step(Gdx.graphics.getDeltaTime(), 4, 4);
+		world.step(delta, 50, 50);
 		player.update();
 		player.body.setAwake(true);
 		
