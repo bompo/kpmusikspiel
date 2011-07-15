@@ -104,6 +104,16 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		frameBuffer = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);		
 		frameBufferVert = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);
 	}
+	
+	@Override
+	public void resize(int width, int height) {
+		cam = new PerspectiveCamera(60, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cam.position.set(0, 0,-5f);
+		cam.direction.set(0, 0, -1);
+		cam.up.set(0, 1, 0);
+		cam.near = 1f;
+		cam.far = 1000;
+	}
 
 	@Override
 	public void show() {
