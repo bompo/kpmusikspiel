@@ -313,7 +313,7 @@ public class GameInstance {
 			Block block = blocks.get(i);
 			if(block instanceof JumpBlock) {
 				if(((JumpBlock) block).jumpAnim > 0) {
-					((JumpBlock) block).jumpAnim = Math.max(0, ((JumpBlock) block).jumpAnim - Gdx.graphics.getDeltaTime());
+					((JumpBlock) block).jumpAnim = Math.max(0, ((JumpBlock) block).jumpAnim - Gdx.graphics.getDeltaTime()*2);
 				} 
 			}			
 		}
