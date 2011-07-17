@@ -53,7 +53,9 @@ public class GameInstance {
 		platforms.clear();
 		blocks.clear();
 		enemies.clear();
+		bullets.clear();
 		world.dispose();
+		
 		
 		
 		world  = new World(new Vector2(0, -20), true);
