@@ -210,8 +210,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			batch.end();
 		}
 		
-		Gdx.app.log("", Gdx.graphics.getWidth()+"");
-		
 		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
 		renderTimeBench = endTimeBench;
 		 
