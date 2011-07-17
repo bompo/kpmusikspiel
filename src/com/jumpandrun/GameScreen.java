@@ -142,10 +142,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		startTime+=deltaTime;
 		
 		enemySpawnTime -=deltaTime;
-		if(enemySpawnTime<0) {
-			enemySpawnTime = MathUtils.random(0, 10);
-			GameInstance.getInstance().addEnemy();
-		}
+//		if(enemySpawnTime<0) {
+//			enemySpawnTime = MathUtils.random(0, 10f);
+//			GameInstance.getInstance().addEnemy();
+//		}
 		
 		angleXBack += MathUtils.sin(startTime)  *delta * 10f;
 		angleYBack += MathUtils.cos(startTime) *delta* 5f;
@@ -237,7 +237,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 //			jumping = false;
 //		}
 
-
 		batch.begin();
 		font.draw(batch, "box2d: " + physicTimeBench, 10, 50);
 		font.draw(batch, "render: " + renderTimeBench, 10, 70);
@@ -318,8 +317,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			if (cam.frustum.sphereInFrustum(tmpVector3.set(enemy.position.x, enemy.position.y, 0), 1f)) {
 				model.idt();
 
-
-
 				tmp.setToTranslation(enemy.position.x, enemy.position.y, 0);
 				model.mul(tmp);
 
@@ -333,11 +330,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 				transShader.setUniformf("a_color", Resources.getInstance().enemyColor[0], Resources.getInstance().enemyColor[1],
 						Resources.getInstance().enemyColor[2], Resources.getInstance().enemyColor[3]);
-				blockModel.render(transShader, GL20.GL_TRIANGLES);
+				playerModel.render(transShader, GL20.GL_TRIANGLES);
 
 				transShader.setUniformf("a_color", Resources.getInstance().enemyEdgeColor[0], Resources.getInstance().enemyEdgeColor[1],
 						Resources.getInstance().enemyEdgeColor[2], Resources.getInstance().enemyEdgeColor[3]);
-				wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+				playerModel.render(transShader, GL20.GL_LINE_STRIP);
 
 			}
 		}
@@ -351,6 +348,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			model.mul(tmp);
 			
 			tmp.setToTranslation(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y-0.8f, 0);
+			model.mul(tmp);
+			
+			tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * GameInstance.getInstance().player.angle);
 			model.mul(tmp);
 			
 			tmp.setToRotation(Vector3.X, angleXBack);
@@ -385,9 +385,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		
 		if (keycode == Keys.R) {
-//			for(Body box:boxes) {
-//				box.setTransform(box.getTransform().getPosition().x+delta,box.getTransform().getPosition().y+delta*(MathUtils.sin(startTime)*delta*500f),0);
-//			}
+			GameInstance.getInstance().addEnemy();
 		}
 		
 		if (keycode == Input.Keys.F) {
