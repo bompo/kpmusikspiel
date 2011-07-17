@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class GameInstance {
 
-	final static float MAX_VELOCITY = 10f;	
+	final static float MAX_VELOCITY = 20f;	
 
 	public static GameInstance instance;
 	
@@ -282,13 +282,13 @@ public class GameInstance {
  
 		// apply left impulse, but only if max velocity is not reached yet
 		if(Gdx.input.isKeyPressed(Keys.A) && vel.x > -MAX_VELOCITY) {
-			player.body.applyLinearImpulse(-2f, 0, pos.x, pos.y);
+			player.body.applyLinearImpulse(-4f, 0, pos.x, pos.y);
 			player.xdir = -1;
 		}
  
 		// apply right impulse, but only if max velocity is not reached yet
 		if(Gdx.input.isKeyPressed(Keys.D) && vel.x < MAX_VELOCITY) {
-			player.body.applyLinearImpulse(2f, 0, pos.x, pos.y);
+			player.body.applyLinearImpulse(4f, 0, pos.x, pos.y);
 			player.xdir = 1;
 		}
  
@@ -298,7 +298,7 @@ public class GameInstance {
 			if(grounded) {
 				player.body.setLinearVelocity(vel.x, 0);			
 				player.body.setTransform(pos.x, pos.y + 0.01f, 0);
-				player.body.applyLinearImpulse(0, 105, pos.x, pos.y);							
+				player.body.applyLinearImpulse(0, 120, pos.x, pos.y);							
 			}
 		}				
  
