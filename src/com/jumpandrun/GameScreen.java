@@ -75,7 +75,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		GameInstance.getInstance().resetGame();
 		
 		cam = new PerspectiveCamera(60, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set(0, 0,-5f);
+		cam.position.set(23, -15,29f);
 		cam.direction.set(0, 0, -1);
 		cam.up.set(0, 1, 0);
 		cam.near = 1f;
@@ -119,7 +119,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		initRender();
 		
 		cam = new PerspectiveCamera(60, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set(0, 0,-5f);
+		cam.position.set(23, -15,29f);
 		cam.direction.set(0, 0, -1);
 		cam.up.set(0, 1, 0);
 		cam.near = 1f;
@@ -150,18 +150,18 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 //			GameInstance.getInstance().addEnemy();
 //		}
 		
-		angleXBack += MathUtils.sin(startTime)  *delta * 10f;
-		angleYBack += MathUtils.cos(startTime) *delta* 5f;
+		angleXBack += MathUtils.sin(startTime) * delta * 10f;
+		angleYBack += MathUtils.cos(startTime) * delta * 5f;
 
-		angleXFront += MathUtils.sin(startTime) *delta* 10f;
-		angleYFront += MathUtils.cos(startTime) *delta* 5f;
+		angleXFront += MathUtils.sin(startTime) * delta * 10f;
+		angleYFront += MathUtils.cos(startTime) * delta* 5f;
 		
 		startTimeBench = System.nanoTime();		
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		cam.position.set(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y, 15);
+//		cam.position.set(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y, 25);
 		cam.update();
-		
+
 		if (Resources.getInstance().bloomOnOff) {
 			frameBuffer.begin();
 			renderScene();
@@ -176,7 +176,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 			bloomShader.begin();
 			bloomShader.setUniformi("sTexture", 0);
-			bloomShader.setUniformf("bloomFactor", Helper.map((MathUtils.sin(startTime * 3f) * delta * 50f) + 0.5f, 0, 1, 0.50f, 0.55f));
+			bloomShader.setUniformf("bloomFactor", Helper.map((MathUtils.sin(startTime * 3f) * delta * 50f) + 0.5f, 0, 1, 0.55f, 0.65f));
 
 			frameBufferVert.begin();
 			bloomShader.setUniformf("TexelOffsetX", Resources.getInstance().m_fTexelOffset);
