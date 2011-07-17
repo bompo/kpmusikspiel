@@ -58,7 +58,7 @@ public class GameInstance {
 		
 		
 		
-		world  = new World(new Vector2(0, -20), true);
+		world  = new World(new Vector2(0, -90), true);
 		map = new Map();
 	}
 	
@@ -276,7 +276,7 @@ public class GameInstance {
 			}
  
 			if(groundedPlatform != null && groundedPlatform.dist == 0) {
-				player.body.applyLinearImpulse(0, -24, pos.x, pos.y);				
+				player.body.applyLinearImpulse(0, -20, pos.x, pos.y);				
 			}
 		}		
  
@@ -298,7 +298,7 @@ public class GameInstance {
 			if(grounded) {
 				player.body.setLinearVelocity(vel.x, 0);			
 				player.body.setTransform(pos.x, pos.y + 0.01f, 0);
-				player.body.applyLinearImpulse(0, 80, pos.x, pos.y);							
+				player.body.applyLinearImpulse(0, 105, pos.x, pos.y);							
 			}
 		}				
  
