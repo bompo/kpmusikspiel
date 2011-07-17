@@ -106,13 +106,18 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	
 	public void initRender() {
 		Gdx.gl20.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		
+	
+		batch = new SpriteBatch();
+		font = new BitmapFont();		
+
 		frameBuffer = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);		
 		frameBufferVert = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);
 	}
 	
 	@Override
 	public void resize(int width, int height) {
+		initRender();
+		
 		cam = new PerspectiveCamera(60, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.position.set(0, 0,-5f);
 		cam.direction.set(0, 0, -1);
@@ -204,6 +209,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			batch.draw(frameBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),0,0,frameBuffer.getWidth(),frameBuffer.getHeight(),false,true);
 			batch.end();
 		}
+		
+		Gdx.app.log("", Gdx.graphics.getWidth()+"");
 		
 		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
 		renderTimeBench = endTimeBench;
@@ -419,10 +426,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			if(Gdx.app.getType() == ApplicationType.Desktop) {
 				if(!org.lwjgl.opengl.Display.isFullscreen()) {
 					Gdx.graphics.setDisplayMode(Gdx.graphics.getDesktopDisplayMode().width, Gdx.graphics.getDesktopDisplayMode().height, true);
-					initRender();
 				} else {
 					Gdx.graphics.setDisplayMode(800,480, false);
-					initRender();
 				}
 			}
 		}
