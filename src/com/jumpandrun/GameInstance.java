@@ -22,6 +22,8 @@ public class GameInstance {
 
 	public static GameInstance instance;
 	
+	Map map;
+	
 	public Array<MovingPlatform> platforms = new Array<MovingPlatform>();
 	public Array<Block> blocks = new Array<Block>();
 	public Array<Enemy> enemies = new Array<Enemy>();
@@ -45,8 +47,16 @@ public class GameInstance {
 		}
 		return instance;
 	}
-
+	
 	public void resetGame() {
+		platforms.clear();
+		blocks.clear();
+		enemies.clear();
+		world.dispose();
+		
+		
+		world  = new World(new Vector2(0, -20), true);
+		map = new Map();
 	}
 	
 	public Body createBox(BodyType type, float width, float height, float density) {
@@ -254,10 +264,8 @@ public class GameInstance {
 			player.jump = false;
 			if(grounded) {
 				player.body.setLinearVelocity(vel.x, 0);			
-				System.out.println("jump before: " + player.body.getLinearVelocity());
 				player.body.setTransform(pos.x, pos.y + 0.01f, 0);
-				player.body.applyLinearImpulse(0, 80, pos.x, pos.y);			
-				System.out.println("jump, " + player.body.getLinearVelocity());				
+				player.body.applyLinearImpulse(0, 80, pos.x, pos.y);							
 			}
 		}					
  
@@ -285,11 +293,18 @@ public class GameInstance {
 			enemy.body.setAwake(true);
 		}
  
-		// le step...			
-		world.step(delta, 50, 50);
 		player.update();
 		player.body.setAwake(true);
 		
+		//check player/enemy collision
+		checkPlayerEnemyCollision();
+		
+		if(player.alive == false) {
+			resetGame();
+		}
+		
+		// le step...			
+		world.step(delta, 50, 50);		
 	}
 	
 	public void activateJumpBlocks() {
@@ -318,5 +333,22 @@ public class GameInstance {
 				((JumpBlock) block).jump();
 			}			
 		}
+	}
+	
+	
+	public void checkPlayerEnemyCollision() {
+		List<Contact> contactList = world.getContactList();
+		for(int i = 0; i < contactList.size(); i++) {
+			Contact contact = contactList.get(i);
+			if(contact.isTouching()) {
+				if(contact.getFixtureA().getBody().getUserData() instanceof Player  && contact.getFixtureB().getBody().getUserData() instanceof Enemy) {
+					player.alive = false;
+				}
+				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof Enemy) {
+					player.alive = false;
+				}
+			}
+		}
+		
 	}
 }

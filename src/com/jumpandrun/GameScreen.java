@@ -23,8 +23,7 @@ import com.music.RhythmAudio;
 import com.music.RhythmValue;
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
-	Map map;
-		
+	
 	PerspectiveCamera cam;
 
 	SpriteBatch batch;
@@ -70,11 +69,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	private float accumulator = 0;
 	
-
 	public GameScreen(Game game) {
 		super(game);
 		
-		map = new Map();
+		GameInstance.getInstance().resetGame();
 		
 		cam = new PerspectiveCamera(60, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.position.set(0, 0,-5f);
@@ -203,7 +201,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			batch.enableBlending();
 			batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE);
 			batch.begin();
-			batch.draw(frameBuffer.getColorBufferTexture(), 0, 0,800,480,0,0,frameBuffer.getWidth(),frameBuffer.getHeight(),false,true);
+			batch.draw(frameBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),0,0,frameBuffer.getWidth(),frameBuffer.getHeight(),false,true);
 			batch.end();
 		}
 		
@@ -391,9 +389,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		if (keycode == Input.Keys.F) {
 			if(Gdx.app.getType() == ApplicationType.Desktop) {
 				if(!org.lwjgl.opengl.Display.isFullscreen()) {
-					Gdx.graphics.setDisplayMode(Gdx.graphics.getDesktopDisplayMode().width, Gdx.graphics.getDesktopDisplayMode().height, true);		
+					Gdx.graphics.setDisplayMode(Gdx.graphics.getDesktopDisplayMode().width, Gdx.graphics.getDesktopDisplayMode().height, true);
+					initRender();
 				} else {
-					Gdx.graphics.setDisplayMode(800,480, false);		
+					Gdx.graphics.setDisplayMode(800,480, false);
+					initRender();
 				}
 			}
 		}
