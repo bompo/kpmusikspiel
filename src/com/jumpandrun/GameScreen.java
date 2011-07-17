@@ -342,6 +342,35 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 		}
 		
+		for (int i = 0; i < GameInstance.getInstance().bullets.size; ++i) {
+			Bullet bullet = GameInstance.getInstance().bullets.get(i);
+			//if (cam.frustum.sphereInFrustum(tmpVector3.set(bullet.position.x, bullet.position.y, 0), 1f)) {
+				model.idt();
+
+
+
+				tmp.setToTranslation(bullet.position.x, bullet.position.y, 0);
+				model.mul(tmp);
+
+				//tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * bullet.angle);
+				//model.mul(tmp);
+				
+				tmp.setToScaling(0.1f, 0.1f, 0.1f);
+				model.mul(tmp);
+
+				transShader.setUniformMatrix("MMatrix", model);
+
+				transShader.setUniformf("a_color", Resources.getInstance().enemyColor[0], Resources.getInstance().enemyColor[1],
+						Resources.getInstance().enemyColor[2], Resources.getInstance().enemyColor[3]);
+				blockModel.render(transShader, GL20.GL_TRIANGLES);
+
+				transShader.setUniformf("a_color", Resources.getInstance().enemyEdgeColor[0], Resources.getInstance().enemyEdgeColor[1],
+						Resources.getInstance().enemyEdgeColor[2], Resources.getInstance().enemyEdgeColor[3]);
+				wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+
+			//}
+		}
+		
 		//render player
 		{
 			tmp.idt();
