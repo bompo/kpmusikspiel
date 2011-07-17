@@ -27,6 +27,7 @@ public class GameInstance {
 	public Array<MovingPlatform> platforms = new Array<MovingPlatform>();
 	public Array<Block> blocks = new Array<Block>();
 	public Array<Enemy> enemies = new Array<Enemy>();
+	public Array<Bullet> bullets = new Array<Bullet>();
 	public World world  = new World(new Vector2(0, -20), true);
 	public Player player;	
 
@@ -144,6 +145,27 @@ public class GameInstance {
 		
 		}
 	}
+	
+	public void addBullet() {
+		if(player.lastshot < player.shotlimit)
+			return;
+		player.lastshot = 0;
+		Bullet b = new Bullet(player.position.x, player.position.y-1.5f);
+		
+		Body box = createBox(BodyType.DynamicBody, 0.1f, 0.1f, 500);
+		
+		box.setBullet(true);		 
+		box.setTransform(player.position.x+player.xdir, player.position.y, 0);
+		Vector2 dir = new Vector2(player.xdir, 0);
+		dir = dir.nor();
+		dir.mul(80);
+		box.setLinearVelocity(dir);
+		
+//		enemy.enemyPhysicsFixture = enemyPhysicsFixture;
+		b.body = box;
+		b.body.setUserData(b);
+		bullets.add(b);
+	}
  
 	public void createPlayer(float x, float y) {
 		BodyDef def = new BodyDef();
@@ -171,7 +193,7 @@ public class GameInstance {
 		player.body.setUserData(player);
 	}
 	
-	public boolean isPlayerGrounded(float deltaTime) {				
+	public boolean isPlayerGrounded() {				
 		groundedPlatform = null;
 		List<Contact> contactList = world.getContactList();
 		for(int i = 0; i < contactList.size(); i++) {
@@ -202,11 +224,14 @@ public class GameInstance {
 		}
 		return false;
 	}
+	/*public boolean flagBullets() {				
+		//List<Contact> contactList = world.getContactList();
+	}*/
 	
 	public void physicStuff(float delta) {
 		Vector2 vel = player.body.getLinearVelocity();
 		Vector2 pos = player.position.tmp();		
-		boolean grounded = isPlayerGrounded(Gdx.graphics.getDeltaTime());
+		boolean grounded = isPlayerGrounded();
 		if(grounded) {
 			lastGroundTime = System.nanoTime();
 		} else {
@@ -220,7 +245,11 @@ public class GameInstance {
 			vel.x = Math.signum(vel.x) * MAX_VELOCITY;
 			player.body.setLinearVelocity(vel.x, vel.y);
 		}
- 
+		
+		if(Gdx.input.isKeyPressed(Keys.SPACE)) {
+			addBullet();
+		}
+		
 		// calculate stilltime & damp
 		if(!Gdx.input.isKeyPressed(Keys.A) && !Gdx.input.isKeyPressed(Keys.D)) {			
 			stillTime += Gdx.graphics.getDeltaTime();
@@ -252,11 +281,13 @@ public class GameInstance {
 		// apply left impulse, but only if max velocity is not reached yet
 		if(Gdx.input.isKeyPressed(Keys.A) && vel.x > -MAX_VELOCITY) {
 			player.body.applyLinearImpulse(-2f, 0, pos.x, pos.y);
+			player.xdir = -1;
 		}
  
 		// apply right impulse, but only if max velocity is not reached yet
 		if(Gdx.input.isKeyPressed(Keys.D) && vel.x < MAX_VELOCITY) {
 			player.body.applyLinearImpulse(2f, 0, pos.x, pos.y);
+			player.xdir = 1;
 		}
  
 		// jump, but only when grounded
@@ -267,7 +298,7 @@ public class GameInstance {
 				player.body.setTransform(pos.x, pos.y + 0.01f, 0);
 				player.body.applyLinearImpulse(0, 80, pos.x, pos.y);							
 			}
-		}					
+		}				
  
 		// update platforms
 		for(int i = 0; i < platforms.size; i++) {
@@ -292,6 +323,13 @@ public class GameInstance {
 			enemy.update();
 			enemy.body.setAwake(true);
 		}
+		//update bullets
+		for(int i = 0; i < bullets.size; i++) {
+			Bullet bullet = bullets.get(i);
+			bullet.update();	
+			bullet.body.setAwake(true);
+		}
+		player.lastshot+= delta;
  
 		player.update();
 		player.body.setAwake(true);
