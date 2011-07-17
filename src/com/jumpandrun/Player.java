@@ -1,6 +1,7 @@
 
 package com.jumpandrun;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -16,6 +17,8 @@ public class Player {
 	public float lastshot = 0;
 	public final float shotlimit = 0.5f;
 	
+	public float angle = 0;
+
 	public Player(float x, float y) {
 		position.x = x;
 		position.y = y;
@@ -25,6 +28,7 @@ public class Player {
 	public void update() {
 		position.x = body.getPosition().x;
 		position.y = body.getPosition().y;
+		angle = (MathUtils.PI * -position.x) / 2.f;
 	}
 
 }

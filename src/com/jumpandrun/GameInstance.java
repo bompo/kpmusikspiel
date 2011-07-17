@@ -122,27 +122,15 @@ public class GameInstance {
 	public void addEnemy() {
 		for(Block block:blocks) {
 			if(block instanceof EnemySpawner) {
-				Enemy enemy = new Enemy(block.position.x, block.position.y-1.5f);
-//				BodyDef def = new BodyDef();
-//				def.type = BodyType.DynamicBody;
-//				Body box = world.createBody(def);
-				
-				Body box = createBox(BodyType.DynamicBody, 1, 1, 5);
-				
-//		
-//				PolygonShape poly = new PolygonShape();		
-//				poly.setAsBox(1f, 1f);
-//				Fixture enemyPhysicsFixture = box.createFixture(poly, 0);
-//				poly.dispose();			
-		
+				Enemy enemy = new Enemy(block.position.x, block.position.y-1.5f);				
+				Body box = createCircle(BodyType.DynamicBody, 1,1);		
 				box.setBullet(true);		 
 				box.setTransform(block.position.x, block.position.y-1.5f, 0);
 				
-//				enemy.enemyPhysicsFixture = enemyPhysicsFixture;
 				enemy.body = box;
+				box.setFixedRotation(true);
 				enemy.body.setUserData(enemy);
 				enemies.add(enemy);
-				Gdx.app.log("", "add enemy " + enemy.body.getPosition().x + " " + enemy.body.getPosition().y );
 			}
 		
 		}
@@ -323,7 +311,8 @@ public class GameInstance {
 		//update enemies
 		for(int i = 0; i < enemies.size; i++) {
 			Enemy enemy = enemies.get(i);
-			enemy.update();	
+			enemy.move();
+			enemy.update();
 			enemy.body.setAwake(true);
 		}
 		//update bullets
