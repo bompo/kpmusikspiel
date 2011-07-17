@@ -36,7 +36,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	float startTime = 0;
 	float enemySpawnTime = MathUtils.random(0, 10);
 	float delta = 0;
-	boolean oldValueRv2 = false;
+	boolean enemySpawnSwitch = false;
 	
 	//DEBUG values
 	float renderTimeBench = 0;
@@ -68,6 +68,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	Vector2 tmpVector2 = new Vector2();
 
 	private float accumulator = 0;
+	
+	private float bloomFactor = 0;
 	
 	public GameScreen(Game game) {
 		super(game);
@@ -176,7 +178,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 			bloomShader.begin();
 			bloomShader.setUniformi("sTexture", 0);
-			bloomShader.setUniformf("bloomFactor", Helper.map((MathUtils.sin(startTime * 3f) * delta * 50f) + 0.5f, 0, 1, 0.55f, 0.65f));
+			bloomShader.setUniformf("bloomFactor", Helper.map((MathUtils.sin(startTime * 3f) * delta * 50f) + 0.5f, 0, 1, 0.55f, 0.60f + (bloomFactor/5.f)));
 
 			frameBufferVert.begin();
 			bloomShader.setUniformf("TexelOffsetX", Resources.getInstance().m_fTexelOffset);
@@ -224,6 +226,17 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 //		}
 		if (ra.getPlayedChannels()[5]==true) {
 			GameInstance.getInstance().activateJumpBlocks();
+		}
+		
+		
+		bloomFactor =  Math.max(0, bloomFactor - deltaTime);
+		if (ra.getPlayedChannels()[6]==true) {
+			bloomFactor = 1;
+		}
+		
+		if (ra.getPlayedChannels()[6]!=enemySpawnSwitch) {
+			enemySpawnSwitch = ra.getPlayedChannels()[6];
+			GameInstance.getInstance().addEnemy();
 		}
 		
 //		renderer.deltaMusic = rv1.getValue();
@@ -346,8 +359,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			Bullet bullet = GameInstance.getInstance().bullets.get(i);
 			//if (cam.frustum.sphereInFrustum(tmpVector3.set(bullet.position.x, bullet.position.y, 0), 1f)) {
 				model.idt();
-
-
 
 				tmp.setToTranslation(bullet.position.x, bullet.position.y, 0);
 				model.mul(tmp);
