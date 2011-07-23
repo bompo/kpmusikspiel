@@ -135,6 +135,9 @@ public class GameInstance {
 		for(Block block:blocks) {
 			if(block instanceof EnemySpawner) {
 				Enemy enemy = new Enemy(block.position.x, block.position.y-1.5f);				
+				if(Math.random() >= 0.5) {
+					enemy.direction.x = -enemy.direction.x;
+				}
 				Body box = createCircle(BodyType.DynamicBody, 1,1);		
 				box.setBullet(true);		 
 				box.setTransform(block.position.x, block.position.y-1.5f, 0);
