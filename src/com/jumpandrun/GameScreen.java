@@ -401,7 +401,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToScaling(1f, 1f, 1f);
 			model.mul(tmp);
 			
-			tmp.setToTranslation(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y-0.8f, 0);
+			tmp.setToTranslation(GameInstance.getInstance().player.position.x + GameInstance.getInstance().player.xdir*0.8f, GameInstance.getInstance().player.position.y-0.8f, 0);
 			model.mul(tmp);
 			
 			tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * GameInstance.getInstance().player.angle);
@@ -419,7 +419,25 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			transShader.setUniformf("a_color",Resources.getInstance().playerColor[0], Resources.getInstance().playerColor[1], Resources.getInstance().playerColor[2], Resources.getInstance().playerColor[3]);
 			playerModel.render(transShader, GL20.GL_TRIANGLES);
 			
-			tmp.setToScaling(2.0f, 2.0f, 2.0f);
+			
+			tmp.idt();
+			model.idt();
+			
+			tmp.setToScaling(1f, 1f, 1f);
+			model.mul(tmp);
+			
+			tmp.setToTranslation(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y-0.8f, 0);
+			model.mul(tmp);
+			
+			tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * GameInstance.getInstance().player.angle);
+			model.mul(tmp);
+			
+			tmp.setToRotation(Vector3.X, angleXBack);
+			model.mul(tmp);
+			tmp.setToRotation(Vector3.Y, angleYBack);
+			model.mul(tmp);
+
+			tmp.setToScaling(1.0f, 1.0f, 1.0f);
 			model.mul(tmp);
 
 			//render hull			
