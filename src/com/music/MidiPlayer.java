@@ -31,7 +31,6 @@ public class MidiPlayer {
 	public void loadFile(String file) {
 		 try {
 			sequence = MidiSystem.getSequence(new File(file));
-			
 			channels = new MidiChannel[sequence.getTracks().length];
 			instruments = new BeadsInstrument[sequence.getTracks().length];
 			for(int i = 0; i < channels.length; i++) {

@@ -1,5 +1,12 @@
 package com.jumpandrun;
 
+import  sun.audio.*;    //import the sun.audio package
+import  java.io.*;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -21,6 +28,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.music.RhythmAudio;
 import com.music.RhythmValue;
+
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
 	
@@ -71,6 +79,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	
 	private float bloomFactor = 0;
 	
+	
 	public GameScreen(Game game) {
 		super(game);
 		
@@ -99,7 +108,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		bloomShader = Resources.getInstance().bloomShader;
 
 		ra.loadMidi("./data/test.mid");
+
 		ra.play();
+		Resources.getInstance().music.play();
 		rv1 = new RhythmValue(RhythmValue.type.SINE, 20, ra);
 		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
 		

@@ -2,6 +2,7 @@ package com.jumpandrun;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
@@ -11,7 +12,9 @@ import com.shader.FastBloomShader;
 import com.shader.TransShader;
 
 public class Resources {
-
+	
+	public Sound music = Gdx.audio.newSound(Gdx.files.internal("data/test.wav"));
+	
 	public Mesh blockModel;
 	public Mesh playerModel;
 	public Mesh targetModel;
@@ -136,6 +139,10 @@ public class Resources {
 		wireCubeModel.setIndices(indices2);
 		
 		bloomOnOff = !prefs.getBoolean("bloom");
+		
+		if(music!=null) music.stop();
+		music = Gdx.audio.newSound(Gdx.files.internal("data/test.wav"));
+		
 	}
 
 	public void initShader() {
