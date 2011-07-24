@@ -1,5 +1,12 @@
 package com.jumpandrun;
 
+import  sun.audio.*;    //import the sun.audio package
+import  java.io.*;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -21,6 +28,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.music.RhythmAudio;
 import com.music.RhythmValue;
+
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
 	
@@ -73,6 +81,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private float highlightTimer = 0;
 	private int highlightCnt = 1000;
 	
+	
 	public GameScreen(Game game) {
 		super(game);
 		
@@ -101,7 +110,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		bloomShader = Resources.getInstance().bloomShader;
 
 		ra.loadMidi("./data/test.mid");
+
 		ra.play();
+		Resources.getInstance().music.play();
 		rv1 = new RhythmValue(RhythmValue.type.SINE, 20, ra);
 		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
 		
@@ -409,7 +420,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToScaling(1f, 1f, 1f);
 			model.mul(tmp);
 			
-			tmp.setToTranslation(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y-0.8f, 0);
+			tmp.setToTranslation(GameInstance.getInstance().player.position.x + GameInstance.getInstance().player.xdir*0.8f, GameInstance.getInstance().player.position.y-0.8f, 0);
 			model.mul(tmp);
 			
 			tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * GameInstance.getInstance().player.angle);
@@ -427,7 +438,25 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			transShader.setUniformf("a_color",Resources.getInstance().playerColor[0], Resources.getInstance().playerColor[1], Resources.getInstance().playerColor[2], Resources.getInstance().playerColor[3]);
 			playerModel.render(transShader, GL20.GL_TRIANGLES);
 			
-			tmp.setToScaling(2.0f, 2.0f, 2.0f);
+			
+			tmp.idt();
+			model.idt();
+			
+			tmp.setToScaling(1f, 1f, 1f);
+			model.mul(tmp);
+			
+			tmp.setToTranslation(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y-0.8f, 0);
+			model.mul(tmp);
+			
+			tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * GameInstance.getInstance().player.angle);
+			model.mul(tmp);
+			
+			tmp.setToRotation(Vector3.X, angleXBack);
+			model.mul(tmp);
+			tmp.setToRotation(Vector3.Y, angleYBack);
+			model.mul(tmp);
+
+			tmp.setToScaling(1.0f, 1.0f, 1.0f);
 			model.mul(tmp);
 
 			//render hull			

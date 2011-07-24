@@ -1,5 +1,6 @@
 package com.jumpandrun;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -135,6 +136,9 @@ public class GameInstance {
 		for(Block block:blocks) {
 			if(block instanceof EnemySpawner) {
 				Enemy enemy = new Enemy(block.position.x, block.position.y-1.5f);				
+				if(Math.random() >= 0.5) {
+					enemy.direction.x = -enemy.direction.x;
+				}
 				Body box = createCircle(BodyType.DynamicBody, 1,1);		
 				box.setBullet(true);		 
 				box.setTransform(block.position.x, block.position.y-1.5f, 0);
@@ -226,9 +230,71 @@ public class GameInstance {
 		}
 		return false;
 	}
-	/*public boolean flagBullets() {				
+	public void flagBullets() {				
 		//List<Contact> contactList = world.getContactList();
-	}*/
+		/*Iterator<Body> it = world.getBodies();
+		while(it.hasNext()) {
+			Body b = it.next();
+			if(b.getUserData() instanceof Bullet) {
+				if(((Bullet)b.getUserData()).age > 100) {
+					((Bullet)b.getUserData()).kill = true;
+					
+				}
+			}
+		}*/
+		
+		List<Contact> contactList = world.getContactList();
+		for(int i = 0; i < contactList.size(); i++) {
+			Contact contact = contactList.get(i);
+			if(contact.isTouching()) {
+				Object a = contact.getFixtureA().getBody().getUserData();
+				Object b = contact.getFixtureB().getBody().getUserData();
+				if(a instanceof Bullet  && b instanceof Enemy) {
+					((Bullet)a).kill = true;
+					((Enemy)b).health-= ((Bullet)a).damage;
+				} else if(b instanceof Bullet && a instanceof Enemy) {
+					((Bullet)b).kill = true;
+					((Enemy)a).health-= ((Bullet)b).damage;
+				}
+				if(a instanceof Bullet && !(b instanceof Bullet) && !(b instanceof Player)) {
+					((Bullet)a).kill = true;
+				} else if(b instanceof Bullet && !(a instanceof Bullet) && !(a instanceof Player)) {
+					((Bullet)b).kill = true;
+				}
+			}
+		}
+
+	}
+	
+	public void removeKilled() {
+		//Bullets
+		boolean found = false;
+		do {
+			found = false;
+			for(int e = 0; e < bullets.size; e++) {
+				if(bullets.get(e).kill) {
+					found = true;
+					world.destroyBody(bullets.get(e).body);
+					bullets.removeIndex(e);
+					break;
+				}
+			}
+		}while(found);
+		
+		//Enemies
+		found = false;
+		do {
+			found = false;
+			for(int e = 0; e < enemies.size; e++) {
+				if(enemies.get(e).kill || enemies.get(e).health <= 0) {
+					found = true;
+					world.destroyBody(enemies.get(e).body);
+					enemies.removeIndex(e);
+					break;
+				}
+			}
+		}while(found);
+	}
 	
 	public void physicStuff(float delta) {
 		Vector2 vel = player.body.getLinearVelocity();
@@ -294,7 +360,7 @@ public class GameInstance {
  
 		// jump, but only when grounded
 		if(player.jump) {			
-			player.jump = false;
+			//player.jump = false;
 			if(grounded) {
 				player.body.setLinearVelocity(vel.x, 0);			
 				player.body.setTransform(pos.x, pos.y + 0.01f, 0);
@@ -331,6 +397,9 @@ public class GameInstance {
 			bullet.update();	
 			bullet.body.setAwake(true);
 		}
+		flagBullets();
+		removeKilled();
+		
 		player.lastshot+= delta;
  
 		player.update();

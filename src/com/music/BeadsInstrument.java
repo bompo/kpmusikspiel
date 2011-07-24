@@ -27,7 +27,7 @@ public class BeadsInstrument {
 		release = 100;
 		sustain = 0.5f;
 		peak = 1.0f;
-		volume = 0.1f;
+		volume = 0.01f;
 		
 	}
 	
@@ -43,7 +43,7 @@ public class BeadsInstrument {
 			} else if(me[i][1] == 1) {
 				
 				g = new Gain(audioContext, 1, new Envelope(audioContext, volume*peak));
-				WavePlayer wp = new WavePlayer(audioContext, (float) (Math.pow(2, (me[i][0] - 48 - 9)/12.0)*440), Buffer.SINE);
+				/*WavePlayer wp = new WavePlayer(audioContext, (float) (Math.pow(2, (me[i][0] - 48 - 9)/12.0)*440), Buffer.SINE);
 				if(type == 1) {
 					wp = new WavePlayer(audioContext, (float) (Math.pow(2, (me[i][0] - 48 - 9)/12.0)*440), Buffer.SAW);
 				} else if(type == 2) {
@@ -54,9 +54,9 @@ public class BeadsInstrument {
 					wp = new WavePlayer(audioContext, (float) (Math.pow(2, (me[i][0] - 48 - 9)/12.0)*440), Buffer.NOISE);
 				}
 				((Envelope)g.getGainEnvelope()).addSegment(sustain*volume, decay);
-				g.addInput(wp);
+				g.addInput(wp);*/
 				gains[me[i][0]] = g;
-				audioContext.out.addInput(g);
+				//audioContext.out.addInput(g);
 				
 			}
 		}

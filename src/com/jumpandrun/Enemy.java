@@ -14,19 +14,25 @@ public class Enemy {
 	public Body body;
 	public Fixture enemyPhysicsFixture;
 	
-	public Vector2 direction = new Vector2(6,0);
+	public Vector2 direction = new Vector2(18,0);
 	
 	public Vector2 position = new Vector2();
 	public float angle = 0;
+	public boolean kill;
+	public int health;
 
 	public Enemy(float x, float y) {
 		position.x = x;
 		position.y = y;
+		kill = false;
+		health = 100;
 	}
 	
 	public void update() {
 		position.x = body.getPosition().x;
 		position.y = body.getPosition().y;
+		if(health <= 0)
+			kill = true;
 	}
 
 	public void move() {
@@ -51,6 +57,8 @@ public class Enemy {
 //						body.applyLinearImpulse(direction.x, direction.y, position.x, position.y);
 					} 
 				}
+			} else {
+				body.setLinearVelocity(direction.x*0.5f, body.getLinearVelocity().y);
 			}
 		}
 		
