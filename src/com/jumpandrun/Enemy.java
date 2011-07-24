@@ -35,8 +35,6 @@ public class Enemy {
 			direction.x = -direction.x;
 		}		
 		
-		Gdx.app.log("", body.getLinearVelocity().x + "");
-		
 		List<Contact> contactList = GameInstance.getInstance().world.getContactList();
 		for(int i = 0; i < contactList.size(); i++) {
 			Contact contact = contactList.get(i);

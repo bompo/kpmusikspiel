@@ -387,6 +387,21 @@ public class GameInstance {
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof Enemy) {
 					player.alive = false;
 				}
+				
+				if(contact.getFixtureA().getBody().getUserData() instanceof Player) {
+					if(contact.getFixtureB().getBody().getUserData() instanceof Block) {
+//						if(((Block) contact.getFixtureB().getBody().getUserData()).highlightAnimate >= 0) {
+							((Block) contact.getFixtureB().getBody().getUserData()).highlightAnimate = 1;
+//						}
+					}
+				}
+				if(contact.getFixtureB().getBody().getUserData() instanceof Player) {
+					if(contact.getFixtureA().getBody().getUserData() instanceof Block) {
+//						if(((Block) contact.getFixtureA().getBody().getUserData()).highlightAnimate >= 0) {
+							((Block) contact.getFixtureA().getBody().getUserData()).highlightAnimate = 1;
+//						}
+					}
+				}
 			}
 		}
 		
