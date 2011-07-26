@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.shader.FastBloomShader;
+import com.shader.TVShader;
 import com.shader.TransShader;
 
 public class Resources {
@@ -54,6 +55,8 @@ public class Resources {
 	
 	public ShaderProgram transShader;
 	public ShaderProgram bloomShader;
+	public ShaderProgram tvShader;
+	
 	public int m_i32TexSize = 128;
 	public float m_fTexelOffset;
 	
@@ -174,6 +177,12 @@ public class Resources {
 		bloomShader = new ShaderProgram(FastBloomShader.mVertexShader, FastBloomShader.mFragmentShader);
 		if (bloomShader.isCompiled() == false) {
 			Gdx.app.log("ShaderTest", bloomShader.getLog());
+			System.exit(0);
+		}
+		
+		tvShader = new ShaderProgram(TVShader.mVertexShader, TVShader.mFragmentShader);
+		if (tvShader.isCompiled() == false) {
+			Gdx.app.log("ShaderTest", tvShader.getLog());
 			System.exit(0);
 		}
 	}

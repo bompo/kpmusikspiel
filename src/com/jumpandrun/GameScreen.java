@@ -58,6 +58,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	Matrix4 tmp = new Matrix4().idt();
 	private ShaderProgram transShader;
 	private ShaderProgram bloomShader;
+	private ShaderProgram tvShader;
 	Mesh blockModel;
 	Mesh playerModel;
 	Mesh targetModel;
@@ -67,6 +68,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	Mesh sphereSliceModel;
 	FrameBuffer frameBuffer;
 	FrameBuffer frameBufferVert;
+	FrameBuffer frameBufferFull;
 	
 	float angleXBack = 0;
 	float angleYBack = 0;
@@ -78,6 +80,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private float accumulator = 0;
 	
 	private float bloomFactor = 0;
+	private float disortFactor = 0;
 	private float highlightTimer = 0;
 	private int highlightCnt = 1000;
 	
@@ -108,6 +111,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		transShader = Resources.getInstance().transShader;
 		bloomShader = Resources.getInstance().bloomShader;
+		tvShader = Resources.getInstance().tvShader;
 
 		ra.loadMidi("./data/test.mid");
 
@@ -127,6 +131,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		frameBuffer = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);		
 		frameBufferVert = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);
+		
+		frameBufferFull = new FrameBuffer(Format.RGB565, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
 	}
 	
 	@Override
@@ -157,6 +163,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 //	}	
 	
 	public void render(float deltaTime) {		
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
 		startTime+=deltaTime;
 		
 		delta = deltaTime;
@@ -175,7 +183,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		startTimeBench = System.nanoTime();		
 		
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 //		cam.position.set(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y, 25);
 		cam.update();
 
@@ -193,7 +200,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 			bloomShader.begin();
 			bloomShader.setUniformi("sTexture", 0);
-			bloomShader.setUniformf("bloomFactor", Helper.map((MathUtils.sin(startTime * 3f) * delta * 50f) + 0.5f, 0, 1, 0.55f, 0.60f + (bloomFactor/5.f)));
+			bloomShader.setUniformf("bloomFactor", Helper.map((MathUtils.sin(startTime * 3f) * delta * 50f) + 0.5f, 0, 1, 0.65f, 0.70f + (bloomFactor/5.f)));
 
 			frameBufferVert.begin();
 			bloomShader.setUniformf("TexelOffsetX", Resources.getInstance().m_fTexelOffset);
@@ -212,20 +219,39 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			bloomShader.end();
 		}
 
-		// render scene again
-		renderScene();
-		
-		Gdx.gl.glDisable(GL20.GL_CULL_FACE);
-		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-		Gdx.gl.glDisable(GL20.GL_BLEND);
-				
-		if(Resources.getInstance().bloomOnOff) {
+
+		if(!Resources.getInstance().bloomOnOff) {
+			// render scene again
+			renderScene();
+		} else {
+
+			frameBufferFull.begin();
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			renderScene();
+
+			Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+			Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+			Gdx.gl.glDisable(GL20.GL_BLEND);	
+			
 			batch.enableBlending();
 			batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE);
 			batch.begin();
 			batch.draw(frameBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),0,0,frameBuffer.getWidth(),frameBuffer.getHeight(),false,true);
 			batch.end();
+			frameBufferFull.end();
+			
+			frameBufferFull.getColorBufferTexture().bind(0);
+			
+			tvShader.begin();
+			tvShader.setUniformf("time", startTime);
+			tvShader.setUniformf("disort", 0.002f+ (disortFactor/400.f));
+			tvShader.setUniformi("sampler0", 0);
+			tvShader.setUniformf("resolution", Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+			quadModel.render(tvShader,GL20.GL_TRIANGLE_FAN);
+			tvShader.end();
+			
 		}
+		
 		
 		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
 		renderTimeBench = endTimeBench;
@@ -249,6 +275,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			bloomFactor = 1;
 		}
 		
+		disortFactor =  Math.max(0, disortFactor - deltaTime);
+		if (ra.getPlayedChannels()[6]==true) {
+			disortFactor = 1;
+		}
+		
 		if (ra.getPlayedChannels()[6]!=enemySpawnSwitch) {
 			enemySpawnSwitch = ra.getPlayedChannels()[6];
 			GameInstance.getInstance().addEnemy();
@@ -256,28 +287,16 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
 			GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
 			
-			highlightCnt = 0;
+			if(highlightCnt>500) {
+				highlightCnt = 0;
+			}
 		}
 		
 		highlightTimer -= delta;
 		if(highlightTimer<0) {
 			highlightCnt++;
-			highlightTimer = 0.005f;
+			highlightTimer = 0.0001f;
 		}
-		
-//		renderer.deltaMusic = rv1.getValue();
-//		map.update(delta);
-//		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
-//		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-//		renderer.render(delta);
-//		
-//		if (map.bob.state == Player.JUMP) {
-//			if (!jumping) {
-//				jumping = true;
-//			}
-//		} else {
-//			jumping = false;
-//		}
 
 		batch.begin();
 		font.draw(batch, "box2d: " + physicTimeBench, 10, 50);
@@ -286,6 +305,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	}	
 
 	private void renderScene() {
+
 		Gdx.gl.glEnable(GL20.GL_CULL_FACE);
 		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 		
@@ -300,10 +320,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			Block block = GameInstance.getInstance().blocks.get(i);
 			
 			if(block.id == highlightCnt) {
-				block.highlightAnimate = 1;
+				block.highlightAnimate = 0.4f;
 			}
 			
-			block.highlightAnimate =  Math.max(0, block.highlightAnimate - delta*5f);
+			block.highlightAnimate =  Math.max(0, block.highlightAnimate - delta);
 			
 			if(cam.frustum.sphereInFrustum(tmpVector3.set(block.position.x, block.position.y, 0),1f)) {
 				model.idt();

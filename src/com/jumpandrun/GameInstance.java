@@ -312,6 +312,16 @@ public class GameInstance {
 			if(contact.isTouching()) {
 				Object a = contact.getFixtureA().getBody().getUserData();
 				Object b = contact.getFixtureB().getBody().getUserData();
+				
+				if(a instanceof Bullet  && b instanceof Block) {
+					((Bullet)a).kill = true;
+					((Block)b).highlightAnimate = 0.3f;
+				} else if(b instanceof Bullet && a instanceof Block) {
+					((Bullet)b).kill = true;
+					((Block)a).highlightAnimate = 0.3f;
+				}
+				
+				
 				if(a instanceof Bullet  && b instanceof Enemy) {
 					((Bullet)a).kill = true;
 					((Enemy)b).hit(((Bullet)a).damage);
@@ -602,14 +612,14 @@ public class GameInstance {
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player) {
 					if(contact.getFixtureB().getBody().getUserData() instanceof Block) {
 //						if(((Block) contact.getFixtureB().getBody().getUserData()).highlightAnimate >= 0) {
-							((Block) contact.getFixtureB().getBody().getUserData()).highlightAnimate = 1;
+							((Block) contact.getFixtureB().getBody().getUserData()).highlightAnimate = 0.5f;
 //						}
 					}
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player) {
 					if(contact.getFixtureA().getBody().getUserData() instanceof Block) {
 //						if(((Block) contact.getFixtureA().getBody().getUserData()).highlightAnimate >= 0) {
-							((Block) contact.getFixtureA().getBody().getUserData()).highlightAnimate = 1;
+							((Block) contact.getFixtureA().getBody().getUserData()).highlightAnimate = 0.5f;
 //						}
 					}
 				}
