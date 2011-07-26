@@ -15,9 +15,7 @@ public class Map {
 	static int JUMPBLOCK1 = 0x005aff;
 	static int JUMPBLOCK2 = 0x91afe5;
 	
-	Array<Block> blocks = new Array<Block>();
 	int[][] tiles;	
-	public Player bob;
 	
 	public Map() {
 		Pixmap pixmap = new Pixmap(Gdx.files.internal("data/levels.png"));
@@ -37,6 +35,8 @@ public class Map {
 					GameInstance.getInstance().addJumpBlock(x*2,y*-1*2);		
 				} else if(pix == ENEMYSPAWNER) {
 					GameInstance.getInstance().addEnemySpawner(x*2,y*-1*2);		
+				} else {
+					GameInstance.getInstance().addBlankBlock(x*2,y*-1*2);		
 				}
 			}
 		}	

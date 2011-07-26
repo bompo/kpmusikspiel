@@ -251,7 +251,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		if (ra.getPlayedChannels()[6]!=enemySpawnSwitch) {
 			enemySpawnSwitch = ra.getPlayedChannels()[6];
-			GameInstance.getInstance().addEnemy();
+//			GameInstance.getInstance().addEnemy();
+			
+			int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
+			GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
 			
 			highlightCnt = 0;
 		}
@@ -354,6 +357,30 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					transShader.setUniformf("a_color",Resources.getInstance().blockEdgeColor[0], Resources.getInstance().blockEdgeColor[1],Resources.getInstance().blockEdgeColor[2], Resources.getInstance().blockEdgeColor[3]);
 					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
 				}
+			}
+		}
+		
+		// render powerUps
+		for (int i = 0; i < GameInstance.getInstance().powerUps.size; ++i) {
+			PowerUp powerUp = GameInstance.getInstance().powerUps.get(i);
+			if (cam.frustum.sphereInFrustum(tmpVector3.set(powerUp.position.x, powerUp.position.y, 0), 1f)) {
+				model.idt();
+
+				tmp.setToTranslation(powerUp.position.x, powerUp.position.y, powerUp.depth);
+				model.mul(tmp);
+				
+				tmp.setToScaling(0.95f, 0.95f, 0.95f);
+				model.mul(tmp);
+
+				transShader.setUniformMatrix("MMatrix", model);
+
+				transShader.setUniformf("a_color", Resources.getInstance().powerUpColor[0], Resources.getInstance().powerUpColor[1],
+						Resources.getInstance().powerUpColor[2], Math.min(powerUp.depth,Resources.getInstance().powerUpColor[3]));
+				playerModel.render(transShader, GL20.GL_TRIANGLES);
+
+				transShader.setUniformf("a_color", Resources.getInstance().powerUpEdgeColor[0], Resources.getInstance().powerUpEdgeColor[1],
+						Resources.getInstance().powerUpEdgeColor[2], Math.min(powerUp.depth,Resources.getInstance().powerUpEdgeColor[3]));
+				playerModel.render(transShader, GL20.GL_LINE_STRIP);
 			}
 		}
 		
