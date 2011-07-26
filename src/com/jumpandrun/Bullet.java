@@ -21,9 +21,10 @@ public class Bullet {
 		damage = 50;
 	}
 	
-	public void update() {
+	public void update(float delta) {
 		position.x = body.getPosition().x;
 		position.y = body.getPosition().y;
-		age++;
+		age+= delta;
+		body.setLinearVelocity(body.getLinearVelocity().x, 0);
 	}
 }

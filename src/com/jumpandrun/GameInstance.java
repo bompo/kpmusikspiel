@@ -183,7 +183,7 @@ public class GameInstance {
 		player.lastshot = 0;
 		Bullet b = new Bullet(player.position.x, player.position.y-1.5f);
 		
-		Body box = createBox(BodyType.DynamicBody, 0.1f, 0.1f, 500);
+		Body box = createBox(BodyType.DynamicBody, 0.2f, 0.2f, 1);
 		
 		box.setBullet(true);		 
 		box.setTransform(player.position.x+player.xdir, player.position.y, 0);
@@ -453,7 +453,7 @@ public class GameInstance {
 		//update bullets
 		for(int i = 0; i < bullets.size; i++) {
 			Bullet bullet = bullets.get(i);
-			bullet.update();	
+			bullet.update(delta);	
 			bullet.body.setAwake(true);
 		}
 		//update powerUps
