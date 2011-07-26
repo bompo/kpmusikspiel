@@ -20,7 +20,8 @@ import com.badlogic.gdx.utils.Array;
 public class GameInstance {
 
 	final static float MAX_VELOCITY = 20f;	
-
+	final static float GRAVITY = -160f;
+	
 	public static GameInstance instance;
 	
 	Map map;
@@ -29,7 +30,7 @@ public class GameInstance {
 	public Array<Block> blocks = new Array<Block>();
 	public Array<Enemy> enemies = new Array<Enemy>();
 	public Array<Bullet> bullets = new Array<Bullet>();
-	public World world  = new World(new Vector2(0, -20), true);
+	public World world  = new World(new Vector2(0, GRAVITY), true);
 	public Player player;	
 
 	float stillTime = 0;
@@ -59,7 +60,7 @@ public class GameInstance {
 		
 		
 		
-		world  = new World(new Vector2(0, -90), true);
+		world  = new World(new Vector2(0, GRAVITY), true);
 		map = new Map();
 	}
 	
@@ -300,13 +301,13 @@ public class GameInstance {
 		Vector2 vel = player.body.getLinearVelocity();
 		Vector2 pos = player.position.tmp();		
 		boolean grounded = isPlayerGrounded();
-		if(grounded) {
+		/*if(grounded) {
 			lastGroundTime = System.nanoTime();
 		} else {
 			if(System.nanoTime() - lastGroundTime < 100000000) {
 				grounded = true;
 			}
-		}
+		}*/
  
 		// cap max velocity on x		
 		if(Math.abs(vel.x) > MAX_VELOCITY) {			
@@ -332,14 +333,14 @@ public class GameInstance {
 			playerPhysicsFixture.setFriction(0f);
 			playerSensorFixture.setFriction(0f);			
 		} else {
-			if(!Gdx.input.isKeyPressed(Keys.A) && !Gdx.input.isKeyPressed(Keys.D) && stillTime > 0.2) {
+			/*if(!Gdx.input.isKeyPressed(Keys.A) && !Gdx.input.isKeyPressed(Keys.D) && stillTime > 0.2) {
 				playerPhysicsFixture.setFriction(100f);
 				playerSensorFixture.setFriction(100f);
 			}
 			else {
 				playerPhysicsFixture.setFriction(0.2f);
 				playerSensorFixture.setFriction(0.2f);
-			}
+			}*/
  
 			if(groundedPlatform != null && groundedPlatform.dist == 0) {
 				player.body.applyLinearImpulse(0, -20, pos.x, pos.y);				
@@ -348,23 +349,28 @@ public class GameInstance {
  
 		// apply left impulse, but only if max velocity is not reached yet
 		if(Gdx.input.isKeyPressed(Keys.A) && vel.x > -MAX_VELOCITY) {
-			player.body.applyLinearImpulse(-4f, 0, pos.x, pos.y);
+			player.body.applyLinearImpulse(-3.4f, 0, pos.x, pos.y);
 			player.xdir = -1;
 		}
  
 		// apply right impulse, but only if max velocity is not reached yet
 		if(Gdx.input.isKeyPressed(Keys.D) && vel.x < MAX_VELOCITY) {
-			player.body.applyLinearImpulse(4f, 0, pos.x, pos.y);
+			player.body.applyLinearImpulse(3.4f, 0, pos.x, pos.y);
 			player.xdir = 1;
 		}
  
 		// jump, but only when grounded
 		if(player.jump) {			
+			
 			//player.jump = false;
 			if(grounded) {
 				player.body.setLinearVelocity(vel.x, 0);			
 				player.body.setTransform(pos.x, pos.y + 0.01f, 0);
-				player.body.applyLinearImpulse(0, 120, pos.x, pos.y);							
+				player.body.applyLinearImpulse(0, 80, pos.x, pos.y);	
+				lastGroundTime = System.nanoTime();
+			} else if(System.nanoTime() - lastGroundTime < 150000000) {
+				player.body.applyLinearImpulse(0, 710*delta, pos.x, pos.y);
+				//player.body.setLinearVelocity(vel.x, vel.y+1*(100000000-(System.nanoTime() - lastGroundTime))/100000000f);
 			}
 		}				
  
@@ -423,13 +429,13 @@ public class GameInstance {
 			if(contact.isTouching()) {
 				if(contact.getFixtureA().getBody().getUserData() instanceof JumpBlock) {
 					if(contact.getFixtureA().getBody().getPosition().y < contact.getFixtureB().getBody().getPosition().y-1) {
-						contact.getFixtureB().getBody().applyLinearImpulse(0, 60, player.position.x, player.position.y);
+						contact.getFixtureB().getBody().applyLinearImpulse(0, 85, player.position.x, player.position.y);
 	//					((JumpBlock)contact.getFixtureA().getBody().getUserData()).jump();
 					}
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof JumpBlock ) {
 					if(contact.getFixtureA().getBody().getPosition().y-1 > contact.getFixtureB().getBody().getPosition().y) {
-					contact.getFixtureA().getBody().applyLinearImpulse(0, 60, player.position.x, player.position.y);
+					contact.getFixtureA().getBody().applyLinearImpulse(0, 85, player.position.x, player.position.y);
 //					((JumpBlock)contact.getFixtureB().getBody().getUserData()).jump();
 					}
 				}
