@@ -20,10 +20,13 @@ public class Enemy {
 	public float angle = 0;
 	public boolean kill;
 	public int health;
+	
+	public int size = 1;
 
-	public Enemy(float x, float y) {
+	public Enemy(float x, float y, int size) {
 		position.x = x;
 		position.y = y;
+		this.size = size;
 		kill = false;
 		health = 100;
 	}

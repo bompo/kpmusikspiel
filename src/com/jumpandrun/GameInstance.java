@@ -145,14 +145,14 @@ public class GameInstance {
 		blankBlocks.add(block);
 	}
 	
-	public void addEnemy() {
+	public void addEnemy(int size) {
 		for(Block block:blocks) {
 			if(block instanceof EnemySpawner) {
-				Enemy enemy = new Enemy(block.position.x, block.position.y-1.5f);				
+				Enemy enemy = new Enemy(block.position.x, block.position.y-1.5f, size);				
 				if(Math.random() >= 0.5) {
 					enemy.direction.x = -enemy.direction.x;
 				}
-				Body box = createCircle(BodyType.DynamicBody, 1,1);		
+				Body box = createCircle(BodyType.DynamicBody, size,1);		
 				box.setBullet(true);		 
 				box.setTransform(block.position.x, block.position.y-1.5f, 0);
 				
@@ -174,6 +174,7 @@ public class GameInstance {
 		box.setFixedRotation(true);
 		powerUp.body.setUserData(powerUp);
 		powerUps.add(powerUp);
+//		powerUp.body.applyLinearImpulse(0, 710, powerUp.position.x, powerUp.position.y);
 	}
 	
 	public void addBullet() {
@@ -458,8 +459,16 @@ public class GameInstance {
 		//update powerUps
 		for(int i = 0; i < powerUps.size; i++) {
 			PowerUp powerUp = powerUps.get(i);
-			powerUp.depth += delta / 10f;
-			if(powerUp.depth > 1) {
+			powerUp.update();
+			if(powerUp.show) {
+				powerUp.depth += delta;
+			}else {
+				powerUp.depth -= delta*5f;
+			}
+			if(powerUp.depth > 1 && powerUp.show) {
+				powerUp.depth -= delta;
+			}
+			if(powerUp.depth < 0 && !powerUp.show) {
 				powerUp.kill = true;
 			}
 		}
@@ -523,6 +532,13 @@ public class GameInstance {
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof Enemy) {
 					player.alive = false;
+				}
+				
+				if(contact.getFixtureA().getBody().getUserData() instanceof Player  && contact.getFixtureB().getBody().getUserData() instanceof PowerUp) {
+					((PowerUp) contact.getFixtureB().getBody().getUserData()).show = false;
+				}
+				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof PowerUp) {
+					((PowerUp) contact.getFixtureA().getBody().getUserData()).show = false;
 				}
 				
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player) {

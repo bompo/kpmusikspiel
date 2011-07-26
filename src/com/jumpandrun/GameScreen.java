@@ -251,7 +251,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		if (ra.getPlayedChannels()[6]!=enemySpawnSwitch) {
 			enemySpawnSwitch = ra.getPlayedChannels()[6];
-//			GameInstance.getInstance().addEnemy();
+			GameInstance.getInstance().addEnemy(MathUtils.random(1, 2));
 			
 			int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
 			GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
@@ -366,7 +366,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			if (cam.frustum.sphereInFrustum(tmpVector3.set(powerUp.position.x, powerUp.position.y, 0), 1f)) {
 				model.idt();
 
-				tmp.setToTranslation(powerUp.position.x, powerUp.position.y, powerUp.depth);
+				tmp.setToTranslation(powerUp.position.x, powerUp.position.y, 0);
+				model.mul(tmp);
+				
+				tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * powerUp.angle);
 				model.mul(tmp);
 				
 				tmp.setToScaling(0.95f, 0.95f, 0.95f);
@@ -396,7 +399,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * enemy.angle);
 				model.mul(tmp);
 				
-				tmp.setToScaling(0.95f, 0.95f, 0.95f);
+				tmp.setToScaling(0.95f*enemy.size, 0.95f*enemy.size, 0.95f*enemy.size);
 				model.mul(tmp);
 
 				transShader.setUniformMatrix("MMatrix", model);
@@ -503,7 +506,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		
 		if (keycode == Keys.R) {
-			GameInstance.getInstance().addEnemy();
+			GameInstance.getInstance().addEnemy(MathUtils.random(1, 2));
 		}
 		
 		if (keycode == Input.Keys.F) {
