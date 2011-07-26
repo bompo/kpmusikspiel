@@ -20,6 +20,7 @@ public class Enemy {
 	public float angle = 0;
 	public boolean kill;
 	public int health;
+	public float hitAnimate = 0;
 	
 	public float size = 1;
 
@@ -31,9 +32,10 @@ public class Enemy {
 		health = 100;
 	}
 	
-	public void update() {
+	public void update(float delta) {
 		position.x = body.getPosition().x;
 		position.y = body.getPosition().y;
+		hitAnimate -= delta*2;
 		if(health <= 0)
 			kill = true;
 	}
@@ -66,6 +68,14 @@ public class Enemy {
 		}
 		
 		angle = (MathUtils.PI * -position.x) / 2.f;		
+	}
+	
+	public void hit(int damage) {
+		health -= damage;
+		if(health <= 0) {
+			kill = true;
+		}
+		hitAnimate = 1;
 	}
 	
 }
