@@ -189,7 +189,7 @@ public class GameInstance {
 		box.setTransform(player.position.x+player.xdir, player.position.y, 0);
 		Vector2 dir = new Vector2(player.xdir, 0);
 		dir = dir.nor();
-		dir.mul(80);
+		dir.mul(b.speed);
 		box.setLinearVelocity(dir);
 		
 //		enemy.enemyPhysicsFixture = enemyPhysicsFixture;
@@ -276,10 +276,10 @@ public class GameInstance {
 				Object b = contact.getFixtureB().getBody().getUserData();
 				if(a instanceof Bullet  && b instanceof Enemy) {
 					((Bullet)a).kill = true;
-					((Enemy)b).health-= ((Bullet)a).damage;
+					((Enemy)b).hit(((Bullet)a).damage);
 				} else if(b instanceof Bullet && a instanceof Enemy) {
 					((Bullet)b).kill = true;
-					((Enemy)a).health-= ((Bullet)b).damage;
+					((Enemy)a).hit(((Bullet)b).damage);
 				}
 				if(a instanceof Bullet && !(b instanceof Bullet) && !(b instanceof Player)) {
 					((Bullet)a).kill = true;
@@ -447,7 +447,7 @@ public class GameInstance {
 		for(int i = 0; i < enemies.size; i++) {
 			Enemy enemy = enemies.get(i);
 			enemy.move();
-			enemy.update();
+			enemy.update(delta);
 			enemy.body.setAwake(true);
 		}
 		//update bullets

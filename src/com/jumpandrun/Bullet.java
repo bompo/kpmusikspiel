@@ -9,6 +9,7 @@ public class Bullet {
 	public int age;
 	public boolean kill;
 	public int damage;
+	public int speed = 80;
 	//public Fixture bulletPhysicsFixture;
 	
 	public Vector2 position = new Vector2();
@@ -27,4 +28,5 @@ public class Bullet {
 		age+= delta;
 		body.setLinearVelocity(body.getLinearVelocity().x, 0);
 	}
+	
 }
