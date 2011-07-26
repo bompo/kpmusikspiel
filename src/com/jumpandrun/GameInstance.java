@@ -3,6 +3,8 @@ package com.jumpandrun;
 import java.util.Iterator;
 import java.util.List;
 
+import net.beadsproject.beads.analysis.featureextractors.Power;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
@@ -28,8 +30,10 @@ public class GameInstance {
 	
 	public Array<MovingPlatform> platforms = new Array<MovingPlatform>();
 	public Array<Block> blocks = new Array<Block>();
+	public Array<Block> blankBlocks = new Array<Block>();
 	public Array<Enemy> enemies = new Array<Enemy>();
 	public Array<Bullet> bullets = new Array<Bullet>();
+	public Array<PowerUp> powerUps = new Array<PowerUp>();
 	public World world  = new World(new Vector2(0, GRAVITY), true);
 	public Player player;	
 
@@ -56,6 +60,8 @@ public class GameInstance {
 		blocks.clear();
 		enemies.clear();
 		bullets.clear();
+		blankBlocks.clear();
+		powerUps.clear();
 		world.dispose();
 		
 		
@@ -81,6 +87,7 @@ public class GameInstance {
 		BodyDef def = new BodyDef();
 		def.type = type;
 		Body box = world.createBody(def);
+		
 		PolygonShape poly = new PolygonShape();		
 		poly.setAsEdge(new Vector2(0, 0), new Vector2(x2 - x1, y2 - y1));
 		box.createFixture(poly, density);
@@ -133,6 +140,11 @@ public class GameInstance {
 		blocks.add(block);
 	}
 	
+	public void addBlankBlock(float x, float y) {
+		Block block = new Block(x,y);
+		blankBlocks.add(block);
+	}
+	
 	public void addEnemy() {
 		for(Block block:blocks) {
 			if(block instanceof EnemySpawner) {
@@ -151,6 +163,17 @@ public class GameInstance {
 			}
 		
 		}
+	}
+	
+	public void addPowerUp(float x, float y) {
+		PowerUp powerUp = new PowerUp(x,y);
+		Body box = createCircle(BodyType.DynamicBody, 1, 1);
+		box.setTransform(powerUp.position.x, powerUp.position.y, 0);
+
+		powerUp.body = box;
+		box.setFixedRotation(true);
+		powerUp.body.setUserData(powerUp);
+		powerUps.add(powerUp);
 	}
 	
 	public void addBullet() {
@@ -269,6 +292,7 @@ public class GameInstance {
 	
 	public void removeKilled() {
 		//Bullets
+		{
 		boolean found = false;
 		do {
 			found = false;
@@ -281,9 +305,27 @@ public class GameInstance {
 				}
 			}
 		}while(found);
+		}
+		
+		//powerups
+		{
+		boolean found = false;
+		do {
+			found = false;
+			for(int e = 0; e < powerUps.size; e++) {
+				if(powerUps.get(e).kill) {
+					found = true;
+					world.destroyBody(powerUps.get(e).body);
+					powerUps.removeIndex(e);
+					break;
+				}
+			}
+		}while(found);
+		}
 		
 		//Enemies
-		found = false;
+		{
+		boolean found = false;
 		do {
 			found = false;
 			for(int e = 0; e < enemies.size; e++) {
@@ -295,9 +337,19 @@ public class GameInstance {
 				}
 			}
 		}while(found);
+		}
 	}
 	
 	public void physicStuff(float delta) {
+
+		
+		if(player.alive == false) {
+			resetGame();
+		}
+		
+		// le step...			
+		world.step(delta, 50, 50);	
+		
 		Vector2 vel = player.body.getLinearVelocity();
 		Vector2 pos = player.position.tmp();		
 		boolean grounded = isPlayerGrounded();
@@ -385,7 +437,7 @@ public class GameInstance {
 			Block block = blocks.get(i);
 			if(block instanceof JumpBlock) {
 				if(((JumpBlock) block).jumpAnim > 0) {
-					((JumpBlock) block).jumpAnim = Math.max(0, ((JumpBlock) block).jumpAnim - Gdx.graphics.getDeltaTime());
+					((JumpBlock) block).jumpAnim = Math.max(0, ((JumpBlock) block).jumpAnim - Gdx.graphics.getDeltaTime()*2);
 				} 
 			}			
 		}
@@ -403,6 +455,16 @@ public class GameInstance {
 			bullet.update(delta);	
 			bullet.body.setAwake(true);
 		}
+		//update powerUps
+		for(int i = 0; i < powerUps.size; i++) {
+			PowerUp powerUp = powerUps.get(i);
+			powerUp.depth += delta / 10f;
+			if(powerUp.depth > 1) {
+				powerUp.kill = true;
+			}
+		}
+
+		
 		flagBullets();
 		removeKilled();
 		
@@ -414,12 +476,8 @@ public class GameInstance {
 		//check player/enemy collision
 		checkPlayerEnemyCollision();
 		
-		if(player.alive == false) {
-			resetGame();
-		}
-		
-		// le step...			
-		world.step(delta, 50, 50);		
+
+					
 	}
 	
 	public void activateJumpBlocks() {
@@ -427,16 +485,20 @@ public class GameInstance {
 		for(int i = 0; i < contactList.size(); i++) {
 			Contact contact = contactList.get(i);
 			if(contact.isTouching()) {
-				if(contact.getFixtureA().getBody().getUserData() instanceof JumpBlock) {
-					if(contact.getFixtureA().getBody().getPosition().y < contact.getFixtureB().getBody().getPosition().y-1) {
-						contact.getFixtureB().getBody().applyLinearImpulse(0, 85, player.position.x, player.position.y);
-	//					((JumpBlock)contact.getFixtureA().getBody().getUserData()).jump();
+				if (contact.getFixtureA().getBody().getUserData() instanceof JumpBlock) {
+					if (contact.getFixtureB().getBody().getUserData() instanceof Enemy || contact.getFixtureB().getBody().getUserData() instanceof Player) {
+						if (contact.getFixtureA().getBody().getPosition().y < contact.getFixtureB().getBody().getPosition().y - 1) {
+							contact.getFixtureB().getBody().applyLinearImpulse(0, 85, player.position.x, player.position.y);
+							// ((JumpBlock)contact.getFixtureA().getBody().getUserData()).jump();
+						}
 					}
 				}
-				if(contact.getFixtureB().getBody().getUserData() instanceof JumpBlock ) {
-					if(contact.getFixtureA().getBody().getPosition().y-1 > contact.getFixtureB().getBody().getPosition().y) {
-					contact.getFixtureA().getBody().applyLinearImpulse(0, 85, player.position.x, player.position.y);
-//					((JumpBlock)contact.getFixtureB().getBody().getUserData()).jump();
+				if (contact.getFixtureB().getBody().getUserData() instanceof JumpBlock) {
+					if (contact.getFixtureA().getBody().getUserData() instanceof Enemy || contact.getFixtureA().getBody().getUserData() instanceof Player) {
+						if (contact.getFixtureA().getBody().getPosition().y - 1 > contact.getFixtureB().getBody().getPosition().y) {
+							contact.getFixtureA().getBody().applyLinearImpulse(0, 85, player.position.x, player.position.y);
+							// ((JumpBlock)contact.getFixtureB().getBody().getUserData()).jump();
+						}
 					}
 				}
 			}
@@ -461,6 +523,21 @@ public class GameInstance {
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof Enemy) {
 					player.alive = false;
+				}
+				
+				if(contact.getFixtureA().getBody().getUserData() instanceof Player) {
+					if(contact.getFixtureB().getBody().getUserData() instanceof Block) {
+//						if(((Block) contact.getFixtureB().getBody().getUserData()).highlightAnimate >= 0) {
+							((Block) contact.getFixtureB().getBody().getUserData()).highlightAnimate = 1;
+//						}
+					}
+				}
+				if(contact.getFixtureB().getBody().getUserData() instanceof Player) {
+					if(contact.getFixtureA().getBody().getUserData() instanceof Block) {
+//						if(((Block) contact.getFixtureA().getBody().getUserData()).highlightAnimate >= 0) {
+							((Block) contact.getFixtureA().getBody().getUserData()).highlightAnimate = 1;
+//						}
+					}
 				}
 			}
 		}
