@@ -12,6 +12,8 @@ public class Block {
 	public int id = 0;
 	public static int idCnt = 0;
 	
+	public float angle = 0;
+	
 	public float highlightAnimate = 0;
 
 	public Block(float x, float y) {

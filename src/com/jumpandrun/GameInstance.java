@@ -29,6 +29,7 @@ public class GameInstance {
 	public static GameInstance instance;
 	
 	Map map;
+	Background background;
 	
 	public Array<MovingPlatform> platforms = new Array<MovingPlatform>();
 	public Array<Block> blocks = new Array<Block>();
@@ -86,6 +87,7 @@ public class GameInstance {
 		
 		world  = new World(new Vector2(0, GRAVITY), true);
 		map = new Map();
+		background = new Background();
 	}
 	
 	public Body createBox(BodyType type, float width, float height, float density) {
@@ -553,7 +555,8 @@ public class GameInstance {
 		//check player/enemy collision
 		checkPlayerEnemyCollision();
 		
-
+		//animate background
+		
 					
 	}
 	

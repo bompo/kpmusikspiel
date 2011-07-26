@@ -41,9 +41,5 @@ public class Map {
 			}
 		}	
 	}
-		
-	public boolean isDeadly(int tileId) {
-		return false;		
-	}
 
 }
