@@ -7,11 +7,13 @@ import net.beadsproject.beads.analysis.featureextractors.Power;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -39,8 +41,14 @@ public class GameInstance {
 
 	float stillTime = 0;
 	long lastGroundTime = 0;
-
+	
 	MovingPlatform groundedPlatform = null;
+
+	Filter groupCollideFilter = new Filter();
+	Filter groupNonCollideFilter = new Filter();
+	
+	Filter playerCollideFilter = new Filter();
+	Filter enemyCollideFilter = new Filter();
 	
 	Body box;
 	Block block;
@@ -64,6 +72,16 @@ public class GameInstance {
 		powerUps.clear();
 		world.dispose();
 		
+		groupCollideFilter.groupIndex = 1;
+//		groupCollideFilter.categoryBits = 0x0001;
+		groupNonCollideFilter.groupIndex = -1;
+		
+//		playerCollideFilter.categoryBits = 0x0001;
+//		playerCollideFilter.maskBits = 0x0004;
+		
+//		enemyCollideFilter.categoryBits = 0x0002;
+//		enemyCollideFilter.maskBits = 0x0004;
+		enemyCollideFilter.groupIndex = -1;
 		
 		
 		world  = new World(new Vector2(0, GRAVITY), true);
@@ -77,7 +95,8 @@ public class GameInstance {
  
 		PolygonShape poly = new PolygonShape();
 		poly.setAsBox(width, height);
-		box.createFixture(poly, density);
+		Fixture fix = box.createFixture(poly, density);
+		fix.setFilterData(groupCollideFilter);
 		poly.dispose();
  
 		return box;
@@ -90,7 +109,8 @@ public class GameInstance {
 		
 		PolygonShape poly = new PolygonShape();		
 		poly.setAsEdge(new Vector2(0, 0), new Vector2(x2 - x1, y2 - y1));
-		box.createFixture(poly, density);
+		Fixture fix = box.createFixture(poly, density);
+		fix.setFilterData(groupCollideFilter);
 		box.setTransform(x1, y1, 0);
 		poly.dispose();
  
@@ -104,7 +124,8 @@ public class GameInstance {
  
 		CircleShape poly = new CircleShape();
 		poly.setRadius(radius);
-		box.createFixture(poly, density);
+		Fixture fix = box.createFixture(poly, density);
+		fix.setFilterData(groupCollideFilter);
 		poly.dispose();
  
 		return box;
@@ -145,9 +166,17 @@ public class GameInstance {
 		blankBlocks.add(block);
 	}
 	
-	public void addEnemy(int size) {
+	public void addEnemy() {
+		if(enemies.size <= 5) {
 		for(Block block:blocks) {
 			if(block instanceof EnemySpawner) {
+				float size =1;
+				if(MathUtils.randomBoolean()) {
+					size = 1;
+				} else {
+					size = 1.7f;
+				}			
+				
 				Enemy enemy = new Enemy(block.position.x, block.position.y-1.5f, size);				
 				if(Math.random() >= 0.5) {
 					enemy.direction.x = -enemy.direction.x;
@@ -156,25 +185,31 @@ public class GameInstance {
 				box.setBullet(true);		 
 				box.setTransform(block.position.x, block.position.y-1.5f, 0);
 				
+				box.getFixtureList().get(0).setFilterData(enemyCollideFilter);
+				
 				enemy.body = box;
 				box.setFixedRotation(true);
 				enemy.body.setUserData(enemy);
 				enemies.add(enemy);
 			}
-		
+			}
 		}
 	}
 	
 	public void addPowerUp(float x, float y) {
-		PowerUp powerUp = new PowerUp(x,y);
-		Body box = createCircle(BodyType.DynamicBody, 1, 1);
-		box.setTransform(powerUp.position.x, powerUp.position.y, 0);
-
-		powerUp.body = box;
-		box.setFixedRotation(true);
-		powerUp.body.setUserData(powerUp);
-		powerUps.add(powerUp);
-//		powerUp.body.applyLinearImpulse(0, 710, powerUp.position.x, powerUp.position.y);
+		if(powerUps.size == 0) {
+			PowerUp powerUp = new PowerUp(x,y);
+			Body box = createCircle(BodyType.DynamicBody, 1, 1);
+			box.setTransform(powerUp.position.x, powerUp.position.y, 0);
+	
+			box.getFixtureList().get(0).setFilterData(enemyCollideFilter);
+			
+			powerUp.body = box;
+			box.setFixedRotation(true);
+			powerUp.body.setUserData(powerUp);
+			powerUps.add(powerUp);
+//			powerUp.body.applyLinearImpulse(0, 710, powerUp.position.x, powerUp.position.y);
+		}
 	}
 	
 	public void addBullet() {
@@ -205,13 +240,16 @@ public class GameInstance {
 		 
 		PolygonShape poly = new PolygonShape();		
 		poly.setAsBox(0.1f, 0.1f);
-		playerPhysicsFixture = box.createFixture(poly, 0);
-		poly.dispose();			
- 
+		playerPhysicsFixture = box.createFixture(poly, 0);	
+		playerPhysicsFixture.setFilterData(playerCollideFilter);
+		poly.dispose();		
+		
+		
 		CircleShape circle = new CircleShape();		
 		circle.setRadius(1f);
 		circle.setPosition(new Vector2(0, -0.6f));
 		playerSensorFixture = box.createFixture(circle, 1);		
+		playerSensorFixture.setFilterData(playerCollideFilter);
 		circle.dispose();		
  
 		box.setBullet(true);
@@ -443,18 +481,33 @@ public class GameInstance {
 			}			
 		}
 		
+		//outOfBounds
+		if(player.position.y < -50) {
+			player.alive = false;
+		}
+		
 		//update enemies
 		for(int i = 0; i < enemies.size; i++) {
 			Enemy enemy = enemies.get(i);
 			enemy.move();
 			enemy.update();
 			enemy.body.setAwake(true);
+			
+			//outOfBounds
+			if(enemy.position.y < -50) {
+				enemy.kill = true;
+			}
 		}
 		//update bullets
 		for(int i = 0; i < bullets.size; i++) {
 			Bullet bullet = bullets.get(i);
 			bullet.update(delta);	
 			bullet.body.setAwake(true);
+			
+			//outOfBounds
+			if(bullet.position.y < -50) {
+				bullet.kill = true;
+			}
 		}
 		//update powerUps
 		for(int i = 0; i < powerUps.size; i++) {
@@ -469,6 +522,11 @@ public class GameInstance {
 				powerUp.depth -= delta;
 			}
 			if(powerUp.depth < 0 && !powerUp.show) {
+				powerUp.kill = true;
+			}
+			
+			//outOfBounds
+			if(powerUp.position.y < -50) {
 				powerUp.kill = true;
 			}
 		}

@@ -21,9 +21,9 @@ public class Enemy {
 	public boolean kill;
 	public int health;
 	
-	public int size = 1;
+	public float size = 1;
 
-	public Enemy(float x, float y, int size) {
+	public Enemy(float x, float y, float size) {
 		position.x = x;
 		position.y = y;
 		this.size = size;

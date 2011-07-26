@@ -251,7 +251,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		if (ra.getPlayedChannels()[6]!=enemySpawnSwitch) {
 			enemySpawnSwitch = ra.getPlayedChannels()[6];
-			GameInstance.getInstance().addEnemy(MathUtils.random(1, 2));
+			GameInstance.getInstance().addEnemy();
 			
 			int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
 			GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
@@ -506,7 +506,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		
 		if (keycode == Keys.R) {
-			GameInstance.getInstance().addEnemy(MathUtils.random(1, 2));
+			GameInstance.getInstance().addEnemy();
 		}
 		
 		if (keycode == Input.Keys.F) {
