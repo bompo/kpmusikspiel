@@ -81,7 +81,7 @@ public class Enemy {
 			}
 		}
 		
-		angle = (MathUtils.PI * -position.x) / 2.f;		
+		angle = -position.x*360/(2*MathUtils.PI*size);		
 	}
 	
 	public void hit(int damage) {

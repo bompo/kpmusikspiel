@@ -415,7 +415,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				tmp.setToTranslation(enemy.position.x, enemy.position.y, 0);
 				model.mul(tmp);
 
-				tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * enemy.angle);
+				tmp.setToRotation(Vector3.Z, enemy.angle);
 				model.mul(tmp);
 				
 				tmp.setToScaling(0.95f*enemy.size, 0.95f*enemy.size, 0.95f*enemy.size);
@@ -472,7 +472,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToTranslation(GameInstance.getInstance().player.position.x + GameInstance.getInstance().player.xdir*0.8f, GameInstance.getInstance().player.position.y-0.8f, 0);
 			model.mul(tmp);
 			
-			tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * GameInstance.getInstance().player.angle);
+			tmp.setToRotation(Vector3.Z, GameInstance.getInstance().player.angle);
 			model.mul(tmp);
 			
 			tmp.setToRotation(Vector3.X, angleXBack);
@@ -497,7 +497,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToTranslation(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y-0.8f, 0);
 			model.mul(tmp);
 			
-			tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * GameInstance.getInstance().player.angle);
+			tmp.setToRotation(Vector3.Z, GameInstance.getInstance().player.angle);
 			model.mul(tmp);
 			
 			tmp.setToRotation(Vector3.X, angleXBack);
