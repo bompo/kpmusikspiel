@@ -49,7 +49,8 @@ public class GameInstance {
 	Filter groupNonCollideFilter = new Filter();
 	
 	Filter playerCollideFilter = new Filter();
-	static Filter enemyCollideFilter = new Filter();
+	Filter deadCollideFilter = new Filter();
+	Filter enemyCollideFilter = new Filter();
 	
 	Body box;
 	Block block;
@@ -73,15 +74,19 @@ public class GameInstance {
 		powerUps.clear();
 		world.dispose();
 		
-		groupCollideFilter.groupIndex = 1;
+		groupCollideFilter.groupIndex = -1;
 		groupCollideFilter.categoryBits = 0x0001;
 		groupNonCollideFilter.groupIndex = -1;
 		
 		playerCollideFilter.categoryBits = 0x0002;
+		playerCollideFilter.groupIndex = -2;
 		
-		enemyCollideFilter.categoryBits = 0x0002;
-		enemyCollideFilter.maskBits = 0x0004;
-		enemyCollideFilter.groupIndex = -1;
+		enemyCollideFilter.categoryBits = 0x0004;
+		enemyCollideFilter.groupIndex = -3;
+		
+		deadCollideFilter.categoryBits = 0x0002;
+		deadCollideFilter.maskBits = 0x0004;
+		deadCollideFilter.groupIndex = -1;
 		
 		
 		world  = new World(new Vector2(0, GRAVITY), true);
@@ -186,7 +191,7 @@ public class GameInstance {
 				box.setBullet(true);		 
 				box.setTransform(block.position.x, block.position.y-1.5f, 0);
 				
-				box.getFixtureList().get(0).setFilterData(playerCollideFilter);
+				box.getFixtureList().get(0).setFilterData(enemyCollideFilter);
 				
 				enemy.body = box;
 				box.setFixedRotation(true);
@@ -203,7 +208,7 @@ public class GameInstance {
 			Body box = createCircle(BodyType.DynamicBody, 1, 1);
 			box.setTransform(powerUp.position.x, powerUp.position.y, 0);
 	
-			box.getFixtureList().get(0).setFilterData(enemyCollideFilter);
+			box.getFixtureList().get(0).setFilterData(deadCollideFilter);
 			
 			powerUp.body = box;
 			box.setFixedRotation(true);

@@ -43,9 +43,9 @@ public class Enemy {
 			alive = false;	
 			if(dyingAnimate==0 && hitAnimate>0) {
 				dyingAnimate-=hitAnimate;
+				body.setLinearVelocity(0, body.getLinearVelocity().y+20);
 			}
-
-			body.getFixtureList().get(0).setFilterData(GameInstance.enemyCollideFilter);
+			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().deadCollideFilter);
 		}
 		if(!alive) {
 			dyingAnimate = Math.min(1, dyingAnimate + delta*3);
