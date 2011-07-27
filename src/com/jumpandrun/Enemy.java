@@ -40,13 +40,15 @@ public class Enemy {
 		}
 		hitAnimate = Math.max(0, hitAnimate - delta*2);
 		if(health <= 0) {
-			alive = false;			
+			alive = false;	
 			if(dyingAnimate==0 && hitAnimate>0) {
 				dyingAnimate-=hitAnimate;
 			}
+
+			body.getFixtureList().get(0).setFilterData(GameInstance.enemyCollideFilter);
 		}
 		if(!alive) {
-			dyingAnimate = Math.min(1, dyingAnimate + delta*2);
+			dyingAnimate = Math.min(1, dyingAnimate + delta*3);
 		}		
 	}
 
@@ -86,6 +88,8 @@ public class Enemy {
 		health -= damage;
 		if(health <= 0) {
 			alive = false;
+			body.getFixtureList().get(0).getFilterData().categoryBits = 0x0002;
+			body.getFixtureList().get(0).getFilterData().maskBits = 0x0004;
 		} 
 		if (dyingAnimate==0){
 			hitAnimate = 1;

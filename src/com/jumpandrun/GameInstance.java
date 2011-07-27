@@ -49,7 +49,7 @@ public class GameInstance {
 	Filter groupNonCollideFilter = new Filter();
 	
 	Filter playerCollideFilter = new Filter();
-	Filter enemyCollideFilter = new Filter();
+	static Filter enemyCollideFilter = new Filter();
 	
 	Body box;
 	Block block;
@@ -74,14 +74,13 @@ public class GameInstance {
 		world.dispose();
 		
 		groupCollideFilter.groupIndex = 1;
-//		groupCollideFilter.categoryBits = 0x0001;
+		groupCollideFilter.categoryBits = 0x0001;
 		groupNonCollideFilter.groupIndex = -1;
 		
-//		playerCollideFilter.categoryBits = 0x0001;
-//		playerCollideFilter.maskBits = 0x0004;
+		playerCollideFilter.categoryBits = 0x0002;
 		
-//		enemyCollideFilter.categoryBits = 0x0002;
-//		enemyCollideFilter.maskBits = 0x0004;
+		enemyCollideFilter.categoryBits = 0x0002;
+		enemyCollideFilter.maskBits = 0x0004;
 		enemyCollideFilter.groupIndex = -1;
 		
 		
@@ -187,7 +186,7 @@ public class GameInstance {
 				box.setBullet(true);		 
 				box.setTransform(block.position.x, block.position.y-1.5f, 0);
 				
-				box.getFixtureList().get(0).setFilterData(enemyCollideFilter);
+				box.getFixtureList().get(0).setFilterData(playerCollideFilter);
 				
 				enemy.body = box;
 				box.setFixedRotation(true);
