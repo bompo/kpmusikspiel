@@ -74,9 +74,11 @@ public class GameInstance {
 		powerUps.clear();
 		world.dispose();
 		
-		groupCollideFilter.groupIndex = -1;
+		groupCollideFilter.groupIndex = 1;
 		groupCollideFilter.categoryBits = 0x0001;
+		
 		groupNonCollideFilter.groupIndex = -1;
+		groupNonCollideFilter.categoryBits = 0x0008;
 		
 		playerCollideFilter.categoryBits = 0x0002;
 		playerCollideFilter.groupIndex = -2;
@@ -208,7 +210,7 @@ public class GameInstance {
 			Body box = createCircle(BodyType.DynamicBody, 1, 1);
 			box.setTransform(powerUp.position.x, powerUp.position.y, 0);
 	
-			box.getFixtureList().get(0).setFilterData(deadCollideFilter);
+			box.getFixtureList().get(0).setFilterData(enemyCollideFilter);
 			
 			powerUp.body = box;
 			box.setFixedRotation(true);
