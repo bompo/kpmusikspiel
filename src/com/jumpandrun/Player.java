@@ -30,7 +30,7 @@ public class Player {
 	public void update() {
 		position.x = body.getPosition().x;
 		position.y = body.getPosition().y;
-		angle = (MathUtils.PI * -position.x) / 2.f;
+		angle = -position.x*360/(2*MathUtils.PI);	
 	}
 
 }
