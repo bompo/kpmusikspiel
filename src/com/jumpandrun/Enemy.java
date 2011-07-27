@@ -18,9 +18,10 @@ public class Enemy {
 	
 	public Vector2 position = new Vector2();
 	public float angle = 0;
-	public boolean kill;
+	public boolean alive;
 	public int health;
 	public float hitAnimate = 0;
+	public float dyingAnimate = 0;
 	
 	public float size = 1;
 
@@ -28,16 +29,25 @@ public class Enemy {
 		position.x = x;
 		position.y = y;
 		this.size = size;
-		kill = false;
+		alive = true;
 		health = 100;
 	}
 	
 	public void update(float delta) {
-		position.x = body.getPosition().x;
-		position.y = body.getPosition().y;
-		hitAnimate -= delta*2;
-		if(health <= 0)
-			kill = true;
+		if(body!=null) {
+			position.x = body.getPosition().x;
+			position.y = body.getPosition().y;
+		}
+		hitAnimate = Math.max(0, hitAnimate - delta*2);
+		if(health <= 0) {
+			alive = false;			
+			if(dyingAnimate==0 && hitAnimate>0) {
+				dyingAnimate-=hitAnimate;
+			}
+		}
+		if(!alive) {
+			dyingAnimate = Math.min(1, dyingAnimate + delta*2);
+		}		
 	}
 
 	public void move() {
@@ -52,14 +62,16 @@ public class Enemy {
 			if(contact.isTouching()) {
 				if(contact.getFixtureA().getBody().getUserData().equals(this)) {
 					if(contact.getFixtureA().getBody().getPosition().y > contact.getFixtureB().getBody().getPosition().y-1) {
-//						body.applyLinearImpulse(direction.x, direction.y, position.x, position.y);
-						body.setLinearVelocity(direction.x, body.getLinearVelocity().y);
+						if(alive) {
+							body.setLinearVelocity(direction.x, body.getLinearVelocity().y);
+						}
 					}
 				}
 				if(contact.getFixtureB().getBody().getUserData().equals(this)) {
 					if(contact.getFixtureA().getBody().getPosition().y-1 < contact.getFixtureB().getBody().getPosition().y) {
-						body.setLinearVelocity(direction.x, body.getLinearVelocity().y);
-//						body.applyLinearImpulse(direction.x, direction.y, position.x, position.y);
+						if(alive) {
+							body.setLinearVelocity(direction.x, body.getLinearVelocity().y);
+						}					
 					} 
 				}
 			} else {
@@ -73,9 +85,11 @@ public class Enemy {
 	public void hit(int damage) {
 		health -= damage;
 		if(health <= 0) {
-			kill = true;
+			alive = false;
+		} 
+		if (dyingAnimate==0){
+			hitAnimate = 1;
 		}
-		hitAnimate = 1;
 	}
 	
 }

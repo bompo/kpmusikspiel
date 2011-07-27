@@ -380,7 +380,7 @@ public class GameInstance {
 		do {
 			found = false;
 			for(int e = 0; e < enemies.size; e++) {
-				if(enemies.get(e).kill || enemies.get(e).health <= 0) {
+				if((!enemies.get(e).alive || enemies.get(e).health <= 0) && enemies.get(e).dyingAnimate == 1) {
 					found = true;
 					world.destroyBody(enemies.get(e).body);
 					enemies.removeIndex(e);
@@ -507,7 +507,7 @@ public class GameInstance {
 			
 			//outOfBounds
 			if(enemy.position.y < -50) {
-				enemy.kill = true;
+				enemy.alive = false;
 			}
 		}
 		//update bullets
@@ -599,10 +599,14 @@ public class GameInstance {
 			Contact contact = contactList.get(i);
 			if(contact.isTouching()) {
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player  && contact.getFixtureB().getBody().getUserData() instanceof Enemy) {
-					player.alive = false;
+					if(((Enemy) contact.getFixtureB().getBody().getUserData()).alive) {
+						player.alive = false;
+					}
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof Enemy) {
-					player.alive = false;
+					if(((Enemy) contact.getFixtureA().getBody().getUserData()).alive) {
+						player.alive = false;
+					}
 				}
 				
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player  && contact.getFixtureB().getBody().getUserData() instanceof PowerUp) {

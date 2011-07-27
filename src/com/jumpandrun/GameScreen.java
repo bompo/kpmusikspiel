@@ -409,10 +409,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		// render enemies
 		for (int i = 0; i < GameInstance.getInstance().enemies.size; ++i) {
 			Enemy enemy = GameInstance.getInstance().enemies.get(i);
-			float hit = 0;
-			if(enemy.hitAnimate > 0) {
-				hit = enemy.hitAnimate;
-			}
 			if (cam.frustum.sphereInFrustum(tmpVector3.set(enemy.position.x, enemy.position.y, 0), 1f)) {
 				model.idt();
 
@@ -427,12 +423,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 				transShader.setUniformMatrix("MMatrix", model);
 
-				transShader.setUniformf("a_color", Resources.getInstance().enemyColor[0]+hit*2, Resources.getInstance().enemyColor[1]+hit*2,
-						Resources.getInstance().enemyColor[2]+hit*2, Resources.getInstance().enemyColor[3]+hit*2);
+				transShader.setUniformf("a_color", Resources.getInstance().enemyColor[0]+(enemy.hitAnimate*2), Resources.getInstance().enemyColor[1]+(enemy.hitAnimate*2),
+						Resources.getInstance().enemyColor[2]+(enemy.hitAnimate*2), Resources.getInstance().enemyColor[3]+(enemy.hitAnimate*2) - enemy.dyingAnimate);
 				playerModel.render(transShader, GL20.GL_TRIANGLES);
 
 				transShader.setUniformf("a_color", Resources.getInstance().enemyEdgeColor[0], Resources.getInstance().enemyEdgeColor[1],
-						Resources.getInstance().enemyEdgeColor[2], Resources.getInstance().enemyEdgeColor[3]);
+						Resources.getInstance().enemyEdgeColor[2], Resources.getInstance().enemyEdgeColor[3]- enemy.dyingAnimate);
 				playerModel.render(transShader, GL20.GL_LINE_STRIP);
 
 			}
