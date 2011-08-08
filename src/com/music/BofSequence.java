@@ -36,14 +36,11 @@ public class BofSequence {
 	}
 	public Array<MidiEvent> getMidiEventsAt(long tick) {
 		Array<MidiEvent> result = new Array<MidiEvent>();
-		Array<BofNote> na = getInRegion(tick-1, tick+1);
-		for(BofNote bn: na) {
-			if(bn.getStart() == tick) {
-				result.add(new MidiEvent(MidiEvent.NOTE_ON, bn.getNote(), bn.getChannel(), (int) (bn.getVelocity()*127)));
-			}
-			if(bn.getEnd() == tick) {
-				result.add(new MidiEvent(MidiEvent.NOTE_OFF, bn.getNote(), bn.getChannel(), (int) (bn.getVelocity()*127)));
-			}
+		//Array<BofNote> na = getInRegion(tick-1, tick+1);
+		for(BofNote bn: notes) {
+			MidiEvent temp = bn.getMidiEvent(tick);
+			if(temp != null)
+				result.add(temp);
 		}
 		return result;
 	}
