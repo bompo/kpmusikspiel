@@ -27,9 +27,12 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.music.AudioEventListener;
 import com.music.BofNote;
 import com.music.BofSequence;
+import com.music.MidiEvent;
 import com.music.RhythmAudio;
+import com.music.TickEvent;
 
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
@@ -84,6 +87,19 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private float highlightTimer = 0;
 	private int highlightCnt = 1000;
 	
+	private AudioEventListener audioListener = new AudioEventListener() {
+
+		@Override
+		public void onEvent(TickEvent te) {
+			
+		}
+
+		@Override
+		public void onMidiEvent(Array<MidiEvent> me, long tick) {
+			
+		}
+		
+	};
 	
 	public GameScreen(Game game) {
 		super(game);
@@ -114,7 +130,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		tvShader = Resources.getInstance().tvShader;
 
 		ra.loadMidi("./data/test.mid");
-
+		ra.registerBeatListener(audioListener);
 		ra.play();
 		//Resources.getInstance().music.play();
 		
@@ -146,7 +162,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	@Override
-	public void show() {		
+	public void show() {
 	}
 
 //	@Override
