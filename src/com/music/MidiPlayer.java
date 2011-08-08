@@ -64,14 +64,7 @@ public class MidiPlayer {
 		for(MidiEvent me: result) {
 			instruments[me.channel].onMidiEvent(me);
 		}
-		
 		tick++;
-		/*for (int i = 0; i < channels.length; i++) {
-				Array<MidiEvent> t = instruments[i].onMidiEvent(channels[i].iterateTick());
-			for (MidiEvent me : t) {
-				result.add(me);
-			}
-		}*/
 		return result;
 	}
 
