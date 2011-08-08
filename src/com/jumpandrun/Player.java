@@ -24,7 +24,7 @@ public class Player {
 		position.x = x;
 		position.y = y;
 		xdir = 1;
-		weapon = new RocketLauncher();
+		weapon = new MachineGun();
 	}
 	
 	public void update(float delta) {
@@ -33,10 +33,6 @@ public class Player {
 		angle = -position.x*360/(2*MathUtils.PI);
 		
 		weapon.update(delta);
-	}
-	
-	public void reset() {
-		weapon.bullets.clear();
 	}
 	
 	public void shoot() {		

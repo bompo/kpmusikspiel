@@ -34,6 +34,7 @@ public class GameInstance {
 	public Array<MovingPlatform> platforms = new Array<MovingPlatform>();
 	public Array<Block> blocks = new Array<Block>();
 	public Array<Block> blankBlocks = new Array<Block>();
+	public Array<Ammo> bullets = new Array<Ammo>();
 	public Array<Enemy> enemies = new Array<Enemy>();
 	public Array<PowerUp> powerUps = new Array<PowerUp>();
 	public World world  = new World(new Vector2(0, GRAVITY), true);
@@ -65,7 +66,6 @@ public class GameInstance {
 	}
 	
 	public void resetGame() {
-		player.reset();
 		platforms.clear();
 		blocks.clear();
 		enemies.clear();
@@ -335,11 +335,11 @@ public class GameInstance {
 		boolean found = false;
 		do {
 			found = false;
-			for(int e = 0; e < player.weapon.bullets.size; e++) {
-				if(player.weapon.bullets.get(e).kill) {
+			for(int e = 0; e < bullets.size; e++) {
+				if(bullets.get(e).kill) {
 					found = true;
-					world.destroyBody(player.weapon.bullets.get(e).body);
-					player.weapon.bullets.removeIndex(e);
+					world.destroyBody(bullets.get(e).body);
+					bullets.removeIndex(e);
 					break;
 				}
 			}
@@ -379,7 +379,7 @@ public class GameInstance {
 		}
 	}
 	
-	public void physicStuff(float delta) {
+	public void update(float delta) {
 
 		
 		if(player.alive == false) {
@@ -486,6 +486,18 @@ public class GameInstance {
 			player.alive = false;
 		}
 		
+		//update bullets
+		for(int i = 0; i < bullets.size; i++) {
+			Ammo bullet = bullets.get(i);
+			bullet.update(delta);	
+			bullet.body.setAwake(true);
+			
+			//outOfBounds
+			if(bullet.position.y < -50) {
+				bullet.kill = true;
+			}
+		}
+		
 		//update enemies
 		for(int i = 0; i < enemies.size; i++) {
 			Enemy enemy = enemies.get(i);
@@ -587,9 +599,13 @@ public class GameInstance {
 				
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player  && contact.getFixtureB().getBody().getUserData() instanceof PowerUp) {
 					((PowerUp) contact.getFixtureB().getBody().getUserData()).show = false;
+					if(player.weapon instanceof RocketLauncher) player.weapon = new MachineGun();
+					else player.weapon = new RocketLauncher();
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof PowerUp) {
 					((PowerUp) contact.getFixtureA().getBody().getUserData()).show = false;
+					if(player.weapon instanceof RocketLauncher) player.weapon = new MachineGun();
+					else player.weapon = new RocketLauncher();
 				}
 				
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player) {

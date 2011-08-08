@@ -3,29 +3,15 @@ package com.jumpandrun;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.utils.Array;
 
 public class Weapon {
 
 	public float lastshot;
 	public float shotlimit;
 	public Ammo ammo;	
-
-	public Array<Ammo> bullets = new Array<Ammo>();
 	
 	public void update(float delta) {
 		lastshot+= delta;
-		
-		for(int i = 0; i < bullets.size; i++) {
-			Ammo bullet = bullets.get(i);
-			bullet.update(delta);	
-			bullet.body.setAwake(true);
-			
-			//outOfBounds
-			if(bullet.position.y < -50) {
-				bullet.kill = true;
-			}
-		}
 	}
 	
 	public void shoot(final Vector2 position, final Vector2 velocity, final int xdir) {
@@ -52,6 +38,6 @@ public class Weapon {
 		
 		b.body = box;
 		b.body.setUserData(b);
-		bullets.add(b);
+		GameInstance.getInstance().bullets.add(b);
 	}
 }

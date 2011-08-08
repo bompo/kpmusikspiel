@@ -273,7 +273,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		renderTimeBench = endTimeBench;
 		 
 		startTimeBench = System.nanoTime();
-		GameInstance.getInstance().physicStuff(deltaTime);	
+		GameInstance.getInstance().update(deltaTime);	
 		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
 		physicTimeBench = endTimeBench;
 
@@ -460,8 +460,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 		}
 		
-		for (int i = 0; i < GameInstance.getInstance().player.weapon.bullets.size; ++i) {
-			Ammo bullet = GameInstance.getInstance().player.weapon.bullets.get(i);
+		for (int i = 0; i < GameInstance.getInstance().bullets.size; ++i) {
+			Ammo bullet = GameInstance.getInstance().bullets.get(i);
 			//if (cam.frustum.sphereInFrustum(tmpVector3.set(bullet.position.x, bullet.position.y, 0), 1f)) {
 				model.idt();
 
@@ -644,6 +644,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		if (keycode == Keys.R) {
 			GameInstance.getInstance().addEnemy();
+		}
+		
+		if (keycode == Keys.T) {
+			if(GameInstance.getInstance().player.weapon instanceof RocketLauncher) GameInstance.getInstance().player.weapon = new MachineGun();
+			else GameInstance.getInstance().player.weapon = new RocketLauncher();
 		}
 		
 		if (keycode == Input.Keys.F) {
