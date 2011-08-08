@@ -35,10 +35,9 @@ public class GameInstance {
 	public Array<Block> blocks = new Array<Block>();
 	public Array<Block> blankBlocks = new Array<Block>();
 	public Array<Enemy> enemies = new Array<Enemy>();
-	public Array<Bullet> bullets = new Array<Bullet>();
 	public Array<PowerUp> powerUps = new Array<PowerUp>();
 	public World world  = new World(new Vector2(0, GRAVITY), true);
-	public Player player;	
+	public Player player = new Player(0, 0);	
 
 	float stillTime = 0;
 	long lastGroundTime = 0;
@@ -66,10 +65,10 @@ public class GameInstance {
 	}
 	
 	public void resetGame() {
+		player.reset();
 		platforms.clear();
 		blocks.clear();
 		enemies.clear();
-		bullets.clear();
 		blankBlocks.clear();
 		powerUps.clear();
 		world.dispose();
@@ -220,25 +219,8 @@ public class GameInstance {
 		}
 	}
 	
-	public void addBullet() {
-		if(player.lastshot < player.shotlimit)
-			return;
-		player.lastshot = 0;
-		Bullet b = new Bullet(player.position.x, player.position.y-1.5f);
-		
-		Body box = createBox(BodyType.DynamicBody, 0.2f, 0.2f, 1);
-		
-		box.setBullet(true);		 
-		box.setTransform(player.position.x+player.xdir, player.position.y, 0);
-		Vector2 dir = new Vector2(player.xdir, 0);
-		dir = dir.nor();
-		dir.mul(b.speed);
-		box.setLinearVelocity(dir);
-		
-//		enemy.enemyPhysicsFixture = enemyPhysicsFixture;
-		b.body = box;
-		b.body.setUserData(b);
-		bullets.add(b);
+	public void playerShoot() {
+		player.shoot();
 	}
  
 	public void createPlayer(float x, float y) {
@@ -321,26 +303,26 @@ public class GameInstance {
 				Object a = contact.getFixtureA().getBody().getUserData();
 				Object b = contact.getFixtureB().getBody().getUserData();
 				
-				if(a instanceof Bullet  && b instanceof Block) {
-					((Bullet)a).kill = true;
+				if(a instanceof Ammo  && b instanceof Block) {
+					((Ammo)a).kill = true;
 					((Block)b).highlightAnimate = 0.3f;
-				} else if(b instanceof Bullet && a instanceof Block) {
-					((Bullet)b).kill = true;
+				} else if(b instanceof Ammo && a instanceof Block) {
+					((Ammo)b).kill = true;
 					((Block)a).highlightAnimate = 0.3f;
 				}
 				
 				
-				if(a instanceof Bullet  && b instanceof Enemy) {
-					((Bullet)a).kill = true;
-					((Enemy)b).hit(((Bullet)a).damage);
-				} else if(b instanceof Bullet && a instanceof Enemy) {
-					((Bullet)b).kill = true;
-					((Enemy)a).hit(((Bullet)b).damage);
+				if(a instanceof Ammo  && b instanceof Enemy) {
+					((Ammo)a).kill = true;
+					((Enemy)b).hit(((Ammo)a).damage);
+				} else if(b instanceof Ammo && a instanceof Enemy) {
+					((Ammo)b).kill = true;
+					((Enemy)a).hit(((Ammo)b).damage);
 				}
-				if(a instanceof Bullet && !(b instanceof Bullet) && !(b instanceof Player)) {
-					((Bullet)a).kill = true;
-				} else if(b instanceof Bullet && !(a instanceof Bullet) && !(a instanceof Player)) {
-					((Bullet)b).kill = true;
+				if(a instanceof Ammo && !(b instanceof Ammo) && !(b instanceof Player)) {
+					((Ammo)a).kill = true;
+				} else if(b instanceof Ammo && !(a instanceof Ammo) && !(a instanceof Player)) {
+					((Ammo)b).kill = true;
 				}
 			}
 		}
@@ -353,11 +335,11 @@ public class GameInstance {
 		boolean found = false;
 		do {
 			found = false;
-			for(int e = 0; e < bullets.size; e++) {
-				if(bullets.get(e).kill) {
+			for(int e = 0; e < player.weapon.bullets.size; e++) {
+				if(player.weapon.bullets.get(e).kill) {
 					found = true;
-					world.destroyBody(bullets.get(e).body);
-					bullets.removeIndex(e);
+					world.destroyBody(player.weapon.bullets.get(e).body);
+					player.weapon.bullets.removeIndex(e);
 					break;
 				}
 			}
@@ -425,7 +407,7 @@ public class GameInstance {
 		}
 		
 		if(Gdx.input.isKeyPressed(Keys.SPACE)) {
-			addBullet();
+			playerShoot();
 		}
 		
 		// calculate stilltime & damp
@@ -516,17 +498,7 @@ public class GameInstance {
 				enemy.alive = false;
 			}
 		}
-		//update bullets
-		for(int i = 0; i < bullets.size; i++) {
-			Bullet bullet = bullets.get(i);
-			bullet.update(delta);	
-			bullet.body.setAwake(true);
-			
-			//outOfBounds
-			if(bullet.position.y < -50) {
-				bullet.kill = true;
-			}
-		}
+		
 		//update powerUps
 		for(int i = 0; i < powerUps.size; i++) {
 			PowerUp powerUp = powerUps.get(i);
@@ -553,9 +525,7 @@ public class GameInstance {
 		flagBullets();
 		removeKilled();
 		
-		player.lastshot+= delta;
- 
-		player.update();
+		player.update(delta);
 		player.body.setAwake(true);
 		
 		//check player/enemy collision

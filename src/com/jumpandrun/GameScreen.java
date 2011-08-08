@@ -2,6 +2,7 @@ package com.jumpandrun;
 
 import  sun.audio.*;    //import the sun.audio package
 import  java.io.*;
+import java.util.Collections;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -434,8 +435,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 		}
 		
-		for (int i = 0; i < GameInstance.getInstance().bullets.size; ++i) {
-			Bullet bullet = GameInstance.getInstance().bullets.get(i);
+		for (int i = 0; i < GameInstance.getInstance().player.weapon.bullets.size; ++i) {
+			Ammo bullet = GameInstance.getInstance().player.weapon.bullets.get(i);
 			//if (cam.frustum.sphereInFrustum(tmpVector3.set(bullet.position.x, bullet.position.y, 0), 1f)) {
 				model.idt();
 

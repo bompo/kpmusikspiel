@@ -12,12 +12,11 @@ public class Player {
 	
 	public boolean jump = false;	
 	public boolean jumping = false;
-	public float xdir;
+	public int xdir;
 	
 	public Vector2 position = new Vector2();
 	
-	public float lastshot = 0;
-	public final float shotlimit = 0.1f;
+	public Weapon weapon;
 	
 	public float angle = 0;
 
@@ -25,12 +24,23 @@ public class Player {
 		position.x = x;
 		position.y = y;
 		xdir = 1;
+		weapon = new RocketLauncher();
 	}
 	
-	public void update() {
+	public void update(float delta) {
 		position.x = body.getPosition().x;
 		position.y = body.getPosition().y;
-		angle = -position.x*360/(2*MathUtils.PI);	
+		angle = -position.x*360/(2*MathUtils.PI);
+		
+		weapon.update(delta);
+	}
+	
+	public void reset() {
+		weapon.bullets.clear();
+	}
+	
+	public void shoot() {		
+		weapon.shoot(position, body.getLinearVelocity(), xdir);
 	}
 
 }
