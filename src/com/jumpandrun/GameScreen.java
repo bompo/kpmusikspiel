@@ -1,20 +1,11 @@
 package com.jumpandrun;
 
-import  sun.audio.*;    //import the sun.audio package
-import  java.io.*;
-import java.util.Collections;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -30,7 +21,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.music.AudioEventListener;
 import com.music.BofNote;
-import com.music.BofSequence;
 import com.music.MidiEvent;
 import com.music.RhythmAudio;
 import com.music.TickEvent;
@@ -512,7 +502,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			transShader.setUniformMatrix("MMatrix", model);
 			transShader.setUniformf("a_color",Resources.getInstance().playerColor[0], Resources.getInstance().playerColor[1], Resources.getInstance().playerColor[2], Resources.getInstance().playerColor[3]);
 			playerModel.render(transShader, GL20.GL_TRIANGLES);
-			
 			
 			tmp.idt();
 			model.idt();
