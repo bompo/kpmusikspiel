@@ -26,7 +26,7 @@ public class Weapon {
 			b = new Rocket(position.x, position.y-1.5f,xdir);
 		}
 		
-		Body box = GameInstance.getInstance().createCircle(BodyType.DynamicBody, b.size, 1);
+		Body box = GameInstance.getInstance().createCircle(BodyType.DynamicBody, b.size, 100000000);
 		
 		box.setBullet(true);		 
 		box.setTransform(position.x+ xdir, position.y, 0);
