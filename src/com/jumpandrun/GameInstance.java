@@ -68,6 +68,7 @@ public class GameInstance {
 	public void resetGame() {
 		platforms.clear();
 		blocks.clear();
+		bullets.clear();
 		enemies.clear();
 		blankBlocks.clear();
 		powerUps.clear();
@@ -304,25 +305,25 @@ public class GameInstance {
 				Object b = contact.getFixtureB().getBody().getUserData();
 				
 				if(a instanceof Ammo  && b instanceof Block) {
-					((Ammo)a).kill = true;
+					((Ammo)a).hit = true;
 					((Block)b).highlightAnimate = 0.3f;
 				} else if(b instanceof Ammo && a instanceof Block) {
-					((Ammo)b).kill = true;
+					((Ammo)b).hit = true;
 					((Block)a).highlightAnimate = 0.3f;
-				}
-				
+				}				
 				
 				if(a instanceof Ammo  && b instanceof Enemy) {
-					((Ammo)a).kill = true;
+					((Ammo)a).hit = true;
 					((Enemy)b).hit(((Ammo)a).damage);
 				} else if(b instanceof Ammo && a instanceof Enemy) {
-					((Ammo)b).kill = true;
+					((Ammo)b).hit = true;
 					((Enemy)a).hit(((Ammo)b).damage);
 				}
+				
 				if(a instanceof Ammo && !(b instanceof Ammo) && !(b instanceof Player)) {
-					((Ammo)a).kill = true;
+					((Ammo)a).hit = true;
 				} else if(b instanceof Ammo && !(a instanceof Ammo) && !(a instanceof Player)) {
-					((Ammo)b).kill = true;
+					((Ammo)b).hit = true;
 				}
 			}
 		}

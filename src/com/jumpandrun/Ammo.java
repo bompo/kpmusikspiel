@@ -7,11 +7,13 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 public class Ammo {
 	public Body body;
 	public int age;
-	public boolean kill;
+	public boolean kill = false;
+	public boolean hit = false;
 	public int damage;
 	public int splashDamage;
 	public float speed = 80;
 	public int xdir = 0;
+	public float size = 0.1f;
 	
 	public Vector2 position = new Vector2();
 
@@ -19,7 +21,6 @@ public class Ammo {
 		position.x = x;
 		position.y = y;
 		age = 0;
-		kill = false;
 		damage = 50;
 		splashDamage = 0;
 		this.xdir = xdir;
@@ -28,7 +29,11 @@ public class Ammo {
 	public void update(float delta) {
 		position.x = body.getPosition().x;
 		position.y = body.getPosition().y;
+		size = body.getFixtureList().get(0).getShape().getRadius();
 		age+= delta;
+		if(hit) {
+			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().deadCollideFilter);
+		}
 	}
 	
 }

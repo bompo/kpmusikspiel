@@ -462,7 +462,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		for (int i = 0; i < GameInstance.getInstance().bullets.size; ++i) {
 			Ammo bullet = GameInstance.getInstance().bullets.get(i);
-			//if (cam.frustum.sphereInFrustum(tmpVector3.set(bullet.position.x, bullet.position.y, 0), 1f)) {
+			if (cam.frustum.sphereInFrustum(tmpVector3.set(bullet.position.x, bullet.position.y, 0), 1f)) {
 				model.idt();
 
 				tmp.setToTranslation(bullet.position.x, bullet.position.y, 0);
@@ -471,20 +471,20 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				//tmp.setToRotation(Vector3.Z, MathUtils.radiansToDegrees * bullet.angle);
 				//model.mul(tmp);
 				
-				tmp.setToScaling(0.1f, 0.1f, 0.1f);
+				tmp.setToScaling(bullet.size,bullet.size,bullet.size);
 				model.mul(tmp);
 
 				transShader.setUniformMatrix("MMatrix", model);
 
-				transShader.setUniformf("a_color", Resources.getInstance().enemyColor[0], Resources.getInstance().enemyColor[1],
-						Resources.getInstance().enemyColor[2], Resources.getInstance().enemyColor[3]);
-				blockModel.render(transShader, GL20.GL_TRIANGLES);
+				transShader.setUniformf("a_color", Resources.getInstance().bulletColor[0], Resources.getInstance().bulletColor[1],
+						Resources.getInstance().bulletColor[2], Resources.getInstance().bulletColor[3]);
+				playerModel.render(transShader, GL20.GL_TRIANGLES);
 
-				transShader.setUniformf("a_color", Resources.getInstance().enemyEdgeColor[0], Resources.getInstance().enemyEdgeColor[1],
-						Resources.getInstance().enemyEdgeColor[2], Resources.getInstance().enemyEdgeColor[3]);
-				wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+				transShader.setUniformf("a_color", Resources.getInstance().bulletEdgeColor[0], Resources.getInstance().bulletEdgeColor[1],
+						Resources.getInstance().bulletEdgeColor[2], Resources.getInstance().bulletEdgeColor[3]);
+				playerModel.render(transShader, GL20.GL_LINE_STRIP);
 
-			//}
+			}
 		}
 		
 		//render player

@@ -12,6 +12,7 @@ public class Bullet extends Ammo {
 	@Override
 	public void update(float delta) {
 		super.update(delta);
+		if(hit) kill = true;
 		body.setLinearVelocity(body.getLinearVelocity().x, 0);
 	}
 }
