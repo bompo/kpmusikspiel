@@ -1,40 +1,59 @@
 package com.music;
 
-import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import com.badlogic.gdx.utils.Array;
 import net.beadsproject.beads.core.AudioContext;
-import net.beadsproject.beads.core.Bead;
-import net.beadsproject.beads.ugens.Clock;
 
 
 public class RhythmAudio {
 	
 	public static MidiPlayer midi;
-	public static final AudioContext ac = new AudioContext();
-	public static LinkedList<RhythmValue> rValues;
+	public static AudioContext ac;
 	public static boolean playing;
 	public static long startTime, doneTicks;
 	public final static long bpm = 140;
+	private static Array<AudioEventListener> listeners;
 	
 	public RhythmAudio() {
+		//JavaSoundAudioIO jsa = new JavaSoundAudioIO(4048);
+		ac = new AudioContext();//jsa);
+		
+		
+		listeners = new Array<AudioEventListener>();
 		doneTicks = 0;
-		midi = null;
-		rValues = new LinkedList<RhythmValue>();
+		midi = new MidiPlayer("", ac);
 		playing = false;
 		
+		
+		/*final Timer timer = new Timer();
+		TimerTask task = new TimerTask() {
+			public void run() {
+				if (false) timer.cancel();
+				else update();
+			}
+		};
+		//start des Timers:
+		timer.scheduleAtFixedRate(task, 0, 1);
+		Integer tin = new Integer(800);*/
+		/*
 		final int tempo = 1;
 		Clock clock = new Clock(ac, tempo);
+		
+		
 		
 		clock.addMessageListener(
 				new Bead() {
 					public void messageReceived(Bead message) {
 						Clock c = (Clock) message;
-						if (c.isBeat()) {
+						//if (c.isBeat()) {
 								iterate();
-						}
+						//}
+								
 					}
 				});
-		ac.out.addDependent(clock);
+		ac.out.addDependent(clock);*/
 		ac.start();
 	}
 	
@@ -42,24 +61,23 @@ public class RhythmAudio {
 		midi = new MidiPlayer(file, ac);
 	}
 	
-	public static void iterate() {
+	public void update() {
 		if(!playing)
 			return;
-		long currentTicks = (long) ((System.nanoTime()-startTime)/(4464285.71));
+		
+		long currentTicks = (long) ((System.nanoTime()-startTime)/(4464285.71));//(60000000000.0/(double)bpm/96.0));// midi.micros*1000));
 		long todo = currentTicks-doneTicks;
 		for(long i = 0; i < todo; i++) {
-			midi.iterate();
-			for(RhythmValue rv: rValues) {
-				rv.iterate();
+			for(AudioEventListener l : listeners) {
+				l.onEvent(new TickEvent(doneTicks+i, 96));
+			}
+			
+			Array<MidiEvent> events = midi.iterate();
+			for(AudioEventListener l : listeners) {
+				l.onMidiEvent(events, doneTicks+i);
 			}
 		}
 		doneTicks = currentTicks;
-	}
-	public void	registerRhythmValue(RhythmValue rv) {
-		rValues.add(rv);
-	}
-	public void	removeRhythmValue(RhythmValue rv) {
-		//todo
 	}
 	public void play()  {
 		startTime = System.nanoTime();
@@ -70,10 +88,20 @@ public class RhythmAudio {
 	}
 	
 	public void stop() {
+		playing = false;
 		ac.stop();
 	}
 	
-	public boolean[] getPlayedChannels() {
-		return midi.getPlayedChannels();
+	public void registerBeatListener(AudioEventListener ael) {
+		listeners.add(ael);
+	}
+	public long getTick() {
+		return doneTicks;
+	}
+	public BofSequence getBofSequence() {
+		return midi.getBofSequence();
+	}
+	public void addNote(BofNote note) {
+		midi.getBofSequence().addNote(note);
 	}
 }

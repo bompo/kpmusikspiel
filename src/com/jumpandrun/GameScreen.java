@@ -27,8 +27,13 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.music.AudioEventListener;
+import com.music.BofNote;
+import com.music.BofSequence;
+import com.music.MidiEvent;
 import com.music.RhythmAudio;
-import com.music.RhythmValue;
+import com.music.TickEvent;
 
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
@@ -39,8 +44,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	BitmapFont font;
 
 	public static RhythmAudio ra = new RhythmAudio();
-	public RhythmValue rv1;
-	public RhythmValue rv2;
 	
 	float startTime = 0;
 	float enemySpawnTime = MathUtils.random(0, 10);
@@ -85,6 +88,19 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private float highlightTimer = 0;
 	private int highlightCnt = 1000;
 	
+	private AudioEventListener audioListener = new AudioEventListener() {
+
+		@Override
+		public void onEvent(TickEvent te) {
+			
+		}
+
+		@Override
+		public void onMidiEvent(Array<MidiEvent> me, long tick) {
+			
+		}
+		
+	};
 	
 	public GameScreen(Game game) {
 		super(game);
@@ -115,11 +131,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		tvShader = Resources.getInstance().tvShader;
 
 		ra.loadMidi("./data/test.mid");
-
+		ra.registerBeatListener(audioListener);
 		ra.play();
-		Resources.getInstance().music.play();
-		rv1 = new RhythmValue(RhythmValue.type.SINE, 20, ra);
-		rv2 = new RhythmValue(RhythmValue.type.BIT, 800, ra);
+		//Resources.getInstance().music.play();
 		
 		initRender();
 	}
@@ -149,7 +163,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	@Override
-	public void show() {		
+	public void show() {
 	}
 
 //	@Override
@@ -165,6 +179,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	
 	public void render(float deltaTime) {		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		ra.update();
 		
 		startTime+=deltaTime;
 		
@@ -265,23 +281,32 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 //		if (ra.getPlayedChannels()[6]==true) {
 //			Player.JUMP_VELOCITY = 15;
 //		}
-		if (ra.getPlayedChannels()[5]==true) {
+		//channel 5 spielt was
+		Array<BofNote> notes = ra.getBofSequence().getNotesAt(ra.getTick());
+		
+		boolean ch5 = false, ch6 = false;
+		for(BofNote note: notes) {
+			if(note.getChannel() == 5)
+				ch5 = true;
+			if(note.getChannel() == 6)
+				ch6 = true;
+		}
+		
+		if (ch5) {
 			GameInstance.getInstance().activateJumpBlocks();
 		}
 		
 		
 		bloomFactor =  Math.max(0, bloomFactor - deltaTime);
-		if (ra.getPlayedChannels()[6]==true) {
-			bloomFactor = 1;
-		}
-		
 		disortFactor =  Math.max(0, disortFactor - deltaTime);
-		if (ra.getPlayedChannels()[6]==true) {
+		
+		if (ch6) {
+			bloomFactor = 1;
 			disortFactor = 1;
 		}
 		
-		if (ra.getPlayedChannels()[6]!=enemySpawnSwitch) {
-			enemySpawnSwitch = ra.getPlayedChannels()[6];
+		if (ch6!= enemySpawnSwitch) {
+			enemySpawnSwitch = ch6;
 			GameInstance.getInstance().addEnemy();
 			
 			int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
