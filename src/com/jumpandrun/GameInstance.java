@@ -305,10 +305,14 @@ public class GameInstance {
 				Object b = contact.getFixtureB().getBody().getUserData();
 				
 				if(a instanceof Ammo  && b instanceof Block) {
-					((Ammo)a).hit = true;
-					((Block)b).highlightAnimate = 0.3f;
+					if(!(a instanceof Mine)) {
+						((Ammo)a).hit = true;
+					}
+					((Block)b).highlightAnimate = 0.3f;					
 				} else if(b instanceof Ammo && a instanceof Block) {
-					((Ammo)b).hit = true;
+					if(!(b instanceof Mine)) {
+						((Ammo)b).hit = true;
+					}
 					((Block)a).highlightAnimate = 0.3f;
 				}				
 				
@@ -320,11 +324,11 @@ public class GameInstance {
 					((Enemy)a).hit(((Ammo)b).damage);
 				}
 				
-				if(a instanceof Ammo && !(b instanceof Ammo) && !(b instanceof Player)) {
-					((Ammo)a).hit = true;
-				} else if(b instanceof Ammo && !(a instanceof Ammo) && !(a instanceof Player)) {
-					((Ammo)b).hit = true;
-				}
+//				if(a instanceof Ammo && !(b instanceof Ammo) && !(b instanceof Player)) {
+//					((Ammo)a).hit = true;
+//				} else if(b instanceof Ammo && !(a instanceof Ammo) && !(a instanceof Player)) {
+//					((Ammo)b).hit = true;
+//				}
 			}
 		}
 
@@ -600,13 +604,11 @@ public class GameInstance {
 				
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player  && contact.getFixtureB().getBody().getUserData() instanceof PowerUp) {
 					((PowerUp) contact.getFixtureB().getBody().getUserData()).show = false;
-					if(player.weapon instanceof RocketLauncher) player.weapon = new MachineGun();
-					else player.weapon = new RocketLauncher();
+					changeWeapon();
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof PowerUp) {
 					((PowerUp) contact.getFixtureA().getBody().getUserData()).show = false;
-					if(player.weapon instanceof RocketLauncher) player.weapon = new MachineGun();
-					else player.weapon = new RocketLauncher();
+					changeWeapon();
 				}
 				
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player) {
@@ -626,5 +628,17 @@ public class GameInstance {
 			}
 		}
 		
+	}
+
+	public void changeWeapon() {
+		GameInstance.getInstance().player.currentWeapon++;
+		GameInstance.getInstance().player.currentWeapon = GameInstance.getInstance().player.currentWeapon%3;
+		if(GameInstance.getInstance().player.currentWeapon==0) {
+			GameInstance.getInstance().player.weapon = new MachineGun();
+		} else if(GameInstance.getInstance().player.currentWeapon==1) {
+			GameInstance.getInstance().player.weapon = new RocketLauncher();
+		} else if(GameInstance.getInstance().player.currentWeapon==2) {
+			GameInstance.getInstance().player.weapon = new MinesLauncher();
+		}
 	}
 }

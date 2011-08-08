@@ -17,6 +17,7 @@ public class Player {
 	public Vector2 position = new Vector2();
 	
 	public Weapon weapon;
+	public int currentWeapon = 0; 
 	
 	public float angle = 0;
 

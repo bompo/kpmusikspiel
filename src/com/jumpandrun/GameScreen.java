@@ -641,8 +641,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		
 		if (keycode == Keys.T) {
-			if(GameInstance.getInstance().player.weapon instanceof RocketLauncher) GameInstance.getInstance().player.weapon = new MachineGun();
-			else GameInstance.getInstance().player.weapon = new RocketLauncher();
+			GameInstance.getInstance().changeWeapon();
 		}
 		
 		if (keycode == Input.Keys.F) {
