@@ -1,9 +1,6 @@
 package com.jumpandrun;
 
-import java.util.Iterator;
 import java.util.List;
-
-import net.beadsproject.beads.analysis.featureextractors.Power;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;

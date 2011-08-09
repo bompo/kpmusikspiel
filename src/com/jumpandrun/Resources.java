@@ -158,7 +158,7 @@ public class Resources {
 		transShader = new ShaderProgram(TransShader.mVertexShader, TransShader.mFragmentShader);
 		if (transShader.isCompiled() == false) {
 			Gdx.app.log("ShaderTest", transShader.getLog());
-			System.exit(0);
+			Gdx.app.exit();
 		}
 
 		// BLOOOOOOMMMM from powervr examples
@@ -181,13 +181,13 @@ public class Resources {
 		bloomShader = new ShaderProgram(FastBloomShader.mVertexShader, FastBloomShader.mFragmentShader);
 		if (bloomShader.isCompiled() == false) {
 			Gdx.app.log("ShaderTest", bloomShader.getLog());
-			System.exit(0);
+			Gdx.app.exit();
 		}
 		
 		tvShader = new ShaderProgram(TVShader.mVertexShader, TVShader.mFragmentShader);
 		if (tvShader.isCompiled() == false) {
 			Gdx.app.log("ShaderTest", tvShader.getLog());
-			System.exit(0);
+			Gdx.app.exit();
 		}
 	}
 
