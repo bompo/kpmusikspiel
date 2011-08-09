@@ -29,6 +29,10 @@ public class TickEvent {
 		double val = tick/(double)(tpb*4);
 		return (float) (val-Math.floor(val));
 	}
+	public float getCustomNote(long ticks){
+		double val = tick/(double)(ticks);
+		return (float) (val-Math.floor(val));
+	}
 	
 	public boolean isEighthNote(){
 		if(tick%(tpb/2) == 0)
@@ -49,5 +53,8 @@ public class TickEvent {
 		if(tick%(tpb*4) == 0)
 			return true;
 		return false;
+	}
+	public long getFullTicks() {
+		return tpb*4;
 	}
 }

@@ -7,12 +7,14 @@ public class MidiEvent {
 	public int type, channel, velocity, note;
 	public float age = 0;
 	public int kill = -1;
+	public BofNote bofNote;
 	
-	public MidiEvent(int t, int n, int ch, int vel) {
+	public MidiEvent(int t, int n, int ch, int vel, BofNote bof) {
 		type = t;
 		channel = ch;
 		velocity = vel;
 		note = n;
+		bofNote = bof;
 	}
 	
 }

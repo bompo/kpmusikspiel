@@ -23,6 +23,7 @@ public class Resources {
 	public Mesh wireCubeModel;
 	public Mesh sphereModel;
 	public Mesh sphereSliceModel;
+	public Mesh torusModel;
 
 	public float[] clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 	public float[] backgroundWireColor = { 1.0f, 0.8f, 0.8f, 0.07f };
@@ -96,6 +97,9 @@ public class Resources {
 		
 		sphereSliceModel= ObjLoader.loadObj(Gdx.files.internal("data/sphere_slice.obj").read());
 		sphereSliceModel.getVertexAttribute(Usage.Position).alias = "a_vertex";
+		
+		torusModel= ObjLoader.loadObj(Gdx.files.internal("data/torus.obj").read());
+		torusModel.getVertexAttribute(Usage.Position).alias = "a_vertex";
 		
 		quadModel = new Mesh(true, 4, 6, new VertexAttribute(Usage.Position, 4, "a_vertex"), new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoord"));
 		float[] vertices = { -1.0f, 1.0f, 0.0f, 1.0f, // Position 0
@@ -197,6 +201,8 @@ public class Resources {
 		targetModel.dispose();
 		quadModel.dispose();
 		wireCubeModel.dispose();
+		sphereSliceModel.dispose();
+		torusModel.dispose();
 		
 		transShader.dispose();
 		bloomShader.dispose();

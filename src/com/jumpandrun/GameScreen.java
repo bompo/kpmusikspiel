@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Array;
 import com.music.AudioEventListener;
 import com.music.BofNote;
 import com.music.MidiEvent;
+import com.music.NoteJumper;
 import com.music.RhythmAudio;
 import com.music.TickEvent;
 
@@ -60,6 +61,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	Mesh wireCubeModel;
 	Mesh sphereModel;
 	Mesh sphereSliceModel;
+	Mesh torusModel;
 	FrameBuffer frameBuffer;
 	FrameBuffer frameBufferVert;
 	FrameBuffer frameBufferFull;
@@ -77,6 +79,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private float disortFactor = 0;
 	private float highlightTimer = 0;
 	private int highlightCnt = 1000;
+
+	Array<NoteJumper> noteJumpers = new Array<NoteJumper>();
 	
 	private AudioEventListener audioListener = new AudioEventListener() {
 
@@ -86,8 +90,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 
 		@Override
-		public void onMidiEvent(Array<MidiEvent> me, long tick) {
-			
+		public void onMidiEvent(Array<MidiEvent> events, long tick) {
+			for (MidiEvent me : events) {
+				if (me.type == MidiEvent.NOTE_ON) {
+					noteJumpers.add(new NoteJumper(me, tick));
+				}
+			}
 		}
 		
 	};
@@ -115,6 +123,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		wireCubeModel = Resources.getInstance().wireCubeModel;
 		sphereModel = Resources.getInstance().sphereModel;
 		sphereSliceModel = Resources.getInstance().sphereSliceModel;
+		torusModel = Resources.getInstance().torusModel;
 		
 		transShader = Resources.getInstance().transShader;
 		bloomShader = Resources.getInstance().bloomShader;
@@ -171,9 +180,27 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		ra.update();
+		{	//remove obsolete NoteJumper
+			for(NoteJumper nj: noteJumpers) {
+				if(!nj.bofNote.isPlayedAt(ra.getTick())) {
+					nj.alive = false;
+				}
+			}
+			//remove from array
+			boolean found;
+			do {
+				found = false;
+				for(int i = 0; i < noteJumpers.size; i++) {
+					if(noteJumpers.get(i) != null && noteJumpers.get(i).alive == false) {
+						noteJumpers.removeIndex(i);
+						found = true;
+						break;
+					}
+				}
+			}while(found);
+		}
 		
 		startTime+=deltaTime;
-		
 		delta = deltaTime;
 		
 		enemySpawnTime -=deltaTime;
@@ -267,10 +294,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
 		physicTimeBench = endTimeBench;
 
-
-//		if (ra.getPlayedChannels()[6]==true) {
-//			Player.JUMP_VELOCITY = 15;
-//		}
 		//channel 5 spielt was
 		Array<BofNote> notes = ra.getBofSequence().getNotesAt(ra.getTick());
 		
@@ -543,7 +566,73 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		transShader.begin();
 		transShader.setUniformMatrix("VPMatrix", cam.combined);
 		
+		for(NoteJumper nj: noteJumpers) {
+			if(!nj.bofNote.isPlayedAt(ra.getTick())) {
+				nj.alive = false;
+				continue;
+			}
+			tmp.idt();
+			model.idt();
+			float move = (float) (1-Math.pow(nj.bofNote.getFraction(ra.getTick())-1, 4));
+			float move2 = (float) (1-Math.pow(nj.bofNote.getFraction(ra.getTick())-1, 2));
+			float length = (1-move);
+			Vector2 pos = new Vector2(nj.posA);
+			pos.x = nj.posA.x*(1-move) + nj.posB.x*(move);
+			pos.y = nj.posA.y*(1-move) + nj.posB.y*(move);
+			
+			tmp.setToTranslation(nj.posA.x,nj.posA.y, -1-nj.bofNote.getChannel()*0);
+			model.mul(tmp);
+			
+			
+			Vector2 dist = new Vector2(nj.posB);
+			dist = dist.sub(nj.posA);
+			dist = dist.nor();
+			float rotate = (float) (Math.atan2(dist.y, dist.x)/Math.PI*180.0);
+			tmp.setToRotation(new Vector3(0f,0f,1f), rotate);//+(float)county);
+			model.mul(tmp);
+			
+			tmp.setToTranslation(nj.posA.dst(nj.posB)*move+0*length/2f,0, -1);
+			model.mul(tmp);
+			
+			tmp.setToScaling(length, 0.1f+nj.bofNote.getVelocity(), 0.1f);
+
+			model.mul(tmp);
+			
+			
+			
+			
+			transShader.setUniformMatrix("MMatrix", model);
+
+			transShader.setUniformf("a_color", 1,1,1,1);
+			blockModel.render(transShader,  GL20.GL_TRIANGLES);
+			
+			
+			///////////////////////////////////
+			
+			
+			tmp.idt();
+			model.idt();
+			move = nj.bofNote.getFraction(ra.getTick());//(float) (1-Math.pow(nj.bofNote.getFraction(tick)-1, 2));
+			pos = new Vector2(nj.posA);
+			pos.x = nj.posA.x*(1-move) + nj.posB.x*(move);
+			pos.y = nj.posA.y*(1-move) + nj.posB.y*(move);
+			tmp.setToTranslation(nj.posA.x,nj.posA.y, 10f);
+			model.mul(tmp);
+			tmp.setToRotation(new Vector3(1f,0f, 0f), 90);
+			model.mul(tmp);
+			float factor = (float) (nj.bofNote.getDuration()/150.0);
+			tmp.setToScaling(0.5f+move*2*factor,0.5f+move*2*factor,0.5f+move*2*factor);
+
+			model.mul(tmp);
+
+			transShader.setUniformMatrix("MMatrix", model);
+
+			transShader.setUniformf("a_color", 1,1,1,1-move);//1*(nj.bofNote.getChannel()%2),1*(nj.bofNote.getChannel()%3),0,(1-nj.bofNote.getFraction(ra.getTick()))*nj.bofNote.getVelocity());
+			torusModel.render(transShader, GL20.GL_TRIANGLES);
+
+		}
 		
+		/*
 		// render plane background
 		for (int x = -0; x < 50; x = x +2) {
 			for (int z = -10; z < 10; z = z +2) {
@@ -617,7 +706,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			transShader.setUniformf("a_color", Resources.getInstance().blockBackgroundEdgeColor[0], Resources.getInstance().blockBackgroundEdgeColor[1],
 					Resources.getInstance().blockBackgroundEdgeColor[2], Resources.getInstance().blockBackgroundEdgeColor[3]);
 			wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
-		}
+		}*/
 			
 		
 		transShader.end();

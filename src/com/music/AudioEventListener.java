@@ -10,6 +10,6 @@ public abstract class AudioEventListener {
 	
 	abstract public void onEvent(TickEvent te);
 	
-	abstract public void onMidiEvent(Array<MidiEvent> me, long tick);
+	abstract public void onMidiEvent(Array<MidiEvent> events, long tick);
 	
 }
