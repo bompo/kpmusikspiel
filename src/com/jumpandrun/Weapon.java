@@ -38,6 +38,7 @@ public class Weapon {
 		
 		b.body = box;
 		b.body.setUserData(b);
+		b.body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().bulletCollideFilter);
 		GameInstance.getInstance().bullets.add(b);
 	}
 }

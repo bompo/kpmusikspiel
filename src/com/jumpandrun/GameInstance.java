@@ -48,6 +48,8 @@ public class GameInstance {
 	Filter groupNonCollideFilter = new Filter();
 	
 	Filter playerCollideFilter = new Filter();
+	Filter bulletCollideFilter = new Filter();
+	Filter onlyPlayerCollideFilter = new Filter();
 	Filter deadCollideFilter = new Filter();
 	Filter enemyCollideFilter = new Filter();
 	
@@ -57,7 +59,8 @@ public class GameInstance {
 	Fixture playerPhysicsFixture;
 	Fixture playerSensorFixture;
 	
-	public float showWeaponTextYAnimate = 0.0f;
+	public float showWeaponTextYAnimate = 10000.0f;
+	public int score = 0;
 	
 	
 	public static GameInstance getInstance() {
@@ -82,8 +85,15 @@ public class GameInstance {
 		groupNonCollideFilter.groupIndex = -1;
 		groupNonCollideFilter.categoryBits = 0x0008;
 		
-		playerCollideFilter.categoryBits = 0x0002;
+		playerCollideFilter.categoryBits = 0x0001;
 		playerCollideFilter.groupIndex = -2;
+		
+		bulletCollideFilter.categoryBits = 0x0002;
+		bulletCollideFilter.groupIndex = -5;
+		
+		onlyPlayerCollideFilter.categoryBits = 0x0007;
+		onlyPlayerCollideFilter.maskBits = 0x0001;
+		onlyPlayerCollideFilter.groupIndex = -4;
 		
 		enemyCollideFilter.categoryBits = 0x0004;
 		enemyCollideFilter.groupIndex = -3;
@@ -212,7 +222,7 @@ public class GameInstance {
 			Body box = createCircle(BodyType.DynamicBody, 1, 1);
 			box.setTransform(powerUp.position.x, powerUp.position.y, 0);
 	
-			box.getFixtureList().get(0).setFilterData(enemyCollideFilter);
+			box.getFixtureList().get(0).setFilterData(onlyPlayerCollideFilter);
 			
 			powerUp.body = box;
 			box.setFixedRotation(true);
@@ -605,14 +615,20 @@ public class GameInstance {
 				}
 				
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player  && contact.getFixtureB().getBody().getUserData() instanceof PowerUp) {
+					
+					if(((PowerUp) contact.getFixtureB().getBody().getUserData()).show) {
+						changeWeapon();
+						showWeaponTextYAnimate = 0;
+					}
 					((PowerUp) contact.getFixtureB().getBody().getUserData()).show = false;
-					changeWeapon();
-					showWeaponTextYAnimate = 0;
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof PowerUp) {
+					
+					if (((PowerUp) contact.getFixtureA().getBody().getUserData()).show) {
+						changeWeapon();
+						showWeaponTextYAnimate = 0;
+					}
 					((PowerUp) contact.getFixtureA().getBody().getUserData()).show = false;
-					changeWeapon();
-					showWeaponTextYAnimate = 0;
 				}
 				
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player) {
@@ -644,6 +660,6 @@ public class GameInstance {
 		} else if(GameInstance.getInstance().player.currentWeapon==2) {
 			player.weapon = new MinesLauncher();
 		}
-		
+		++score;
 	}
 }

@@ -101,6 +101,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 	};
 
+	private float animateFont = 2.0f;
+
+	private int score = 0;
+
 
 	public GameScreen(Game game) {
 		super(game);
@@ -135,7 +139,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		ra.loadMidi("./data/test.mid");
 		ra.registerBeatListener(audioListener);
 		ra.play();
-		//Resources.getInstance().music.play();
+//		Resources.getInstance().music.play();
 		
 		initRender();
 	}
@@ -147,7 +151,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		fontBatch = new SpriteBatch();
 		fontBatch.getProjectionMatrix().setToOrtho2D(0, 0,800, 480);
-		font = new BitmapFont();		
+		font = new BitmapFont();	
+		font.setScale(2.0f);
 
 		frameBuffer = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);		
 		frameBufferVert = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);
@@ -348,7 +353,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		fontBatch.begin();
 		if (GameInstance.getInstance().showWeaponTextYAnimate < Gdx.graphics.getHeight()+100) {
-			font.setScale(2.0f);
+		
 			if (GameInstance.getInstance().player.weapon instanceof MachineGun) {
 				font.draw(fontBatch, "Machinegun", 300, 250
 						+ GameInstance.getInstance().showWeaponTextYAnimate);
@@ -359,8 +364,16 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				font.draw(fontBatch, "Mines Launcher",  300, 250
 						+ GameInstance.getInstance().showWeaponTextYAnimate);
 			}
-			GameInstance.getInstance().showWeaponTextYAnimate = Math.min(Gdx.graphics.getHeight()+100, GameInstance.getInstance().showWeaponTextYAnimate + (deltaTime*500f));
+			GameInstance.getInstance().showWeaponTextYAnimate = Math.min(Gdx.graphics.getHeight()+100, GameInstance.getInstance().showWeaponTextYAnimate + (deltaTime*300f));
 		}
+		
+		font.setScale(animateFont);
+		if(this.score  != GameInstance.getInstance().score) {
+			animateFont = 3;
+			this.score =  GameInstance.getInstance().score;
+		}
+		animateFont = Math.max(2, animateFont - (deltaTime*10.f));
+		font.draw(fontBatch, score+"",  30, 70);
 		fontBatch.end();		
 	}	
 
@@ -740,6 +753,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		if (keycode == Keys.R) {
 			GameInstance.getInstance().addEnemy();
+		}
+		
+		if (keycode == Keys.Z) {
+			int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
+			GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
 		}
 		
 		

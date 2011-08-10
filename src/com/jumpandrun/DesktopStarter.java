@@ -38,10 +38,10 @@ public class DesktopStarter extends Game {
 
 		config.setFromDisplayMode(displayMode);
 
-		config.width = 800;
-		config.height = 480;
-		config.useCPUSynch = false;
-		config.vSyncEnabled = false;
+		config.width = 1280;
+		config.height = 720;
+		config.useCPUSynch = true;
+		config.vSyncEnabled = true;
 		config.fullscreen = false;
 		config.samples = 0;
 		config.useGL20 = true;
