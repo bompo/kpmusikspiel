@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -54,6 +56,9 @@ public class GameInstance {
 
 	Fixture playerPhysicsFixture;
 	Fixture playerSensorFixture;
+	
+	public float showWeaponTextYAnimate = 0.0f;
+	
 	
 	public static GameInstance getInstance() {
 		if (instance == null) {
@@ -602,10 +607,12 @@ public class GameInstance {
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player  && contact.getFixtureB().getBody().getUserData() instanceof PowerUp) {
 					((PowerUp) contact.getFixtureB().getBody().getUserData()).show = false;
 					changeWeapon();
+					showWeaponTextYAnimate = 0;
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof PowerUp) {
 					((PowerUp) contact.getFixtureA().getBody().getUserData()).show = false;
 					changeWeapon();
+					showWeaponTextYAnimate = 0;
 				}
 				
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player) {
@@ -628,14 +635,15 @@ public class GameInstance {
 	}
 
 	public void changeWeapon() {
-		GameInstance.getInstance().player.currentWeapon++;
-		GameInstance.getInstance().player.currentWeapon = GameInstance.getInstance().player.currentWeapon%3;
-		if(GameInstance.getInstance().player.currentWeapon==0) {
-			GameInstance.getInstance().player.weapon = new MachineGun();
-		} else if(GameInstance.getInstance().player.currentWeapon==1) {
-			GameInstance.getInstance().player.weapon = new RocketLauncher();
+		player.currentWeapon++;
+		player.currentWeapon = player.currentWeapon%3;
+		if(player.currentWeapon==0) {
+			player.weapon = new MachineGun();
+		} else if(player.currentWeapon==1) {
+			player.weapon = new RocketLauncher();
 		} else if(GameInstance.getInstance().player.currentWeapon==2) {
-			GameInstance.getInstance().player.weapon = new MinesLauncher();
+			player.weapon = new MinesLauncher();
 		}
+		
 	}
 }

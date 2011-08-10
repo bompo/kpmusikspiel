@@ -32,6 +32,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	PerspectiveCamera cam;
 
 	SpriteBatch batch;
+	SpriteBatch fontBatch;
 	BitmapFont font;
 
 	public static RhythmAudio ra = new RhythmAudio();
@@ -99,7 +100,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		
 	};
-	
+
+
 	public GameScreen(Game game) {
 		super(game);
 		
@@ -114,6 +116,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		Gdx.input.setInputProcessor(this);
 		batch = new SpriteBatch();
+		batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		font = new BitmapFont();
 		
 		blockModel = Resources.getInstance().blockModel;
@@ -141,6 +144,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		Gdx.gl20.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	
 		batch = new SpriteBatch();
+		batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		fontBatch = new SpriteBatch();
+		fontBatch.getProjectionMatrix().setToOrtho2D(0, 0,800, 480);
 		font = new BitmapFont();		
 
 		frameBuffer = new FrameBuffer(Format.RGB565, Resources.getInstance().m_i32TexSize, Resources.getInstance().m_i32TexSize, false);		
@@ -152,7 +158,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public void resize(int width, int height) {
 		initRender();
-		
 		cam = new PerspectiveCamera(60, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.position.set(23, -15,29f);
 		cam.direction.set(0, 0, -1);
@@ -184,6 +189,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			for(NoteJumper nj: noteJumpers) {
 				if(!nj.bofNote.isPlayedAt(ra.getTick())) {
 					nj.alive = false;
+////					Gdx.app.log("", nj.bofNote.getNote() + "");
+//					if(nj.bofNote.getNote()<40) {
+//						GameInstance.getInstance().addPowerUp(nj.posA.x,nj.posA.y);
+//					}
 				}
 			}
 			//remove from array
@@ -335,11 +344,24 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			highlightCnt++;
 			highlightTimer = 0.0001f;
 		}
-
-		batch.begin();
-		font.draw(batch, "box2d: " + physicTimeBench, 10, 50);
-		font.draw(batch, "render: " + renderTimeBench, 10, 70);
-		batch.end();		
+		
+		
+		fontBatch.begin();
+		if (GameInstance.getInstance().showWeaponTextYAnimate < Gdx.graphics.getHeight()+100) {
+			font.setScale(2.0f);
+			if (GameInstance.getInstance().player.weapon instanceof MachineGun) {
+				font.draw(fontBatch, "Machinegun", 300, 250
+						+ GameInstance.getInstance().showWeaponTextYAnimate);
+			} else if (GameInstance.getInstance().player.weapon instanceof RocketLauncher) {
+				font.draw(fontBatch, "Rocket Launcher", 300, 250
+						+ GameInstance.getInstance().showWeaponTextYAnimate);
+			} else if (GameInstance.getInstance().player.weapon instanceof MinesLauncher) {
+				font.draw(fontBatch, "Mines Launcher",  300, 250
+						+ GameInstance.getInstance().showWeaponTextYAnimate);
+			}
+			GameInstance.getInstance().showWeaponTextYAnimate = Math.min(Gdx.graphics.getHeight()+100, GameInstance.getInstance().showWeaponTextYAnimate + (deltaTime*500f));
+		}
+		fontBatch.end();		
 	}	
 
 	private void renderScene() {
@@ -597,16 +619,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToScaling(length, 0.1f+nj.bofNote.getVelocity(), 0.1f);
 
 			model.mul(tmp);
-			
-			
-			
+				
 			
 			transShader.setUniformMatrix("MMatrix", model);
 
 			transShader.setUniformf("a_color", 1,1,1,1);
 			blockModel.render(transShader,  GL20.GL_TRIANGLES);
-			
-			
 			///////////////////////////////////
 			
 			
