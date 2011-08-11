@@ -139,7 +139,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		ra.loadMidi("./data/test.mid");
 		ra.registerBeatListener(audioListener);
 		ra.play();
-//		Resources.getInstance().music.play();
+		Resources.getInstance().music.play();
 		
 		initRender();
 	}

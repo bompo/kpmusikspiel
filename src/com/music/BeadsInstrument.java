@@ -28,7 +28,7 @@ public class BeadsInstrument {
 		release = 100;
 		sustain = 0.5f;
 		peak = 1.0f;
-		volume = 0.1f;
+		volume = 0;//0.1f;
 		channel = ch;
 		
 	}
