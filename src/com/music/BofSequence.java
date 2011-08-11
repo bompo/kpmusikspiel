@@ -34,11 +34,11 @@ public class BofSequence {
 		}
 		return result;
 	}
-	public Array<MidiEvent> getMidiEventsAt(long tick) {
-		Array<MidiEvent> result = new Array<MidiEvent>();
+	public Array<BofEvent> getMidiEventsAt(long tick) {
+		Array<BofEvent> result = new Array<BofEvent>();
 		//Array<BofNote> na = getInRegion(tick-1, tick+1);
 		for(BofNote bn: notes) {
-			MidiEvent temp = bn.getMidiEvent(tick);
+			BofEvent temp = bn.getMidiEvent(tick);
 			if(temp != null)
 				result.add(temp);
 		}

@@ -25,7 +25,7 @@ public class BeadsInstrument {
 		audioContext = ac;
 		type = t%5;
 		decay = 40;
-		release = 100;
+		release = 800;
 		sustain = 0.5f;
 		peak = 1.0f;
 		volume = 0;//0.1f;
@@ -34,12 +34,12 @@ public class BeadsInstrument {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void onMidiEvent(MidiEvent me) {
+	public void onMidiEvent(BofEvent me) {
 		
 
 		Gain gain = gains[me.note];
 		
-		if(me.type == MidiEvent.NOTE_OFF) {
+		if(me.type == BofEvent.NOTE_OFF) {
 			if(gain != null) {
 				((Envelope)gain.getGainEnvelope()).clear();
 				((Envelope)gain.getGainEnvelope()).addSegment(0, release, new KillTrigger(gain));
@@ -47,7 +47,7 @@ public class BeadsInstrument {
 				
 			}
 			
-		} else if(me.type == MidiEvent.NOTE_ON) {
+		} else if(me.type == BofEvent.NOTE_ON) {
 			
 			if(gain != null) {
 				((Envelope)gain.getGainEnvelope()).clear();

@@ -21,7 +21,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.music.AudioEventListener;
 import com.music.BofNote;
-import com.music.MidiEvent;
+import com.music.BofEvent;
 import com.music.NoteJumper;
 import com.music.RhythmAudio;
 import com.music.TickEvent;
@@ -91,9 +91,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 
 		@Override
-		public void onMidiEvent(Array<MidiEvent> events, long tick) {
-			for (MidiEvent me : events) {
-				if (me.type == MidiEvent.NOTE_ON) {
+		public void onMidiEvent(Array<BofEvent> events, long tick) {
+			for (BofEvent me : events) {
+				if (me.type == BofEvent.NOTE_ON) {
 					noteJumpers.add(new NoteJumper(me, tick));
 				}
 			}
@@ -753,6 +753,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		if (keycode == Keys.R) {
 			GameInstance.getInstance().addEnemy();
+		}
+		if (keycode == Keys.S) {
+			ra.saveMidi();
 		}
 		
 		if (keycode == Keys.Z) {

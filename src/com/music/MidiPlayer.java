@@ -9,12 +9,15 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
+import javax.sound.midi.spi.MidiFileWriter;
 
 import com.badlogic.gdx.utils.Array;
 
 import net.beadsproject.beads.core.AudioContext;
 
 public class MidiPlayer {
+	public static final int NOTE_ON = 0x90;
+	public static final int NOTE_OFF = 0x80;
 	private Sequence sequence;
 	private BeadsInstrument[] instruments;
 	private AudioContext audioContext;
@@ -57,11 +60,69 @@ public class MidiPlayer {
 			e.printStackTrace();
 		}
 	}
-
-	public Array<MidiEvent> iterate() {
-		Array<MidiEvent> result = bofSeq.getMidiEventsAt(tick);//new Array<MidiEvent>();
+	public boolean saveFile(String file) {
+		long lastTick = 0;
+		int channels = 0;
+		{
+			Array<BofNote> bNotes = bofSeq.getNotes();
+			for(BofNote note: bNotes) {
+				if(note.getEnd() > lastTick)
+					lastTick = note.getEnd();
+				if(note.getChannel() > channels)
+					channels = note.getChannel();
+			}
+		}
+		channels++;
+		Sequence seq;
+		try {	//CREATE SEQUENCE
+			seq = new Sequence(Sequence.PPQ, 96);
+		} catch (InvalidMidiDataException e2) {
+			return false;
+		}
+		for(int i = 0; i < channels; i++) {
+			seq.createTrack();
+		}
+		Track[] tracks = seq.getTracks();
+		System.out.println("laasttick " + lastTick);
+		for(int i = 0 ; i < lastTick; i++) {
+			Array<BofEvent> bEvents = bofSeq.getMidiEventsAt(i);
+			for(BofEvent e: bEvents) {
+				ShortMessage sm = new ShortMessage();
+				try {
+					// SET MIDI MESSAGE
+					if(e.type == BofEvent.NOTE_ON)
+						sm.setMessage(NOTE_ON, 1, e.note, e.velocity);
+					else if(e.type == BofEvent.NOTE_OFF)
+						sm.setMessage(NOTE_OFF, 1, e.note, e.velocity);
+					/*sm.setMessage(NOTE_ON);
+					if(e.type == BofEvent.NOTE_OFF)
+						sm.setMessage(NOTE_OFF);*/
+				} catch (InvalidMidiDataException e1) {
+					System.out.println("LAWLZ");
+					return false;
+				}
+				
+				javax.sound.midi.MidiEvent me = new javax.sound.midi.MidiEvent(sm, i);
+				tracks[e.channel].add(me);
+			}
+		}
+		for(int i = 0; i < channels; i++) {
+			System.out.println("events: " + tracks[i].ticks());
+		}
 		
-		for(MidiEvent me: result) {
+		try {	//SAVE
+			//System.out.println("count " + MidiSystem.getMidiFileTypes().length);
+			MidiSystem.write(seq, MidiSystem.getMidiFileTypes()[1], new File(file));
+		} catch (IOException e) {
+			return false;
+		}
+		
+		return true;
+	}
+	public Array<BofEvent> iterate() {
+		Array<BofEvent> result = bofSeq.getMidiEventsAt(tick);
+		
+		for(BofEvent me: result) {
 			instruments[me.channel].onMidiEvent(me);
 		}
 		tick++;
@@ -73,9 +134,6 @@ public class MidiPlayer {
 	}
 
 	private class ChannelParser {
-
-		public static final int NOTE_ON = 0x90;
-		public static final int NOTE_OFF = 0x80;
 		public BofNote[] keys;
 		
 		public ChannelParser() {

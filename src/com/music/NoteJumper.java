@@ -12,7 +12,7 @@ public class NoteJumper {
 	public float random;
 	public int channel;
 
-	public NoteJumper(MidiEvent me, long tick) {
+	public NoteJumper(BofEvent me, long tick) {
 		velocity = me.velocity;
 		note = me.note;
 		start = tick;

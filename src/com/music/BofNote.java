@@ -49,11 +49,11 @@ public class BofNote {
 		}
 		return 0;
 	}
-	public MidiEvent getMidiEvent(long tick) {
+	public BofEvent getMidiEvent(long tick) {
 		if(start == tick) {
-			return new MidiEvent(MidiEvent.NOTE_ON, note, channel, (int) (velocity*127), this);
+			return new BofEvent(BofEvent.NOTE_ON, note, channel, (int) (velocity*127), this);
 		}else if(end == tick) {
-			return new MidiEvent(MidiEvent.NOTE_OFF, note, channel, (int) (velocity*127), this);
+			return new BofEvent(BofEvent.NOTE_OFF, note, channel, (int) (velocity*127), this);
 		}
 		return null;
 	}

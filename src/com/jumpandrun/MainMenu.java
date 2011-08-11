@@ -21,7 +21,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.music.AudioEventListener;
 import com.music.BofNote;
-import com.music.MidiEvent;
+import com.music.BofEvent;
 import com.music.RhythmAudio;
 import com.music.TickEvent;
 
@@ -87,7 +87,7 @@ public class MainMenu  extends DefaultScreen implements InputProcessor {
 		}
 
 		@Override
-		public void onMidiEvent(Array<MidiEvent> me, long tick) {
+		public void onMidiEvent(Array<BofEvent> me, long tick) {
 			
 		}
 		

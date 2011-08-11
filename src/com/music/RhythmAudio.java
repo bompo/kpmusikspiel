@@ -72,7 +72,7 @@ public class RhythmAudio {
 				l.onEvent(new TickEvent(doneTicks+i, 96));
 			}
 			
-			Array<MidiEvent> events = midi.iterate();
+			Array<BofEvent> events = midi.iterate();
 			for(AudioEventListener l : listeners) {
 				l.onMidiEvent(events, doneTicks+i);
 			}
@@ -103,5 +103,11 @@ public class RhythmAudio {
 	}
 	public void addNote(BofNote note) {
 		midi.getBofSequence().addNote(note);
+	}
+	public void saveMidi() {
+		if(midi.saveFile("saveTest2.mid"))
+			System.out.println("SUCCESS!");
+		else
+			System.out.println("FAIL :) .... :(");
 	}
 }

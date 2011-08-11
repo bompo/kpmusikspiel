@@ -14,7 +14,7 @@ import com.shader.TransShader;
 
 public class Resources {
 	
-	public Sound music = Gdx.audio.newSound(Gdx.files.internal("data/test.wav"));
+	public Sound music = Gdx.audio.newSound(Gdx.files.internal("data/test.mp3"));
 	
 	public Mesh blockModel;
 	public Mesh playerModel;
@@ -154,7 +154,7 @@ public class Resources {
 		bloomOnOff = true;//!prefs.getBoolean("bloom");
 		
 		if(music!=null) music.stop();
-		music = Gdx.audio.newSound(Gdx.files.internal("data/test.wav"));
+		music = Gdx.audio.newSound(Gdx.files.internal("data/test.mp3"));
 		
 	}
 
