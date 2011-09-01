@@ -105,6 +105,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	private int score = 0;
 
+	private boolean bulletSplash = false;
+	private float shakeCam = 0;
+
 
 	public GameScreen(Game game) {
 		super(game);
@@ -232,6 +235,13 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		startTimeBench = System.nanoTime();		
 		
 //		cam.position.set(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y, 25);
+		if(shakeCam>0) {
+			cam.rotate(MathUtils.sin(shakeCam)/10.f, 0, 0, 1);
+			shakeCam =  Math.max(0, shakeCam - (deltaTime*100f));
+		} else {
+			cam.up.set(0,1,0);
+		}
+		
 		cam.update();
 
 		if (Resources.getInstance().bloomOnOff) {
@@ -245,6 +255,34 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 			Gdx.gl.glDisable(GL20.GL_BLEND);
 
+			for (int i = 0; i < GameInstance.getInstance().bullets.size; ++i) {
+				Ammo bullet = GameInstance.getInstance().bullets.get(i);
+				bulletSplash  = false;
+				if(bullet instanceof Rocket) {
+					if(((Rocket) bullet).hit) {
+						disortFactor=1;
+						bulletSplash  = true;
+						if(shakeCam==0) {
+							shakeCam = 20;
+						}
+					} 
+				}
+				
+				if(bullet instanceof Mine) {
+					if(((Mine) bullet).hit) {
+						disortFactor=1;
+						bulletSplash  = true;
+						if(shakeCam==0) {
+							shakeCam = 20;
+						}
+					} 
+				}
+			}
+			if(bulletSplash) {
+				disortFactor =  Math.max(0, disortFactor - (deltaTime*5.f));
+			}
+			
+			
 			frameBuffer.getColorBufferTexture().bind(0);
 
 			bloomShader.begin();
@@ -326,6 +364,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		bloomFactor =  Math.max(0, bloomFactor - deltaTime);
 		disortFactor =  Math.max(0, disortFactor - deltaTime);
+		
 		
 		if (ch6) {
 			bloomFactor = 1;

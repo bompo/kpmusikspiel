@@ -45,13 +45,13 @@ public class GameInstance {
 	MovingPlatform groundedPlatform = null;
 
 	Filter groupCollideFilter = new Filter();
-	Filter groupNonCollideFilter = new Filter();
 	
 	Filter playerCollideFilter = new Filter();
 	Filter bulletCollideFilter = new Filter();
-	Filter onlyPlayerCollideFilter = new Filter();
-	Filter deadCollideFilter = new Filter();
 	Filter enemyCollideFilter = new Filter();
+	Filter powerUpCollideFilter = new Filter();
+	Filter deadCollideFilter = new Filter();
+	Filter bulletSplashCollideFilter = new Filter();
 	
 	Body box;
 	Block block;
@@ -79,28 +79,34 @@ public class GameInstance {
 		powerUps.clear();
 		world.dispose();
 		
-		groupCollideFilter.groupIndex = 1;
+		groupCollideFilter.groupIndex = -1;
 		groupCollideFilter.categoryBits = 0x0001;
+		groupCollideFilter.maskBits = -1;
 		
-		groupNonCollideFilter.groupIndex = -1;
-		groupNonCollideFilter.categoryBits = 0x0008;
-		
-		playerCollideFilter.categoryBits = 0x0001;
 		playerCollideFilter.groupIndex = -2;
+		playerCollideFilter.categoryBits = 0x0002;
+		playerCollideFilter.maskBits = (short) (0x0001 | 0x0008 | 0x0010);
 		
-		bulletCollideFilter.categoryBits = 0x0002;
-		bulletCollideFilter.groupIndex = -5;
+		bulletCollideFilter.groupIndex = -3;
+		bulletCollideFilter.categoryBits = 0x0004;
+		bulletCollideFilter.maskBits = (short) (0x0001 | 0x0008);
 		
-		onlyPlayerCollideFilter.categoryBits = 0x0007;
-		onlyPlayerCollideFilter.maskBits = 0x0001;
-		onlyPlayerCollideFilter.groupIndex = -4;
+		enemyCollideFilter.groupIndex = -4;
+		enemyCollideFilter.categoryBits = 0x0008;
+		enemyCollideFilter.maskBits = (short) (0x0001 | 0x0002  | 0x0004 | 0x0020);
 		
-		enemyCollideFilter.categoryBits = 0x0004;
-		enemyCollideFilter.groupIndex = -3;
+		powerUpCollideFilter.groupIndex = -5;
+		powerUpCollideFilter.categoryBits = 0x0010;
+		powerUpCollideFilter.maskBits = (short) (0x0001 | 0x0002);
 		
-		deadCollideFilter.categoryBits = 0x0002;
-		deadCollideFilter.maskBits = 0x0004;
-		deadCollideFilter.groupIndex = -1;
+		deadCollideFilter.groupIndex = -6;
+		deadCollideFilter.categoryBits = 0x0020;
+		deadCollideFilter.maskBits = -1;
+		
+		bulletSplashCollideFilter.groupIndex = -7;
+		bulletSplashCollideFilter.categoryBits = 0x0020;
+		bulletSplashCollideFilter.maskBits = (short) (0x0008);
+		
 		
 		
 		world  = new World(new Vector2(0, GRAVITY), true);
@@ -157,6 +163,7 @@ public class GameInstance {
 		box.setTransform(enemySpawner.position.x , enemySpawner.position.y, 0);
 		
 		enemySpawner.body = box;
+			
 		blocks.add(enemySpawner);
 		enemySpawner.body.setUserData(enemySpawner);		
 	}
@@ -222,7 +229,7 @@ public class GameInstance {
 			Body box = createCircle(BodyType.DynamicBody, 1, 1);
 			box.setTransform(powerUp.position.x, powerUp.position.y, 0);
 	
-			box.getFixtureList().get(0).setFilterData(onlyPlayerCollideFilter);
+			box.getFixtureList().get(0).setFilterData(powerUpCollideFilter);
 			
 			powerUp.body = box;
 			box.setFixedRotation(true);

@@ -28,7 +28,7 @@ public class MinesLauncher extends Weapon {
 		}
 		
 		Body box = GameInstance.getInstance().createCircle(BodyType.DynamicBody, b.size, 100000000);
-		
+		box.getFixtureList().get(0).setFilterData(GameInstance.getInstance().bulletCollideFilter);
 		box.setBullet(true);		 
 		box.setTransform(position.x+ xdir, position.y, 0);
 		Vector2 dir = new Vector2(xdir, 0);

@@ -6,7 +6,7 @@ public class Rocket extends Ammo {
 		super(x, y, xdir);
 		damage = 100;
 		speed = 1f;
-		splashDamage = 5;
+		splashDamage = 6;
 	}	
 	
 	
@@ -14,6 +14,7 @@ public class Rocket extends Ammo {
 	public void update(float delta) {
 		super.update(delta);
 		if(hit) {
+			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().bulletSplashCollideFilter);
 			body.getFixtureList().get(0).getShape().setRadius(body.getFixtureList().get(0).getShape().getRadius()+delta*10);
 			if(body.getFixtureList().get(0).getShape().getRadius()>=splashDamage) {
 				kill = true;
