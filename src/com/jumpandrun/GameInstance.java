@@ -302,8 +302,7 @@ public class GameInstance {
 					}											
 					return true;			
 				}
- 
-				return false;
+
 			}
 		}
 		return false;
