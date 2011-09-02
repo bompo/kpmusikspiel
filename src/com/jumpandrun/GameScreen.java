@@ -108,9 +108,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			
 			if(te.getTick()%3072 == 0) {
 				float ppos = GameInstance.getInstance().player.position.y;
-				songcounter = (int) ((ppos + 197)/50);
+				songcounter = (int) ((ppos + 395)/50);
 				songcounter %= 6;
-				System.out.println("songcounter" + songcounter + " tick: " + te.getTick());
+				//System.out.println("songcounter" + ppos+ " tick: " + te.getTick());
 				
 				ra.gotoTick(songcounter*3072);
 				if(songcounter == 0)
