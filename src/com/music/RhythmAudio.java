@@ -13,7 +13,7 @@ public class RhythmAudio {
 	public static AudioContext ac;
 	public static boolean playing;
 	public static long startTime, doneTicks;
-	public final static long bpm = 140;
+	public final static long bpm = 120;
 	private static Array<AudioEventListener> listeners;
 	
 	public RhythmAudio() {
@@ -65,7 +65,7 @@ public class RhythmAudio {
 		if(!playing)
 			return;
 		
-		long currentTicks = (long) ((System.nanoTime()-startTime)/(4464285.71));//(60000000000.0/(double)bpm/96.0));// midi.micros*1000));
+		long currentTicks = (long) ((System.nanoTime()-startTime)/(60000000000.0/(double)bpm/96.0));// midi.micros*1000));
 		long todo = currentTicks-doneTicks;
 		for(long i = 0; i < todo; i++) {
 			for(AudioEventListener l : listeners) {
