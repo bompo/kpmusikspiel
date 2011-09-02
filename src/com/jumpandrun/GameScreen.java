@@ -203,7 +203,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	public void resize(int width, int height) {
 		initRender();
 		cam = new PerspectiveCamera(60, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set(23, -15,29f);
+		cam.position.set(21, -15,29f);
 		cam.direction.set(0, 0, -1);
 		cam.up.set(0, 1, 0);
 		cam.near = 1f;
@@ -270,7 +270,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		startTimeBench = System.nanoTime();		
 		
-		cam.position.set(cam.position.x, GameInstance.getInstance().player.position.y, 25);
+		cam.position.set(cam.position.x, GameInstance.getInstance().player.position.y, 29);
 		if(shakeCam>0) {
 			cam.rotate(MathUtils.sin(shakeCam)/10.f, 0, 0, 1);
 			shakeCam =  Math.max(0, shakeCam - (deltaTime*100f));
