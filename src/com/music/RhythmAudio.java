@@ -82,7 +82,7 @@ public class RhythmAudio {
 	}
 	public void gotoTick(long tick) {
 		offset += tick - (doneTicks);
-		doneTicks = tick-1;
+		doneTicks = tick;
 		midi.tick = doneTicks;
 	}
 	public void play()  {
