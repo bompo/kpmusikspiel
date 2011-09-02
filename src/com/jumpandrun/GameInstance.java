@@ -197,6 +197,9 @@ public class GameInstance {
 		if(enemies.size <= 5) {
 		for(Block block:blocks) {
 			if(block instanceof EnemySpawner) {
+				if(block.position.y > player.position.y  -10 && block.position.y<player.position.y +10) {
+				
+				
 				float size =1;
 				if(MathUtils.randomBoolean()) {
 					size = 1;
@@ -218,6 +221,7 @@ public class GameInstance {
 				box.setFixedRotation(true);
 				enemy.body.setUserData(enemy);
 				enemies.add(enemy);
+				}
 			}
 			}
 		}
@@ -506,10 +510,10 @@ public class GameInstance {
 			}			
 		}
 		
-		//outOfBounds
-		if(player.position.y < -50) {
-			player.alive = false;
-		}
+//		//outOfBounds
+//		if(player.position.y < -50) {
+//			player.alive = false;
+//		}
 		
 		//update bullets
 		for(int i = 0; i < bullets.size; i++) {
@@ -517,10 +521,10 @@ public class GameInstance {
 			bullet.update(delta);	
 			bullet.body.setAwake(true);
 			
-			//outOfBounds
-			if(bullet.position.y < -50) {
-				bullet.kill = true;
-			}
+//			//outOfBounds
+//			if(bullet.position.y < -50) {
+//				bullet.kill = true;
+//			}
 		}
 		
 		//update enemies
@@ -531,7 +535,7 @@ public class GameInstance {
 			enemy.body.setAwake(true);
 			
 			//outOfBounds
-			if(enemy.position.y < -50) {
+			if(!(enemy.position.y > player.position.y  -20 && enemy.position.y<player.position.y +20)) {
 				enemy.alive = false;
 			}
 		}
@@ -552,10 +556,10 @@ public class GameInstance {
 				powerUp.kill = true;
 			}
 			
-			//outOfBounds
-			if(powerUp.position.y < -50) {
-				powerUp.kill = true;
-			}
+//			//outOfBounds
+//			if(powerUp.position.y < -50) {
+//				powerUp.kill = true;
+//			}
 		}
 
 		
