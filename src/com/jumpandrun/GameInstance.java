@@ -441,7 +441,7 @@ public class GameInstance {
 		}
 		else { 
 			stillTime = 0;
-		}			
+		}		
  
 		// disable friction while jumping
 		if(!grounded) {			
