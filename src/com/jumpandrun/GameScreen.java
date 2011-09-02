@@ -271,7 +271,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		startTimeBench = System.nanoTime();		
 		
-//		cam.position.set(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y, 25);
+		cam.position.set(GameInstance.getInstance().player.position.x, GameInstance.getInstance().player.position.y, 25);
 		if(shakeCam>0) {
 			cam.rotate(MathUtils.sin(shakeCam)/10.f, 0, 0, 1);
 			shakeCam =  Math.max(0, shakeCam - (deltaTime*100f));

@@ -158,7 +158,7 @@ public class Resources {
 		wireCubeModel.setVertices(vertices2);
 		wireCubeModel.setIndices(indices2);
 		
-		bloomOnOff = false;//true;//!prefs.getBoolean("bloom");
+		bloomOnOff = !prefs.getBoolean("bloom");
 		
 		if(music!=null) music.stop();
 			music = Gdx.audio.newSound(Gdx.files.internal("data/test.mp3"));
