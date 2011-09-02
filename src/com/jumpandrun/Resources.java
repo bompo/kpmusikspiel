@@ -170,6 +170,7 @@ public class Resources {
 			}
 		}
 		
+		GameInstance.getInstance().recordHigh = prefs.getInteger("record");
 		
 		if(music!=null) music.stop();
 			music = Gdx.audio.newSound(Gdx.files.internal("data/test.mp3"));

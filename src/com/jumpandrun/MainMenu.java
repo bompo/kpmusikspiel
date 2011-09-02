@@ -301,7 +301,7 @@ public class MainMenu  extends DefaultScreen implements InputProcessor {
 			GameInstance.getInstance().addEnemy();
 			
 			int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
-			GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
+			GameInstance.getInstance().addPowerUp();
 			
 			if(highlightCnt>500) {
 				highlightCnt = 0;

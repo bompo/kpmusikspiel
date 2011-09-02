@@ -59,6 +59,8 @@ public class GameInstance {
 
 	public float showWeaponTextYAnimate = 10000.0f;
 	public int score = 0;
+	public int currentHigh;
+	public int recordHigh;
 
 	public static GameInstance getInstance() {
 		if (instance == null) {
@@ -107,6 +109,13 @@ public class GameInstance {
 		world = new World(new Vector2(0, GRAVITY), true);
 		map = new Map();
 		background = new Background();
+		
+		if(currentHigh >= recordHigh) {
+			Resources.getInstance().prefs.putInteger("record",currentHigh);
+			Resources.getInstance().prefs.flush();		
+		}
+		
+		currentHigh = 0;
 	}
 
 	public Body createBox(BodyType type, float width, float height, float density) {
@@ -221,9 +230,20 @@ public class GameInstance {
 		}
 	}
 
-	public void addPowerUp(float x, float y) {
+	public void addPowerUp() {
+		
+		Array<Block> blocks = new Array<Block>();
+		for(Block b:blankBlocks) {
+			if (b.position.y > player.position.y  && b.position.y <  player.position.y + 20) {
+				blocks.add(b);	
+			}
+		}
+						
+		int random = MathUtils.random(0,blocks.size-1);
+		
+		
 		if (powerUps.size == 0) {
-			PowerUp powerUp = new PowerUp(x, y);
+			PowerUp powerUp = new PowerUp(blocks.get(random).position.x, blocks.get(random).position.y);
 			Body box = createCircle(BodyType.DynamicBody, 1, 1);
 			box.setTransform(powerUp.position.x, powerUp.position.y, 0);
 
@@ -403,6 +423,9 @@ public class GameInstance {
 
 	public void update(float delta) {
 
+		currentHigh = (int) Math.max(Math.floor(GameInstance.getInstance().player.position.y+396),currentHigh);
+		recordHigh = (int) Math.max(recordHigh,currentHigh);
+		
 		if (player.alive == false) {
 			resetGame();
 		}
@@ -547,10 +570,10 @@ public class GameInstance {
 				powerUp.kill = true;
 			}
 
-			// //outOfBounds
-			// if(powerUp.position.y < -50) {
-			// powerUp.kill = true;
-			// }
+			 //outOfBounds
+			if (!(powerUp.position.y > player.position.y - 20 && powerUp.position.y < player.position.y + 20)) {
+				powerUp.kill = true;
+			}
 		}
 
 		flagBullets();
