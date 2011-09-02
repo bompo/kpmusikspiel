@@ -9,12 +9,13 @@ import net.beadsproject.beads.core.AudioContext;
 
 public class RhythmAudio {
 	
-	public static MidiPlayer midi;
-	public static AudioContext ac;
-	public static boolean playing;
-	public static long startTime, doneTicks;
-	public final static long bpm = 120;
-	private static Array<AudioEventListener> listeners;
+	public MidiPlayer midi;
+	public AudioContext ac;
+	public boolean playing;
+	public long startTime, doneTicks;
+	public final long bpm = 120;
+	private Array<AudioEventListener> listeners;
+	private long offset = 0;
 	
 	public RhythmAudio() {
 		//JavaSoundAudioIO jsa = new JavaSoundAudioIO(4048);
@@ -65,7 +66,7 @@ public class RhythmAudio {
 		if(!playing)
 			return;
 		
-		long currentTicks = (long) ((System.nanoTime()-startTime)/(60000000000.0/(double)bpm/96.0));// midi.micros*1000));
+		long currentTicks = (long) ((System.nanoTime()-startTime)/(60000000000.0/(double)bpm/96.0)) + offset;// midi.micros*1000));
 		long todo = currentTicks-doneTicks;
 		for(long i = 0; i < todo; i++) {
 			for(AudioEventListener l : listeners) {
@@ -78,6 +79,11 @@ public class RhythmAudio {
 			}
 		}
 		doneTicks = currentTicks;
+	}
+	public void gotoTick(long tick) {
+		offset += tick - (doneTicks);
+		doneTicks = tick-1;
+		midi.tick = doneTicks;
 	}
 	public void play()  {
 		startTime = System.nanoTime();
