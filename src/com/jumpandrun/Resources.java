@@ -15,6 +15,13 @@ import com.shader.TransShader;
 public class Resources {
 	
 	public Sound music = Gdx.audio.newSound(Gdx.files.internal("data/test.mp3"));
+	public Sound song01 = Gdx.audio.newSound(Gdx.files.internal("data/out_01.mp3"));
+	public Sound song02 = Gdx.audio.newSound(Gdx.files.internal("data/out_02.mp3"));
+	public Sound song03 = Gdx.audio.newSound(Gdx.files.internal("data/out_03.mp3"));
+	public Sound song04 = Gdx.audio.newSound(Gdx.files.internal("data/out_04.mp3"));
+	public Sound song05 = Gdx.audio.newSound(Gdx.files.internal("data/out_05.mp3"));
+	public Sound song06 = Gdx.audio.newSound(Gdx.files.internal("data/out_06.mp3"));
+	public Sound hit = Gdx.audio.newSound(Gdx.files.internal("data/hit.mp3"));
 	
 	public Mesh blockModel;
 	public Mesh playerModel;
@@ -151,10 +158,24 @@ public class Resources {
 		wireCubeModel.setVertices(vertices2);
 		wireCubeModel.setIndices(indices2);
 		
-		bloomOnOff = true;//!prefs.getBoolean("bloom");
+		bloomOnOff = false;//true;//!prefs.getBoolean("bloom");
 		
 		if(music!=null) music.stop();
-		music = Gdx.audio.newSound(Gdx.files.internal("data/test.mp3"));
+			music = Gdx.audio.newSound(Gdx.files.internal("data/test.mp3"));
+		if(song01!=null) song01.stop();
+		if(song02!=null) song02.stop();
+		if(song03!=null) song03.stop();
+		if(song04!=null) song04.stop();
+		if(song05!=null) song05.stop();
+		if(song06!=null) song06.stop();
+		if(hit!=null) hit.stop();
+		song01 = Gdx.audio.newSound(Gdx.files.internal("data/out_01.mp3"));
+		song02 = Gdx.audio.newSound(Gdx.files.internal("data/out_02.mp3"));
+		song03 = Gdx.audio.newSound(Gdx.files.internal("data/out_03.mp3"));
+		song04 = Gdx.audio.newSound(Gdx.files.internal("data/out_04.mp3"));
+		song05 = Gdx.audio.newSound(Gdx.files.internal("data/out_05.mp3"));
+		song06 = Gdx.audio.newSound(Gdx.files.internal("data/out_06.mp3"));
+		hit = Gdx.audio.newSound(Gdx.files.internal("data/hit.mp3"));
 		
 	}
 

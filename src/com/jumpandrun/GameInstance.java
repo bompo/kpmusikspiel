@@ -235,6 +235,7 @@ public class GameInstance {
 			box.setFixedRotation(true);
 			powerUp.body.setUserData(powerUp);
 			powerUps.add(powerUp);
+			Resources.getInstance().hit.play();
 //			powerUp.body.applyLinearImpulse(0, 710, powerUp.position.x, powerUp.position.y);
 		}
 	}

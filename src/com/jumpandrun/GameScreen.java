@@ -83,18 +83,55 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	Array<NoteJumper> noteJumpers = new Array<NoteJumper>();
 	
+	private int songcounter = 0;
+	
 	private AudioEventListener audioListener = new AudioEventListener() {
 
 		@Override
 		public void onEvent(TickEvent te) {
 			
+			if(te.isFullNote()) {
+				GameInstance.getInstance().activateJumpBlocks();
+			}
+			
+			if(te.getCustomNote((long)(te.getFullTicks()*4/Math.pow(2,songcounter))) == 0) {
+				//enemySpawnSwitch = ch6;
+				GameInstance.getInstance().addEnemy();
+				
+				int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
+				GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
+				
+				if(highlightCnt>500) {
+					highlightCnt = 0;
+				}
+			}
+			
+			
+			if(te.getTick()%3072 == 0) {
+				if(songcounter == 0)
+					Resources.getInstance().song01.play();
+				else if(songcounter == 1)
+					Resources.getInstance().song02.play();
+				else if(songcounter == 2)
+					Resources.getInstance().song03.play();
+				else if(songcounter == 3)
+					Resources.getInstance().song04.play();
+				else if(songcounter == 4)
+					Resources.getInstance().song05.play();
+				else if(songcounter == 5)
+					Resources.getInstance().song06.play();
+				songcounter++;
+				songcounter %= 6;
+			}
 		}
 
 		@Override
 		public void onMidiEvent(Array<BofEvent> events, long tick) {
 			for (BofEvent me : events) {
 				if (me.type == BofEvent.NOTE_ON) {
+
 					noteJumpers.add(new NoteJumper(me, tick));
+					
 				}
 			}
 		}
@@ -139,10 +176,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		bloomShader = Resources.getInstance().bloomShader;
 		tvShader = Resources.getInstance().tvShader;
 
-		ra.loadMidi("./data/test.mid");
+		ra.loadMidi("./data/song.mid");
 		ra.registerBeatListener(audioListener);
 		ra.play();
-		Resources.getInstance().music.play();
+		//Resources.getInstance().music.play();
 		
 		initRender();
 	}
@@ -345,43 +382,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		GameInstance.getInstance().update(deltaTime);	
 		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
 		physicTimeBench = endTimeBench;
-
-		//channel 5 spielt was
-		Array<BofNote> notes = ra.getBofSequence().getNotesAt(ra.getTick());
-		
-		boolean ch5 = false, ch6 = false;
-		for(BofNote note: notes) {
-			if(note.getChannel() == 5)
-				ch5 = true;
-			if(note.getChannel() == 6)
-				ch6 = true;
-		}
-		
-		if (ch5) {
-			GameInstance.getInstance().activateJumpBlocks();
-		}
 		
 		
 		bloomFactor =  Math.max(0, bloomFactor - deltaTime);
 		disortFactor =  Math.max(0, disortFactor - deltaTime);
 		
-		
-		if (ch6) {
-			bloomFactor = 1;
-			disortFactor = 1;
-		}
-		
-		if (ch6!= enemySpawnSwitch) {
-			enemySpawnSwitch = ch6;
-			GameInstance.getInstance().addEnemy();
-			
-			int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
-			GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
-			
-			if(highlightCnt>500) {
-				highlightCnt = 0;
-			}
-		}
 		
 		highlightTimer -= delta;
 		if(highlightTimer<0) {
