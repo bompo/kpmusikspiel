@@ -28,14 +28,14 @@ public class BeadsInstrument {
 		release = 800;
 		sustain = 0.5f;
 		peak = 1.0f;
-		volume = 0;//0.1f;
+		volume = 0.2f;
 		channel = ch;
 		
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void onMidiEvent(BofEvent me) {
-		
+		/*
 
 		Gain gain = gains[me.note];
 		
@@ -72,7 +72,7 @@ public class BeadsInstrument {
 			gains[me.note] = gain;
 			audioContext.out.addInput(gain);
 		}
-		
+		*/
 	
 	}
 	

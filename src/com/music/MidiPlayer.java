@@ -23,7 +23,7 @@ public class MidiPlayer {
 	private AudioContext audioContext;
 	public double micros = 1337;
 	private BofSequence bofSeq;
-	private long tick = 0;
+	public long tick = 0;
 
 	public MidiPlayer(String file, AudioContext ac) {
 		audioContext = ac;
