@@ -20,7 +20,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.music.AudioEventListener;
-import com.music.BofNote;
 import com.music.BofEvent;
 import com.music.NoteJumper;
 import com.music.RhythmAudio;
@@ -662,7 +661,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			pos.x = nj.posA.x*(1-move) + nj.posB.x*(move);
 			pos.y = nj.posA.y*(1-move) + nj.posB.y*(move);
 			
-			tmp.setToTranslation(nj.posA.x,nj.posA.y, -1-nj.bofNote.getChannel()*0);
+			tmp.setToTranslation(nj.posA.x,cam.position.y + nj.posA.y, -1-nj.bofNote.getChannel()*0);
 			model.mul(tmp);
 			
 			
@@ -694,7 +693,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			pos = new Vector2(nj.posA);
 			pos.x = nj.posA.x*(1-move) + nj.posB.x*(move);
 			pos.y = nj.posA.y*(1-move) + nj.posB.y*(move);
-			tmp.setToTranslation(nj.posA.x,nj.posA.y, 10f);
+			tmp.setToTranslation(nj.posA.x,cam.position.y + nj.posA.y, 10f);
 			model.mul(tmp);
 			tmp.setToRotation(new Vector3(1f,0f, 0f), 90);
 			model.mul(tmp);
@@ -809,10 +808,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
 			GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
 		}
-		
-		
+				
 		if (keycode == Keys.F1) {
-			Resources.getInstance().bloomOnOff = !Resources.getInstance().bloomOnOff; 
+			Resources.getInstance().prefs.putBoolean("bloom", !Resources.getInstance().prefs.getBoolean("bloom"));
+			Resources.getInstance().bloomOnOff = !Resources.getInstance().prefs.getBoolean("bloom");
+			Resources.getInstance().prefs.flush();			
 		}
 		
 		if (keycode == Keys.T) {
@@ -827,6 +827,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					Gdx.graphics.setDisplayMode(800,480, false);
 				}
 			}
+			Resources.getInstance().prefs.putBoolean("fullscreen", !Resources.getInstance().prefs.getBoolean("fullscreen"));
+			Resources.getInstance().fullscreenOnOff = !Resources.getInstance().prefs.getBoolean("fullscreen");
+			Resources.getInstance().prefs.flush();
 		}
 		return false;
 	}

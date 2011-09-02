@@ -2,6 +2,7 @@ package com.jumpandrun;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
@@ -74,6 +75,7 @@ public class Resources {
 	
 	public Preferences prefs = Gdx.app.getPreferences("kpmusikspiel");
 	public boolean bloomOnOff = false;
+	public boolean fullscreenOnOff = false;
 
 	public static Resources instance;
 
@@ -159,6 +161,15 @@ public class Resources {
 		wireCubeModel.setIndices(indices2);
 		
 		bloomOnOff = !prefs.getBoolean("bloom");
+		fullscreenOnOff = !prefs.getBoolean("fullscreen");
+		if(Gdx.app.getType() == ApplicationType.Desktop) {
+			if(!org.lwjgl.opengl.Display.isFullscreen() && fullscreenOnOff) {
+				Gdx.graphics.setDisplayMode(Gdx.graphics.getDesktopDisplayMode().width, Gdx.graphics.getDesktopDisplayMode().height, true);
+			} else {
+				Gdx.graphics.setDisplayMode(800,480, false);		
+			}
+		}
+		
 		
 		if(music!=null) music.stop();
 			music = Gdx.audio.newSound(Gdx.files.internal("data/test.mp3"));

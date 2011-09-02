@@ -19,7 +19,7 @@ public class NoteJumper {
 		bofNote = null;
 		float range = 10;
 		posA = new Vector2 ((float) (Math.random() - 0.5) * range, (float) (Math.random() - 0.5) * range);
-		posA.add(new Vector2(23,-15));
+		posA.add(new Vector2(23,0));
 		posB = new Vector2(posA.x+range*(float)(Math.random()-0.5), posA.y+range*(float)(Math.random()-0.5));//(float) (Math.random() - 0.5) * range, (float) (Math.random() - 0.5) * range);
 		
 		alive = true;
