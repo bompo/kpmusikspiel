@@ -353,7 +353,7 @@ public class GameInstance {
 					((Ammo) a).hit = true;
 					((Enemy) b).hit(((Ammo) a).damage);
 
-					Resources.getInstance().gunhit.play();
+						Resources.getInstance().gunhit.play();
 				} else if (b instanceof Ammo && a instanceof Enemy) {
 					((Ammo) b).hit = true;
 					((Enemy) a).hit(((Ammo) b).damage);
