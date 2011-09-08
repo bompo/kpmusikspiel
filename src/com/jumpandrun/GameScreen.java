@@ -487,12 +487,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
 					
 					{
-						jumpani = 1- jumpani;
 						model.idt();
-						tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y+(1-jumpani), 0);
+						tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y+(jumpani), 0);
 						model.mul(tmp);
 			
-						tmp.setToScaling(0.95f, 0.95f*jumpani, 0.95f);
+						tmp.setToScaling(0.90f, 0.95f*(1-jumpani), 0.95f);
 						model.mul(tmp);
 								
 						transShader.setUniformMatrix("MMatrix", model);
