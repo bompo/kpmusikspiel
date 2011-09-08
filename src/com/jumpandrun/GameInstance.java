@@ -211,9 +211,9 @@ public class GameInstance {
 						}
 
 						Enemy enemy = new Enemy(block.position.x, block.position.y - 1.5f, size);
-						if (Math.random() >= 0.5) {
-							enemy.direction.x = -enemy.direction.x;
-						}
+//						if (Math.random() >= 0.5) {
+//							enemy.direction.x = -enemy.direction.x;
+//						}
 						Body box = createCircle(BodyType.DynamicBody, size, 1);
 						box.setBullet(true);
 						box.setTransform(block.position.x, block.position.y - 1.5f, 0);
@@ -660,14 +660,14 @@ public class GameInstance {
 				}
 				
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player) {
-					if(contact.getFixtureB().getBody().getUserData() instanceof Block) {
+					if(contact.getFixtureB().getBody().getUserData() instanceof Block && !(contact.getFixtureB().getBody().getUserData() instanceof JumpBlock)) {
 //						if(((Block) contact.getFixtureB().getBody().getUserData()).highlightAnimate >= 0) {
 							((Block) contact.getFixtureB().getBody().getUserData()).highlightAnimate = 0.5f;
 //						}
 					}
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player) {
-					if(contact.getFixtureA().getBody().getUserData() instanceof Block) {
+					if(contact.getFixtureA().getBody().getUserData() instanceof Block && !(contact.getFixtureA().getBody().getUserData() instanceof JumpBlock)) {
 //						if(((Block) contact.getFixtureA().getBody().getUserData()).highlightAnimate >= 0) {
 							((Block) contact.getFixtureA().getBody().getUserData()).highlightAnimate = 0.5f;
 //						}

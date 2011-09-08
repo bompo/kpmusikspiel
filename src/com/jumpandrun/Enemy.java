@@ -13,7 +13,7 @@ public class Enemy {
 	public Body body;
 	public Fixture enemyPhysicsFixture;
 	
-	public Vector2 direction = new Vector2(9,0);
+	public Vector2 direction = new Vector2(0,0);
 	
 	public Vector2 position = new Vector2();
 	public float angle = 0;
@@ -65,6 +65,7 @@ public class Enemy {
 					if(contact.getFixtureA().getBody().getPosition().y > contact.getFixtureB().getBody().getPosition().y-1) {
 						if(alive) {
 							body.setLinearVelocity(direction.x, body.getLinearVelocity().y);
+							if(direction.x==0) direction.x = 9;
 						}
 					}
 				}
@@ -72,6 +73,7 @@ public class Enemy {
 					if(contact.getFixtureA().getBody().getPosition().y-1 < contact.getFixtureB().getBody().getPosition().y) {
 						if(alive) {
 							body.setLinearVelocity(direction.x, body.getLinearVelocity().y);
+							if(direction.x==0) direction.x = 9;
 						}					
 					} 
 				}
