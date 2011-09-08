@@ -95,6 +95,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			
 			if(te.getCustomNote((long)(te.getFullTicks()*4/Math.pow(2,songcounter))) == 0) {
 				//enemySpawnSwitch = ch6;
+				Resources.getInstance().jumpblock.play();
 				GameInstance.getInstance().addEnemy();
 				GameInstance.getInstance().addPowerUp();
 				

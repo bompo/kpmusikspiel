@@ -253,7 +253,6 @@ public class GameInstance {
 			box.setFixedRotation(true);
 			powerUp.body.setUserData(powerUp);
 			powerUps.add(powerUp);
-			Resources.getInstance().hit.play();
 			// powerUp.body.applyLinearImpulse(0, 710, powerUp.position.x,
 			// powerUp.position.y);
 		}
@@ -406,18 +405,23 @@ public class GameInstance {
 
 		// Enemies
 		{
+			boolean killedenemy = false;
 			boolean found = false;
 			do {
 				found = false;
 				for (int e = 0; e < enemies.size; e++) {
 					if ((!enemies.get(e).alive || enemies.get(e).health <= 0) && enemies.get(e).dyingAnimate == 1) {
 						found = true;
+						if(enemies.get(e).health <= 0)
+							killedenemy = true;
 						world.destroyBody(enemies.get(e).body);
 						enemies.removeIndex(e);
 						break;
 					}
 				}
 			} while (found);
+			if(killedenemy)
+				Resources.getInstance().hit.play();
 		}
 	}
 

@@ -23,6 +23,10 @@ public class Resources {
 	public Sound song05 = Gdx.audio.newSound(Gdx.files.internal("data/out_05.mp3"));
 	public Sound song06 = Gdx.audio.newSound(Gdx.files.internal("data/out_06.mp3"));
 	public Sound hit = Gdx.audio.newSound(Gdx.files.internal("data/hit.mp3"));
+	public Sound jumpblock = Gdx.audio.newSound(Gdx.files.internal("data/jumpblock.mp3"));
+	public Sound sound01 = Gdx.audio.newSound(Gdx.files.internal("data/sound01.mp3"));
+	public Sound sound02 = Gdx.audio.newSound(Gdx.files.internal("data/sound02.mp3"));
+	public Sound sound03 = Gdx.audio.newSound(Gdx.files.internal("data/sound03.mp3"));
 	
 	public Mesh blockModel;
 	public Mesh playerModel;
@@ -181,6 +185,10 @@ public class Resources {
 		if(song05!=null) song05.stop();
 		if(song06!=null) song06.stop();
 		if(hit!=null) hit.stop();
+		if(jumpblock!=null) jumpblock.stop();
+		if(sound01!=null) sound01.stop();
+		if(sound02!=null) sound02.stop();
+		if(sound03!=null) sound03.stop();
 		song01 = Gdx.audio.newSound(Gdx.files.internal("data/out_01.mp3"));
 		song02 = Gdx.audio.newSound(Gdx.files.internal("data/out_02.mp3"));
 		song03 = Gdx.audio.newSound(Gdx.files.internal("data/out_03.mp3"));
@@ -188,6 +196,10 @@ public class Resources {
 		song05 = Gdx.audio.newSound(Gdx.files.internal("data/out_05.mp3"));
 		song06 = Gdx.audio.newSound(Gdx.files.internal("data/out_06.mp3"));
 		hit = Gdx.audio.newSound(Gdx.files.internal("data/hit.mp3"));
+		jumpblock = Gdx.audio.newSound(Gdx.files.internal("data/jumpblock.mp3"));
+		sound01 = Gdx.audio.newSound(Gdx.files.internal("data/sound01.mp3"));
+		sound02 = Gdx.audio.newSound(Gdx.files.internal("data/sound02.mp3"));
+		sound03 = Gdx.audio.newSound(Gdx.files.internal("data/sound03.mp3"));
 		
 	}
 
