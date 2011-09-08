@@ -98,7 +98,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 
 			long freq = (long)(te.getFullTicks()*4/Math.pow(2,songcounter));
-			if( freq < te.getFullTicks()*4/Math.pow(2,3))
+			if( freq < te.getFullTicks()*4/Math.pow(2,2))
 				freq = (long)(te.getFullTicks()*4/Math.pow(2,3));
 				
 			if(te.getCustomNote(freq) == 0) {
