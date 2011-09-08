@@ -96,9 +96,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			if(te.getCustomNote((long)(te.getFullTicks()*4/Math.pow(2,songcounter))) == 0) {
 				//enemySpawnSwitch = ch6;
 				GameInstance.getInstance().addEnemy();
-				
-				int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
-				GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
+				GameInstance.getInstance().addPowerUp();
 				
 				if(highlightCnt>500) {
 					highlightCnt = 0;
@@ -275,7 +273,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		startTimeBench = System.nanoTime();		
 		
-		cam.position.set(cam.position.x, GameInstance.getInstance().player.position.y, 29);
+		if(GameInstance.getInstance().player.position.y<-385.0) {
+			cam.position.set(cam.position.x, -385.0f, 29);
+		} else {
+			cam.position.set(cam.position.x, GameInstance.getInstance().player.position.y, 29);
+		}
 		if(shakeCam>0) {
 			cam.rotate(MathUtils.sin(shakeCam)/10.f, 0, 0, 1);
 			shakeCam =  Math.max(0, shakeCam - (deltaTime*100f));
@@ -420,8 +422,14 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			animateFont = 3;
 			this.score =  GameInstance.getInstance().score;
 		}
-		animateFont = Math.max(2, animateFont - (deltaTime*10.f));
-		font.draw(fontBatch, score+"",  30, 70);
+		animateFont = Math.max(1.0f, animateFont - (deltaTime*10.f));
+		font.draw(fontBatch, score+" Points",  680, 480);
+		if(GameInstance.getInstance().currentHigh >= GameInstance.getInstance().recordHigh) {
+			font.draw(fontBatch, GameInstance.getInstance().currentHigh+"m - NEW RECORD!",  30, 480);
+		} else {
+			font.draw(fontBatch, GameInstance.getInstance().currentHigh+"m - Record: " + GameInstance.getInstance().recordHigh + "m",  30, 480);
+		}
+		
 		fontBatch.end();		
 	}	
 
@@ -807,8 +815,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		
 		if (keycode == Keys.Z) {
-			int random = MathUtils.random(0,GameInstance.getInstance().blankBlocks.size-1);
-			GameInstance.getInstance().addPowerUp(GameInstance.getInstance().blankBlocks.get(random).position.x,GameInstance.getInstance().blankBlocks.get(random).position.y);
+			GameInstance.getInstance().addPowerUp();
 		}
 				
 		if (keycode == Keys.F1) {
