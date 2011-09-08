@@ -5,8 +5,8 @@ public class Mine extends Ammo {
 	public Mine(float x, float y, int xdir) {
 		super(x, y, xdir);
 		damage = 100;
-		speed = 0f;
-		splashDamage = 5;
+		speed = 50f;
+		splashDamage = 7;
 	}	
 	
 	

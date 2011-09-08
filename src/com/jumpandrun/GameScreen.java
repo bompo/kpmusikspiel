@@ -107,7 +107,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			
 			if(te.getTick()%3072 == 0) {
 				float ppos = GameInstance.getInstance().player.position.y;
-				songcounter = (int) ((ppos + 395)/140);
+				songcounter = (int) ((ppos + 1195)/140);
 				songcounter %= 6;
 				System.out.println("songcounter" + ppos+ " tick: " + te.getTick());
 				
@@ -274,8 +274,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		startTimeBench = System.nanoTime();		
 		
-		if(GameInstance.getInstance().player.position.y<-385.0) {
-			cam.position.set(cam.position.x, -385.0f, 29);
+		if(GameInstance.getInstance().player.position.y<-1185.0) {
+			cam.position.set(cam.position.x, -1185.0f, 29);
 		} else {
 			cam.position.set(cam.position.x, GameInstance.getInstance().player.position.y, 29);
 		}
@@ -426,9 +426,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		animateFont = Math.max(1.0f, animateFont - (deltaTime*10.f));
 		font.draw(fontBatch, score+" Points",  680, 480);
 		if(GameInstance.getInstance().currentHigh >= GameInstance.getInstance().recordHigh) {
-			font.draw(fontBatch, GameInstance.getInstance().currentHigh+"m - NEW RECORD!",  30, 480);
+			font.draw(fontBatch, GameInstance.getInstance().currentHigh+"m - NEW RECORD! " + Gdx.graphics.getFramesPerSecond(),  30, 480);
 		} else {
-			font.draw(fontBatch, GameInstance.getInstance().currentHigh+"m - Record: " + GameInstance.getInstance().recordHigh + "m",  30, 480);
+			font.draw(fontBatch, GameInstance.getInstance().currentHigh+"m - Record: " + GameInstance.getInstance().recordHigh + "m  " + Gdx.graphics.getFramesPerSecond(),  30, 480);
 		}
 		
 		fontBatch.end();		
