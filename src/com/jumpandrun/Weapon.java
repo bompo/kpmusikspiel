@@ -17,7 +17,7 @@ public class Weapon {
 	public void shoot(final Vector2 position, final Vector2 velocity, final int xdir) {
 		if(lastshot < shotlimit)
 			return;
-		
+		Resources.getInstance().sound01.play();
 		lastshot = 0;
 		Ammo b = new Ammo(position.x, position.y-1.5f, xdir);
 		if(ammo instanceof Bullet) {

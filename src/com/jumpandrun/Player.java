@@ -37,6 +37,7 @@ public class Player {
 	}
 	
 	public void shoot() {		
+
 		weapon.shoot(position, body.getLinearVelocity(), xdir);
 	}
 

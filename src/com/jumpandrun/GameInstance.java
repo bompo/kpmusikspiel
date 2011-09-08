@@ -330,7 +330,6 @@ public class GameInstance {
 		 * 
 		 * } } }
 		 */
-
 		List<Contact> contactList = world.getContactList();
 		for (int i = 0; i < contactList.size(); i++) {
 			Contact contact = contactList.get(i);
@@ -353,9 +352,13 @@ public class GameInstance {
 				if (a instanceof Ammo && b instanceof Enemy) {
 					((Ammo) a).hit = true;
 					((Enemy) b).hit(((Ammo) a).damage);
+
+					Resources.getInstance().gunhit.play();
 				} else if (b instanceof Ammo && a instanceof Enemy) {
 					((Ammo) b).hit = true;
 					((Enemy) a).hit(((Ammo) b).damage);
+
+					Resources.getInstance().gunhit.play();
 				}
 
 				// if(a instanceof Ammo && !(b instanceof Ammo) && !(b
@@ -420,8 +423,6 @@ public class GameInstance {
 					}
 				}
 			} while (found);
-			if(killedenemy)
-				Resources.getInstance().hit.play();
 		}
 	}
 

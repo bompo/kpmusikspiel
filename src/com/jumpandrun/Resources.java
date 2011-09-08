@@ -27,6 +27,7 @@ public class Resources {
 	public Sound sound01 = Gdx.audio.newSound(Gdx.files.internal("data/sound01.mp3"));
 	public Sound sound02 = Gdx.audio.newSound(Gdx.files.internal("data/sound02.mp3"));
 	public Sound sound03 = Gdx.audio.newSound(Gdx.files.internal("data/sound03.mp3"));
+	public Sound gunhit = Gdx.audio.newSound(Gdx.files.internal("data/gunhit.mp3"));
 	
 	public Mesh blockModel;
 	public Mesh playerModel;
@@ -189,6 +190,7 @@ public class Resources {
 		if(sound01!=null) sound01.stop();
 		if(sound02!=null) sound02.stop();
 		if(sound03!=null) sound03.stop();
+		if(gunhit!=null) gunhit.stop();
 		song01 = Gdx.audio.newSound(Gdx.files.internal("data/out_01.mp3"));
 		song02 = Gdx.audio.newSound(Gdx.files.internal("data/out_02.mp3"));
 		song03 = Gdx.audio.newSound(Gdx.files.internal("data/out_03.mp3"));
@@ -200,6 +202,7 @@ public class Resources {
 		sound01 = Gdx.audio.newSound(Gdx.files.internal("data/sound01.mp3"));
 		sound02 = Gdx.audio.newSound(Gdx.files.internal("data/sound02.mp3"));
 		sound03 = Gdx.audio.newSound(Gdx.files.internal("data/sound03.mp3"));
+		gunhit = Gdx.audio.newSound(Gdx.files.internal("data/gunhit.mp3"));
 		
 	}
 

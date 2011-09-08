@@ -1,7 +1,7 @@
 package com.jumpandrun;
 
 public class Rocket extends Ammo {
-	
+	int hitcount = 0;
 	public Rocket(float x, float y, int xdir) {
 		super(x, y, xdir);
 		damage = 100;
@@ -14,6 +14,9 @@ public class Rocket extends Ammo {
 	public void update(float delta) {
 		super.update(delta);
 		if(hit) {
+			hitcount++;
+			if(hitcount == 1)
+				Resources.getInstance().hit.play();
 			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().bulletSplashCollideFilter);
 			body.getFixtureList().get(0).getShape().setRadius(body.getFixtureList().get(0).getShape().getRadius()+delta*10);
 			if(body.getFixtureList().get(0).getShape().getRadius()>=splashDamage) {
