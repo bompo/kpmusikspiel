@@ -28,6 +28,7 @@ public class MinesLauncher extends Weapon {
 		}
 		
 		Body box = GameInstance.getInstance().createCircle(BodyType.DynamicBody, b.size, 100000000);
+		box.getFixtureList().get(0).setFriction(100000);
 		box.getFixtureList().get(0).setFilterData(GameInstance.getInstance().bulletCollideFilter);
 		box.setBullet(true);		 
 		box.setTransform(position.x+ xdir, position.y, 0);
@@ -35,7 +36,7 @@ public class MinesLauncher extends Weapon {
 		dir = dir.nor();
 		b.speed += (velocity.x*xdir);
 		dir.mul(b.speed);
-//		box.setLinearVelocity(dir);
+		box.setLinearVelocity(dir);
 		
 		b.body = box;
 		b.body.setUserData(b);

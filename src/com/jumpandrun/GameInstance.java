@@ -423,7 +423,7 @@ public class GameInstance {
 
 	public void update(float delta) {
 
-		currentHigh = (int) Math.max(Math.floor(GameInstance.getInstance().player.position.y+396),currentHigh);
+		currentHigh = (int) Math.max(Math.floor(GameInstance.getInstance().player.position.y+1196),currentHigh);
 		recordHigh = (int) Math.max(recordHigh,currentHigh);
 		
 		if (player.alive == false) {
