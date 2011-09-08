@@ -84,6 +84,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	
 	private int songcounter = 0;
 	
+	private float blockani = 0;
+	
 	private AudioEventListener audioListener = new AudioEventListener() {
 
 		@Override
@@ -103,6 +105,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					highlightCnt = 0;
 				}
 			}
+			blockani = te.getCustomNote((long)(te.getFullTicks()*4/Math.pow(2,songcounter)));
 			
 			
 			if(te.getTick()%3072 == 0) {
@@ -463,10 +466,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					JumpBlock jumbBlock = (JumpBlock)block;
 					jumbBlock.update();
 					
-					tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y, 0);
+					tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y+(1-blockani), 0);
 					model.mul(tmp);
 		
-					tmp.setToScaling(0.95f, 0.95f, 0.95f);
+					tmp.setToScaling(0.95f, 0.95f*blockani, 0.95f);
 					model.mul(tmp);
 							
 					transShader.setUniformMatrix("MMatrix", model);
@@ -478,10 +481,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);			
 				} else if(block instanceof EnemySpawner) {	
 					
-					tmp.setToTranslation(block.position.x, block.position.y, 0);
+					tmp.setToTranslation(block.position.x, block.position.y+(1-blockani), 0);
 					model.mul(tmp);
 		
-					tmp.setToScaling(0.95f, 0.95f, 0.95f);
+					tmp.setToScaling(0.95f, 0.95f*blockani, 0.95f);
 					model.mul(tmp);
 							
 					transShader.setUniformMatrix("MMatrix", model);
