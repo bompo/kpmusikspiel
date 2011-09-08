@@ -98,7 +98,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 
 			long freq = (long)(te.getFullTicks()*4/Math.pow(2,songcounter));
-			if( freq > te.getFullTicks()*4/Math.pow(2,3))
+			if( freq < te.getFullTicks()*4/Math.pow(2,3))
 				freq = (long)(te.getFullTicks()*4/Math.pow(2,3));
 				
 			if(te.getCustomNote(freq) == 0) {
@@ -484,9 +484,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					blockModel.render(transShader, GL20.GL_TRIANGLES);
 		
 					transShader.setUniformf("a_color",Resources.getInstance().jumpBlockEdgeColor[0], Resources.getInstance().jumpBlockEdgeColor[1],Resources.getInstance().jumpBlockEdgeColor[2], Resources.getInstance().jumpBlockEdgeColor[3] + jumbBlock.jumpAnim);
-					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);		
+					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
 					
 					{
+						jumpani = 1- jumpani;
 						model.idt();
 						tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y+(1-jumpani), 0);
 						model.mul(tmp);
