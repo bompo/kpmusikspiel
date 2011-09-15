@@ -73,6 +73,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	Vector3 tmpVector3 = new Vector3();
 	Vector2 tmpVector2 = new Vector2();
 	
+	private float colorMix = 0;
+	
 	private float bloomFactor = 0;
 	private float disortFactor = 0;
 	private float highlightTimer = 0;
@@ -80,7 +82,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	Array<NoteJumper> noteJumpers = new Array<NoteJumper>();
 	
-	private int songcounter = 0;
+	private int songCounter = 0;
+	private int oldSongCounter = 0;
 	
 	private float blockani = 0, jumpani = 0;
 	
@@ -95,7 +98,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				GameInstance.getInstance().addPowerUp();
 			}
 
-			long freq = (long)(te.getFullTicks()*4/Math.pow(2,songcounter));
+			long freq = (long)(te.getFullTicks()*4/Math.pow(2,songCounter));
 			if( freq < te.getFullTicks()*4/Math.pow(2,2))
 				freq = (long)(te.getFullTicks()*4/Math.pow(2,3));
 				
@@ -114,22 +117,23 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			
 			if(te.getTick()%3072 == 0) {
 				float ppos = GameInstance.getInstance().player.position.y;
-				songcounter = (int) ((ppos + 1195)/200);
-				songcounter %= 6;
-				System.out.println("songcounter" + ppos+ " tick: " + te.getTick());
+
+				songCounter = (int) ((ppos + 1195)/200);
+				songCounter %= 6;
+
 				
-				ra.gotoTick(songcounter*3072);
-				if(songcounter == 0)
+				ra.gotoTick(songCounter*3072);
+				if(songCounter == 0)
 					Resources.getInstance().song01.play();
-				else if(songcounter == 1)
+				else if(songCounter == 1)
 					Resources.getInstance().song02.play();
-				else if(songcounter == 2)
+				else if(songCounter == 2)
 					Resources.getInstance().song03.play();
-				else if(songcounter == 3)
+				else if(songCounter == 3)
 					Resources.getInstance().song04.play();
-				else if(songcounter == 4)
+				else if(songCounter == 4)
 					Resources.getInstance().song05.play();
-				else if(songcounter == 5)
+				else if(songCounter == 5)
 					Resources.getInstance().song06.play();
 				
 			}
@@ -526,11 +530,72 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 							
 					transShader.setUniformMatrix("MMatrix", model);
 					
-					
-					Resources.getInstance().blockColor[0] = 1;
-					Resources.getInstance().blockColor[1] = 1;
-					Resources.getInstance().blockColor[2] = 1;
-					Resources.getInstance().blockColor[3] = 1;
+					if(oldSongCounter!=songCounter) {
+						oldSongCounter = songCounter;
+						colorMix = 0;
+					}
+					colorMix = Math.min(1, colorMix + delta/50.f);
+					if (songCounter == 0) {
+						Resources.getInstance().blockColor[0] = Resources.getInstance().blockColor1[0]*colorMix + (Resources.getInstance().blockColor2[0]* (1-colorMix));
+						Resources.getInstance().blockColor[1] = Resources.getInstance().blockColor1[1]*colorMix + (Resources.getInstance().blockColor2[1]* (1-colorMix));
+						Resources.getInstance().blockColor[2] = Resources.getInstance().blockColor1[2]*colorMix + (Resources.getInstance().blockColor2[2]* (1-colorMix));
+						Resources.getInstance().blockColor[3] = Resources.getInstance().blockColor1[3]*colorMix + (Resources.getInstance().blockColor2[3]* (1-colorMix));
+						
+						Resources.getInstance().blockEdgeColor[0] = Resources.getInstance().blockEdgeColor1[0]*colorMix + (Resources.getInstance().blockEdgeColor2[0]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[1] = Resources.getInstance().blockEdgeColor1[1]*colorMix + (Resources.getInstance().blockEdgeColor2[1]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[2] = Resources.getInstance().blockEdgeColor1[2]*colorMix + (Resources.getInstance().blockEdgeColor2[2]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[3] = Resources.getInstance().blockEdgeColor1[3]*colorMix + (Resources.getInstance().blockEdgeColor2[3]* (1-colorMix));
+					} else if (songCounter == 1) {
+						Resources.getInstance().blockColor[0] = Resources.getInstance().blockColor2[0]*colorMix + (Resources.getInstance().blockColor3[0]* (1-colorMix));
+						Resources.getInstance().blockColor[1] = Resources.getInstance().blockColor2[1]*colorMix + (Resources.getInstance().blockColor3[1]* (1-colorMix));
+						Resources.getInstance().blockColor[2] = Resources.getInstance().blockColor2[2]*colorMix + (Resources.getInstance().blockColor3[2]* (1-colorMix));
+						Resources.getInstance().blockColor[3] = Resources.getInstance().blockColor2[3]*colorMix + (Resources.getInstance().blockColor3[3]* (1-colorMix));
+						
+						Resources.getInstance().blockEdgeColor[0] = Resources.getInstance().blockEdgeColor2[0]*colorMix + (Resources.getInstance().blockEdgeColor3[0]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[1] = Resources.getInstance().blockEdgeColor2[1]*colorMix + (Resources.getInstance().blockEdgeColor3[1]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[2] = Resources.getInstance().blockEdgeColor2[2]*colorMix + (Resources.getInstance().blockEdgeColor3[2]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[3] = Resources.getInstance().blockEdgeColor2[3]*colorMix + (Resources.getInstance().blockEdgeColor3[3]* (1-colorMix));
+					} else if (songCounter == 2) {
+						Resources.getInstance().blockColor[0] = Resources.getInstance().blockColor3[0]*colorMix + (Resources.getInstance().blockColor4[0]* (1-colorMix));
+						Resources.getInstance().blockColor[1] = Resources.getInstance().blockColor3[1]*colorMix + (Resources.getInstance().blockColor4[1]* (1-colorMix));
+						Resources.getInstance().blockColor[2] = Resources.getInstance().blockColor3[2]*colorMix + (Resources.getInstance().blockColor4[2]* (1-colorMix));
+						Resources.getInstance().blockColor[3] = Resources.getInstance().blockColor3[3]*colorMix + (Resources.getInstance().blockColor4[3]* (1-colorMix));
+						
+						Resources.getInstance().blockEdgeColor[0] = Resources.getInstance().blockEdgeColor3[0]*colorMix + (Resources.getInstance().blockEdgeColor4[0]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[1] = Resources.getInstance().blockEdgeColor3[1]*colorMix + (Resources.getInstance().blockEdgeColor4[1]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[2] = Resources.getInstance().blockEdgeColor3[2]*colorMix + (Resources.getInstance().blockEdgeColor4[2]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[3] = Resources.getInstance().blockEdgeColor3[3]*colorMix + (Resources.getInstance().blockEdgeColor4[3]* (1-colorMix));
+					} else if (songCounter == 3) {
+						Resources.getInstance().blockColor[0] = Resources.getInstance().blockColor4[0]*colorMix + (Resources.getInstance().blockColor5[0]* (1-colorMix));
+						Resources.getInstance().blockColor[1] = Resources.getInstance().blockColor4[1]*colorMix + (Resources.getInstance().blockColor5[1]* (1-colorMix));
+						Resources.getInstance().blockColor[2] = Resources.getInstance().blockColor4[2]*colorMix + (Resources.getInstance().blockColor5[2]* (1-colorMix));
+						Resources.getInstance().blockColor[3] = Resources.getInstance().blockColor4[3]*colorMix + (Resources.getInstance().blockColor5[3]* (1-colorMix));
+						
+						Resources.getInstance().blockEdgeColor[0] = Resources.getInstance().blockEdgeColor4[0]*colorMix + (Resources.getInstance().blockEdgeColor5[0]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[1] = Resources.getInstance().blockEdgeColor4[1]*colorMix + (Resources.getInstance().blockEdgeColor5[1]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[2] = Resources.getInstance().blockEdgeColor4[2]*colorMix + (Resources.getInstance().blockEdgeColor5[2]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[3] = Resources.getInstance().blockEdgeColor4[3]*colorMix + (Resources.getInstance().blockEdgeColor5[3]* (1-colorMix));
+					} else if (songCounter == 4) {
+						Resources.getInstance().blockColor[0] = Resources.getInstance().blockColor5[0]*colorMix + (Resources.getInstance().blockColor6[0]* (1-colorMix));
+						Resources.getInstance().blockColor[1] = Resources.getInstance().blockColor5[1]*colorMix + (Resources.getInstance().blockColor6[1]* (1-colorMix));
+						Resources.getInstance().blockColor[2] = Resources.getInstance().blockColor5[2]*colorMix + (Resources.getInstance().blockColor6[2]* (1-colorMix));
+						Resources.getInstance().blockColor[3] = Resources.getInstance().blockColor5[3]*colorMix + (Resources.getInstance().blockColor6[3]* (1-colorMix));
+						
+						Resources.getInstance().blockEdgeColor[0] = Resources.getInstance().blockEdgeColor5[0]*colorMix + (Resources.getInstance().blockEdgeColor6[0]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[1] = Resources.getInstance().blockEdgeColor5[1]*colorMix + (Resources.getInstance().blockEdgeColor6[1]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[2] = Resources.getInstance().blockEdgeColor5[2]*colorMix + (Resources.getInstance().blockEdgeColor6[2]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[3] = Resources.getInstance().blockEdgeColor5[3]*colorMix + (Resources.getInstance().blockEdgeColor6[3]* (1-colorMix));
+					} else if (songCounter == 5) {
+						Resources.getInstance().blockColor[0] = Resources.getInstance().blockColor6[0]*colorMix + (Resources.getInstance().blockColor7[0]* (1-colorMix));
+						Resources.getInstance().blockColor[1] = Resources.getInstance().blockColor6[1]*colorMix + (Resources.getInstance().blockColor7[1]* (1-colorMix));
+						Resources.getInstance().blockColor[2] = Resources.getInstance().blockColor6[2]*colorMix + (Resources.getInstance().blockColor7[2]* (1-colorMix));
+						Resources.getInstance().blockColor[3] = Resources.getInstance().blockColor6[3]*colorMix + (Resources.getInstance().blockColor7[3]* (1-colorMix));
+						
+						Resources.getInstance().blockEdgeColor[0] = Resources.getInstance().blockEdgeColor6[0]*colorMix + (Resources.getInstance().blockEdgeColor7[0]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[1] = Resources.getInstance().blockEdgeColor6[1]*colorMix + (Resources.getInstance().blockEdgeColor7[1]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[2] = Resources.getInstance().blockEdgeColor6[2]*colorMix + (Resources.getInstance().blockEdgeColor7[2]* (1-colorMix));
+						Resources.getInstance().blockEdgeColor[3] = Resources.getInstance().blockEdgeColor6[3]*colorMix + (Resources.getInstance().blockEdgeColor7[3]* (1-colorMix));
+					}
 					
 					transShader.setUniformf("a_color", Resources.getInstance().blockColor[0], Resources.getInstance().blockColor[1], Resources.getInstance().blockColor[2], Resources.getInstance().blockColor[3] + block.highlightAnimate);
 					blockModel.render(transShader, GL20.GL_TRIANGLES);
