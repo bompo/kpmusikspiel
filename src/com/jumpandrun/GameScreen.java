@@ -88,14 +88,21 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private float blockani = 0, jumpani = 0;
 	
 	private AudioEventListener audioListener = new AudioEventListener() {
-
+		boolean sel = false;
 		@Override
 		public void onEvent(TickEvent te) {
 			
 			if(te.isFullNote()) {
-				Resources.getInstance().jumpblock.play();
-				GameInstance.getInstance().activateJumpBlocks();
+				//Resources.getInstance().jumpblock.play();
 				GameInstance.getInstance().addPowerUp();
+			}
+			if(te.isHalfNote()) {
+				sel = !sel;
+				if(sel) {
+					GameInstance.getInstance().activateJumpBlocks();
+				} else {
+					GameInstance.getInstance().activateJumpBlocks2();
+				}
 			}
 
 			long freq = (long)(te.getFullTicks()*4/Math.pow(2,songCounter));
@@ -141,6 +148,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		@Override
 		public void onMidiEvent(Array<BofEvent> events, long tick) {
+			
 			for (BofEvent me : events) {
 				if (me.type == BofEvent.NOTE_ON) {
 

@@ -618,7 +618,38 @@ public class GameInstance {
 			}
 		}
 
-		for (int i = 0; i < blocks.size; i++) {
+		for (int i = 0; i < blocks.size; i+=2) {
+			Block block = blocks.get(i);
+			if (block instanceof JumpBlock) {
+				((JumpBlock) block).jump();
+			}
+		}
+	}
+	public void activateJumpBlocks2() {
+		List<Contact> contactList = world.getContactList();
+		for (int i = 0; i < contactList.size(); i++) {
+			Contact contact = contactList.get(i);
+			if (contact.isTouching()) {
+				if (contact.getFixtureA().getBody().getUserData() instanceof JumpBlock) {
+					if (contact.getFixtureB().getBody().getUserData() instanceof Enemy || contact.getFixtureB().getBody().getUserData() instanceof Player) {
+						if (contact.getFixtureA().getBody().getPosition().y < contact.getFixtureB().getBody().getPosition().y - 1) {
+							contact.getFixtureB().getBody().applyLinearImpulse(0, 320, player.position.x, player.position.y);
+							// ((JumpBlock)contact.getFixtureA().getBody().getUserData()).jump();
+						}
+					}
+				}
+				if (contact.getFixtureB().getBody().getUserData() instanceof JumpBlock) {
+					if (contact.getFixtureA().getBody().getUserData() instanceof Enemy || contact.getFixtureA().getBody().getUserData() instanceof Player) {
+						if (contact.getFixtureA().getBody().getPosition().y - 1 > contact.getFixtureB().getBody().getPosition().y) {
+							contact.getFixtureA().getBody().applyLinearImpulse(0, 320, player.position.x, player.position.y);
+							// ((JumpBlock)contact.getFixtureB().getBody().getUserData()).jump();
+						}
+					}
+				}
+			}
+		}
+
+		for (int i = 1; i < blocks.size; i+=2) {
 			Block block = blocks.get(i);
 			if (block instanceof JumpBlock) {
 				((JumpBlock) block).jump();
