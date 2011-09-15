@@ -30,9 +30,9 @@ public class Ammo {
 		position.y = body.getPosition().y;
 		size = body.getFixtureList().get(0).getShape().getRadius();
 		age+= delta;
-		if(hit) {
-			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().deadCollideFilter);
-		}
+//		if(hit) {
+//			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().deadCollideFilter);
+//		}
 	}
 	
 }

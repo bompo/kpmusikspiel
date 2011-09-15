@@ -585,7 +585,6 @@ public class GameInstance {
 		removeKilled();
 
 		player.update(delta);
-		player.body.setAwake(true);
 
 		// check player/enemy collision
 		checkPlayerEnemyCollision();
@@ -664,12 +663,12 @@ public class GameInstance {
 			if(contact.isTouching()) {
 				if(contact.getFixtureA().getBody().getUserData() instanceof Player  && contact.getFixtureB().getBody().getUserData() instanceof Enemy) {
 					if(((Enemy) contact.getFixtureB().getBody().getUserData()).alive) {
-						player.alive = false;
+						player.hit();
 					}
 				}
 				if(contact.getFixtureB().getBody().getUserData() instanceof Player && contact.getFixtureA().getBody().getUserData() instanceof Enemy) {
 					if(((Enemy) contact.getFixtureA().getBody().getUserData()).alive) {
-						player.alive = false;
+						player.hit();
 					}
 				}
 				

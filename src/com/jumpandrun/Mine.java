@@ -7,12 +7,14 @@ public class Mine extends Ammo {
 		damage = 100;
 		speed = 50f;
 		splashDamage = 10;
+		size = 0.1f;
 	}	
 	
 	
 	@Override
 	public void update(float delta) {
 		super.update(delta);
+		size = 0.1f;
 		if(hit) {
 			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().bulletSplashCollideFilter);
 			body.getFixtureList().get(0).getShape().setRadius(body.getFixtureList().get(0).getShape().getRadius()+delta*10);
@@ -20,11 +22,7 @@ public class Mine extends Ammo {
 				kill = true;
 			}
 			body.setLinearVelocity(1, 1);
-		} else {
-			if(body.getLinearVelocity().x >0 && body.getLinearVelocity().y >0) {
-			body.setLinearVelocity(body.getLinearVelocity().x-(delta*50), body.getLinearVelocity().y-(delta*50));
-			}
-		}
+		} 
 	}
 	
 }

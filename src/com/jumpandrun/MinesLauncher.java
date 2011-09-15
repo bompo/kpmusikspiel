@@ -26,9 +26,10 @@ public class MinesLauncher extends Weapon {
 		} else if(ammo instanceof Mine) {
 			b = new Mine(position.x, position.y-1.5f,xdir);
 		}
-		
-		Body box = GameInstance.getInstance().createCircle(BodyType.DynamicBody, b.size, 100000000);
-		box.getFixtureList().get(0).setFriction(100000);
+	
+		Body box = GameInstance.getInstance().createBox(BodyType.DynamicBody, b.size,b.size, 100);
+		box.getFixtureList().get(0).setFriction(0.1f);
+		box.getFixtureList().get(0).setRestitution(0.5f);
 		box.getFixtureList().get(0).setFilterData(GameInstance.getInstance().bulletCollideFilter);
 		box.setBullet(true);		 
 		box.setTransform(position.x+ xdir, position.y, 0);
