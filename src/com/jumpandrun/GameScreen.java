@@ -72,8 +72,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	float angleYFront = 0;	
 	Vector3 tmpVector3 = new Vector3();
 	Vector2 tmpVector2 = new Vector2();
-
-	private float accumulator = 0;
 	
 	private float bloomFactor = 0;
 	private float disortFactor = 0;
@@ -116,7 +114,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			
 			if(te.getTick()%3072 == 0) {
 				float ppos = GameInstance.getInstance().player.position.y;
-				songcounter = (int) ((ppos + 1195)/140);
+				songcounter = (int) ((ppos + 1195)/200);
 				songcounter %= 6;
 				System.out.println("songcounter" + ppos+ " tick: " + te.getTick());
 				
@@ -699,7 +697,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.idt();
 			model.idt();
 			float move = (float) (1-Math.pow(nj.bofNote.getFraction(ra.getTick())-1, 4));
-			float move2 = (float) (1-Math.pow(nj.bofNote.getFraction(ra.getTick())-1, 2));
 			float length = (1-move);
 			Vector2 pos = new Vector2(nj.posA);
 			pos.x = nj.posA.x*(1-move) + nj.posB.x*(move);
@@ -752,83 +749,25 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			torusModel.render(transShader, GL20.GL_TRIANGLES);
 
 		}
-		
-		/*
-		// render plane background
-		for (int x = -0; x < 50; x = x +2) {
-			for (int z = -10; z < 10; z = z +2) {
-			model.idt();
-
-			tmp.setToTranslation(x, -25, z);
-			model.mul(tmp);
-
-			tmp.setToScaling(0.95f, 0.95f, 0.95f);
-			model.mul(tmp);
-
-			transShader.setUniformMatrix("MMatrix", model);
-
-			transShader.setUniformf("a_color", Resources.getInstance().blockBackgroundColor[0], Resources.getInstance().blockBackgroundColor[1],
-					Resources.getInstance().blockBackgroundColor[2], Resources.getInstance().blockBackgroundColor[3] - Helper.map(z, 10, -20, 0, 1.0f));
-			blockModel.render(transShader, GL20.GL_TRIANGLES);
-
-			transShader.setUniformf("a_color", Resources.getInstance().blockBackgroundEdgeColor[0], Resources.getInstance().blockBackgroundEdgeColor[1],
-					Resources.getInstance().blockBackgroundEdgeColor[2], Resources.getInstance().blockBackgroundEdgeColor[3] - Helper.map(z, 10, -20, 0, 1.0f));
-			wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
-			}
-		}
-		
-		// render static boxes
-		for (int i = 0; i < GameInstance.getInstance().background.backgroundBlocks.size; ++i) {
-			Block block = GameInstance.getInstance().background.backgroundBlocks.get(i);
-
-			model.idt();
-
-			tmp.setToTranslation(block.position.x, block.position.y, 0);
-			model.mul(tmp);
-
-			tmp.setToScaling(0.95f, 0.95f, 0.95f);
-			model.mul(tmp);
-
-			transShader.setUniformMatrix("MMatrix", model);
-
-			transShader.setUniformf("a_color", Resources.getInstance().blockBackgroundColor[0], Resources.getInstance().blockBackgroundColor[1],
-					Resources.getInstance().blockBackgroundColor[2], Resources.getInstance().blockBackgroundColor[3] + block.highlightAnimate);
-			blockModel.render(transShader, GL20.GL_TRIANGLES);
-
-			transShader.setUniformf("a_color", Resources.getInstance().blockBackgroundEdgeColor[0], Resources.getInstance().blockBackgroundEdgeColor[1],
-					Resources.getInstance().blockBackgroundEdgeColor[2], Resources.getInstance().blockBackgroundEdgeColor[3]);
-			wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
-
-		}
-		
-		// render move boxes
-		for (int i = 0; i < GameInstance.getInstance().background.backgroundMoveBlocks.size; ++i) {
-			Block block = GameInstance.getInstance().background.backgroundMoveBlocks.get(i);
-
-			model.idt();
-
-			tmp.setToTranslation(block.position.x, block.position.y, 0);
-			model.mul(tmp);
-
-			block.angle += MathUtils.sin(startTime) * delta * 10f;
-
-			tmp.setToRotation(Vector3.Y, block.angle);
-			model.mul(tmp);
-
-			tmp.setToScaling(0.95f, 0.95f, 0.95f);
-			model.mul(tmp);
-
-			transShader.setUniformMatrix("MMatrix", model);
-
-			transShader.setUniformf("a_color", Resources.getInstance().blockBackgroundColor[0], Resources.getInstance().blockBackgroundColor[1],
-					Resources.getInstance().blockBackgroundColor[2], Resources.getInstance().blockBackgroundColor[3] + block.highlightAnimate);
-			blockModel.render(transShader, GL20.GL_TRIANGLES);
-
-			transShader.setUniformf("a_color", Resources.getInstance().blockBackgroundEdgeColor[0], Resources.getInstance().blockBackgroundEdgeColor[1],
-					Resources.getInstance().blockBackgroundEdgeColor[2], Resources.getInstance().blockBackgroundEdgeColor[3]);
-			wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
-		}*/
+		/*for(int i = 0 ; i < 6; i++) {
 			
+			tmp.idt();
+			model.idt();
+			
+			tmp.setToTranslation(0, i*200-1195,0);
+			model.mul(tmp);
+	
+			tmp.setToScaling(44, 1, 1);
+
+			model.mul(tmp);
+				
+			
+			transShader.setUniformMatrix("MMatrix", model);
+
+			transShader.setUniformf("a_color", 1,1,1,1);
+			blockModel.render(transShader,  GL20.GL_TRIANGLES);
+			
+		}*/
 		
 		transShader.end();
 	}
