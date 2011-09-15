@@ -828,14 +828,15 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToTranslation(0, i*200-1195,-30);
 			model.mul(tmp);
 	
-			tmp.setToScaling(300, 2, 1);
+			tmp.setToScaling(300, 1, 1);
 
 			model.mul(tmp);
 				
 			
 			transShader.setUniformMatrix("MMatrix", model);
 
-			transShader.setUniformf("a_color", 1,1,1,1);
+			transShader.setUniformf("a_color", Resources.getInstance().blockColor[0], Resources.getInstance().blockColor[1], Resources.getInstance().blockColor[2], 0.6f+ (jumpani%0.25f));
+			
 			blockModel.render(transShader,  GL20.GL_TRIANGLES);
 			
 		}
