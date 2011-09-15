@@ -42,8 +42,18 @@ public class Resources {
 	public float[] backgroundWireColor = { 1.0f, 0.8f, 0.8f, 0.07f };
 	public float[] wireCubeColor = { 1.0f, 0.1f, 0.1f, 0.04f };
 	public float[] wireCubeEdgeColor = { 1.0f, 0.1f, 0.1f, 0.5f };
+	
 	public float[] blockColor = { 1.0f, 0.1f, 0.1f, 0.2f };
-	public float[] blockEdgeColor = { 1.0f, 0.1f, 0.1f, 0.8f };	
+	public float[] blockEdgeColor = { 1.0f, 0.1f, 0.1f, 0.8f };
+	public float[] blockColor1 = { 1.0f, 0.1f, 0.1f, 0.2f };
+	public float[] blockEdgeColor1 = { 1.0f, 0.1f, 0.1f, 0.8f };
+	public float[] blockColor2 = { 1.0f, 0.1f, 0.1f, 0.2f };
+	public float[] blockEdgeColor2 = { 1.0f, 0.1f, 0.1f, 0.8f };
+	public float[] blockColor3 = { 1.0f, 0.1f, 0.1f, 0.2f };
+	public float[] blockEdgeColor3 = { 1.0f, 0.1f, 0.1f, 0.8f };
+	public float[] blockColor4 = { 1.0f, 0.1f, 0.1f, 0.2f };
+	public float[] blockEdgeColor4 = { 1.0f, 0.1f, 0.1f, 0.8f };
+	
 	public float[] blockBackgroundColor = { 0.75f, 0.2f, 0.2f, 0.2f };
 	public float[] blockBackgroundEdgeColor = { 0.75f, 0.2f, 0.2f, 0.7f };	
 	public float[] movableBlockColor = { 1.0f, 0.8f, 0.1f, 0.8f };

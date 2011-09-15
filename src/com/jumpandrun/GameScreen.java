@@ -528,6 +528,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 							
 					transShader.setUniformMatrix("MMatrix", model);
 					
+					
+					Resources.getInstance().blockColor[0] = 1;
+					Resources.getInstance().blockColor[1] = 1;
+					Resources.getInstance().blockColor[2] = 1;
+					Resources.getInstance().blockColor[3] = 1;
+					
 					transShader.setUniformf("a_color", Resources.getInstance().blockColor[0], Resources.getInstance().blockColor[1], Resources.getInstance().blockColor[2], Resources.getInstance().blockColor[3] + block.highlightAnimate);
 					blockModel.render(transShader, GL20.GL_TRIANGLES);
 		
