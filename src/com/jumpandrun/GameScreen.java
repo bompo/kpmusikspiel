@@ -814,15 +814,15 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			torusModel.render(transShader, GL20.GL_TRIANGLES);
 
 		}
-		/*for(int i = 0 ; i < 6; i++) {
+		for(int i = 0 ; i < 6; i++) {
 			
 			tmp.idt();
 			model.idt();
 			
-			tmp.setToTranslation(0, i*200-1195,0);
+			tmp.setToTranslation(0, i*200-1195,-30);
 			model.mul(tmp);
 	
-			tmp.setToScaling(44, 1, 1);
+			tmp.setToScaling(300, 2, 1);
 
 			model.mul(tmp);
 				
@@ -832,7 +832,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			transShader.setUniformf("a_color", 1,1,1,1);
 			blockModel.render(transShader,  GL20.GL_TRIANGLES);
 			
-		}*/
+		}
 		
 		transShader.end();
 	}
