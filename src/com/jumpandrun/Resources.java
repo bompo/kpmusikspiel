@@ -15,7 +15,6 @@ import com.shader.TransShader;
 
 public class Resources {
 	
-	public Sound music = Gdx.audio.newSound(Gdx.files.internal("data/test.mp3"));
 	public Sound song01 = Gdx.audio.newSound(Gdx.files.internal("data/out_01.mp3"));
 	public Sound song02 = Gdx.audio.newSound(Gdx.files.internal("data/out_02.mp3"));
 	public Sound song03 = Gdx.audio.newSound(Gdx.files.internal("data/out_03.mp3"));
@@ -193,8 +192,6 @@ public class Resources {
 		
 		GameInstance.getInstance().recordHigh = prefs.getInteger("record");
 		
-		if(music!=null) music.stop();
-			music = Gdx.audio.newSound(Gdx.files.internal("data/test.mp3"));
 		if(song01!=null) song01.stop();
 		if(song02!=null) song02.stop();
 		if(song03!=null) song03.stop();
