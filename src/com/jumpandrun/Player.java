@@ -10,9 +10,13 @@ public class Player {
 	
 	public boolean alive = true;
 	
+	public int live = 5;
+	
 	public boolean jump = false;	
 	public boolean jumping = false;
 	public int xdir;
+	
+	public float invincible = 0;
 	
 	public Vector2 position = new Vector2();
 	
@@ -33,7 +37,25 @@ public class Player {
 		position.y = body.getPosition().y;
 		angle = -position.x*360/(2*MathUtils.PI);
 		
+		invincible = Math.max(0, invincible-(delta*50.f));
+//		if(invincible >= 0) {
+//			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().enemyCollideFilter);
+//		} else {
+//			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().playerCollideFilter);
+//		}
+		
 		weapon.update(delta);
+	}
+	
+	public void hit() {
+		if(invincible>0) return;
+		live-=1;
+		if(live<0) {
+			alive = false;
+		} else {
+			invincible = 40;
+		}
+		
 	}
 	
 	public void shoot() {		

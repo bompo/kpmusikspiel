@@ -438,9 +438,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		animateFont = Math.max(1.0f, animateFont - (deltaTime*10.f));
 		font.draw(fontBatch, score+" Points",  680, 480);
 		if(GameInstance.getInstance().currentHigh >= GameInstance.getInstance().recordHigh) {
-			font.draw(fontBatch, GameInstance.getInstance().currentHigh+"m - NEW RECORD! " + Gdx.graphics.getFramesPerSecond(),  30, 480);
+			font.drawMultiLine(fontBatch, GameInstance.getInstance().currentHigh+"m - NEW RECORD! \nLives " +GameInstance.getInstance().player.live + " \n" + Gdx.graphics.getFramesPerSecond() ,  30, 480);
 		} else {
-			font.draw(fontBatch, GameInstance.getInstance().currentHigh+"m - Record: " + GameInstance.getInstance().recordHigh + "m  " + Gdx.graphics.getFramesPerSecond(),  30, 480);
+			font.draw(fontBatch, GameInstance.getInstance().currentHigh+"m - Record: " + GameInstance.getInstance().recordHigh + "m   \nLives " +GameInstance.getInstance().player.live + " \n" + Gdx.graphics.getFramesPerSecond() ,  30, 480);
 		}
 		
 		fontBatch.end();		
@@ -712,7 +712,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			model.mul(tmp);
 	
 			transShader.setUniformMatrix("MMatrix", model);
-			transShader.setUniformf("a_color",Resources.getInstance().playerColor[0], Resources.getInstance().playerColor[1], Resources.getInstance().playerColor[2], Resources.getInstance().playerColor[3]);
+			transShader.setUniformf("a_color",Resources.getInstance().playerColor[0], Resources.getInstance().playerColor[1], Resources.getInstance().playerColor[2], Resources.getInstance().playerColor[3]-MathUtils.sin(GameInstance.getInstance().player.invincible));
 			playerModel.render(transShader, GL20.GL_TRIANGLES);
 			
 			tmp.idt();
@@ -737,7 +737,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 			//render hull			
 			transShader.setUniformMatrix("MMatrix", model);
-			transShader.setUniformf("a_color",Resources.getInstance().playerEdgeColor[0], Resources.getInstance().playerEdgeColor[1], Resources.getInstance().playerEdgeColor[2], Resources.getInstance().playerEdgeColor[3]);
+			transShader.setUniformf("a_color",Resources.getInstance().playerEdgeColor[0], Resources.getInstance().playerEdgeColor[1], Resources.getInstance().playerEdgeColor[2], Resources.getInstance().playerEdgeColor[3]-MathUtils.sin(GameInstance.getInstance().player.invincible));
 			playerModel.render(transShader, GL20.GL_LINE_STRIP);
 		}
 		transShader.end();

@@ -53,10 +53,10 @@ public class Resources {
 	public float[] blockEdgeColor3 = { 1.0f, 0.1f, 1.0f, 0.8f };
 	public float[] blockColor4 = { 0.5f, 1.0f, 0.5f, 0.2f };
 	public float[] blockEdgeColor4 = { 0.5f, 1.0f, 0.5f, 0.8f };
-	public float[] blockColor5 = { 0.1f, 0.3f, 0.7f, 0.2f };
-	public float[] blockEdgeColor5 = { 0.1f, 0.3f, 0.7f, 0.8f };
-	public float[] blockColor6 = { 0.6f, 0.2f, 0.6f, 0.2f };
-	public float[] blockEdgeColor6 = { 0.6f, 0.2f, 0.6f, 0.8f };
+	public float[] blockColor5 = { 0.2f, 0.4f, 0.7f, 0.2f };
+	public float[] blockEdgeColor5 = { 0.2f, 0.4f, 0.7f, 0.8f };
+	public float[] blockColor6 = { 0.8f, 0.2f, 0.8f, 0.2f };
+	public float[] blockEdgeColor6 = { 0.8f, 0.2f, 0.8f, 0.8f };
 	public float[] blockColor7 = { 1.0f, 0.4f, 0.8f, 0.2f };
 	public float[] blockEdgeColor7 = { 1.0f, 0.4f, 0.8f, 0.8f };
 	
