@@ -617,10 +617,12 @@ public class GameInstance {
 			}
 		}
 
-		for (int i = 0; i < blocks.size; i+=2) {
+		for (int i = 0; i < blocks.size; i++) {
 			Block block = blocks.get(i);
 			if (block instanceof JumpBlock) {
-				((JumpBlock) block).jump();
+				JumpBlock b = (JumpBlock)block;
+				if(b.type==0)
+					b.jump();
 			}
 		}
 	}
@@ -648,10 +650,12 @@ public class GameInstance {
 			}
 		}
 
-		for (int i = 1; i < blocks.size; i+=2) {
+		for (int i = 1; i < blocks.size; i++) {
 			Block block = blocks.get(i);
 			if (block instanceof JumpBlock) {
-				((JumpBlock) block).jump();
+				JumpBlock b = (JumpBlock)block;
+				if(b.type==1)
+					b.jump();
 			}
 		}
 	}
