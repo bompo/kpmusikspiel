@@ -405,13 +405,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		bloomFactor =  Math.max(0, bloomFactor - deltaTime);
 		disortFactor =  Math.max(0, disortFactor - deltaTime);
 		
-		
 		highlightTimer -= delta;
 		if(highlightTimer<0) {
 			highlightCnt++;
 			highlightTimer = 0.0001f;
-		}
-		
+		}		
 		
 		fontBatch.begin();
 		if (GameInstance.getInstance().showWeaponTextYAnimate < Gdx.graphics.getHeight()+100) {
