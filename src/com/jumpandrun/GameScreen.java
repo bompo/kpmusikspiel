@@ -242,9 +242,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public void render(float deltaTime) {
 //		accumulator += Gdx.graphics.getDeltaTime();
-//        while (accumulator > 1.0f / 30.0f) {
+//        while (accumulator > 1.0f / 60.0f) {
                 tick();
-//                accumulator -= 1.0f / 30.0f;
+//                accumulator -= 1.0f / 60.0f;
 //        }
         doRender();
 		
@@ -350,7 +350,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		fontBatch.end();	
 	}
 	
-	public void tick() {		
+	public void tick() {	
+		delta = Gdx.graphics.getDeltaTime();
+
+		GameInstance.getInstance().update(delta);	
+		
+		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		ra.update();
@@ -377,16 +382,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				}
 			}while(found);
 		}
-		
-		delta = Gdx.graphics.getDeltaTime();
-
-		GameInstance.getInstance().update(delta);	
-		
-		enemySpawnTime -=1;
-//		if(enemySpawnTime<0) {
-//			enemySpawnTime = MathUtils.random(0, 10f);
-//			GameInstance.getInstance().addEnemy();
-//		}
+	
 		
 		angleXBack += MathUtils.sin(startTime) * delta * 10f;
 		angleYBack += MathUtils.cos(startTime) * delta * 5f;
@@ -449,20 +445,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			GameInstance.getInstance().showWeaponTextYAnimate = Math.min(Gdx.graphics.getHeight()+100, GameInstance.getInstance().showWeaponTextYAnimate + (delta*300f));
 		}
 		animateFont = Math.max(1.0f, animateFont - (delta*10.f));
-	}	
-
-	private void renderScene() {
-
-		Gdx.gl.glEnable(GL20.GL_CULL_FACE);
-		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 		
-		Gdx.gl20.glEnable(GL20.GL_BLEND);
-		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-				
-		transShader.begin();
-		transShader.setUniformMatrix("VPMatrix", cam.combined);
-		
-		//render boxes
 		for (int i =0; i<GameInstance.getInstance().blocks.size ; ++i) {
 			Block block = GameInstance.getInstance().blocks.get(i);
 			
@@ -471,75 +454,20 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 			
 			block.highlightAnimate =  Math.max(0, block.highlightAnimate - delta);
-			
-			if(cam.frustum.sphereInFrustum(tmpVector3.set(block.position.x, block.position.y, 0),1f)) {
-				model.idt();
-						
+				
 				if(block instanceof JumpBlock) {
 					//TODO quick hack
 					JumpBlock jumbBlock = (JumpBlock)block;
 					jumbBlock.update();
 					
-					tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y, 0);
-					model.mul(tmp);
-		
-					tmp.setToScaling(0.95f, 0.95f, 0.95f);
-					model.mul(tmp);
-							
-					transShader.setUniformMatrix("MMatrix", model);
+//					{
+//						if(jumbBlock.type==1) {
+//							jumpani = (jumpani+0.5f)%1;
+//						}
+//					}
 					
-					transShader.setUniformf("a_color", Resources.getInstance().jumpBlockColor[0], Resources.getInstance().jumpBlockColor[1], Resources.getInstance().jumpBlockColor[2], Resources.getInstance().jumpBlockColor[3] + jumbBlock.jumpAnim + block.highlightAnimate);
-					blockModel.render(transShader, GL20.GL_TRIANGLES);
-		
-					transShader.setUniformf("a_color",Resources.getInstance().jumpBlockEdgeColor[0], Resources.getInstance().jumpBlockEdgeColor[1],Resources.getInstance().jumpBlockEdgeColor[2], Resources.getInstance().jumpBlockEdgeColor[3] + jumbBlock.jumpAnim);
-					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
-					
-					{
-						float jani = jumpani;//(jumpani+0.5f)%1;
-						if(jumbBlock.type==1) {
-							jani = (jumpani+0.5f)%1;
-						}
-						model.idt();
-						tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y+(jani), 0);
-						model.mul(tmp);
-			
-						tmp.setToScaling(0.90f, 0.95f*(1-jani), 0.95f);
-						model.mul(tmp);
-								
-						transShader.setUniformMatrix("MMatrix", model);
-						
-						transShader.setUniformf("a_color", Resources.getInstance().jumpBlockColor[0], Resources.getInstance().jumpBlockColor[1], Resources.getInstance().jumpBlockColor[2], Resources.getInstance().jumpBlockColor[3] + jumbBlock.jumpAnim + block.highlightAnimate);
-						blockModel.render(transShader, GL20.GL_TRIANGLES);
-			
-						transShader.setUniformf("a_color",Resources.getInstance().jumpBlockEdgeColor[0], Resources.getInstance().jumpBlockEdgeColor[1],Resources.getInstance().jumpBlockEdgeColor[2], Resources.getInstance().jumpBlockEdgeColor[3] + jumbBlock.jumpAnim);
-						wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);	
-					}
-					
-				} else if(block instanceof EnemySpawner) {	
-					
-					tmp.setToTranslation(block.position.x, block.position.y, 0);
-					model.mul(tmp);
-		
-					tmp.setToScaling(0.8f, 0.95f, 0.95f);
-					model.mul(tmp);
-							
-					transShader.setUniformMatrix("MMatrix", model);
-					
-					transShader.setUniformf("a_color", Resources.getInstance().enemySpawnerColor[0], Resources.getInstance().enemySpawnerColor[1]*blockani, Resources.getInstance().enemySpawnerColor[2], blockani);
-					blockModel.render(transShader, GL20.GL_TRIANGLES);
-		
-					transShader.setUniformf("a_color",Resources.getInstance().enemySpawnerEdgeColor[0], Resources.getInstance().enemySpawnerEdgeColor[1],Resources.getInstance().enemySpawnerEdgeColor[2], Resources.getInstance().enemySpawnerEdgeColor[3]);
-					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
-				} else {	
-					
-					tmp.setToTranslation(block.position.x, block.position.y, 0);
-					model.mul(tmp);
-		
-					tmp.setToScaling(0.95f, 0.95f, 0.95f);
-					model.mul(tmp);
-							
-					transShader.setUniformMatrix("MMatrix", model);
-					
+				}  else {	
+				
 					if(oldSongCounter!=songCounter) {
 						oldSongCounter = songCounter;
 						colorMix = 0;
@@ -606,6 +534,88 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 						Resources.getInstance().blockEdgeColor[2] = Resources.getInstance().blockEdgeColor6[2]*colorMix + (Resources.getInstance().blockEdgeColor7[2]* (1-colorMix));
 						Resources.getInstance().blockEdgeColor[3] = Resources.getInstance().blockEdgeColor6[3]*colorMix + (Resources.getInstance().blockEdgeColor7[3]* (1-colorMix));
 					}
+				}
+			
+		}
+	}	
+
+	private void renderScene() {
+
+		Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+		
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+				
+		transShader.begin();
+		transShader.setUniformMatrix("VPMatrix", cam.combined);
+		
+		//render boxes
+		for (int i =0; i<GameInstance.getInstance().blocks.size ; ++i) {
+			Block block = GameInstance.getInstance().blocks.get(i);
+			
+			if(cam.frustum.sphereInFrustum(tmpVector3.set(block.position.x, block.position.y, 0),1f)) {
+				model.idt();
+						
+				if(block instanceof JumpBlock) {
+					//TODO quick hack
+					JumpBlock jumbBlock = (JumpBlock)block;
+					
+					tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y, 0);
+					model.mul(tmp);
+		
+					tmp.setToScaling(0.95f, 0.95f, 0.95f);
+					model.mul(tmp);
+							
+					transShader.setUniformMatrix("MMatrix", model);
+					
+					transShader.setUniformf("a_color", Resources.getInstance().jumpBlockColor[0], Resources.getInstance().jumpBlockColor[1], Resources.getInstance().jumpBlockColor[2], Resources.getInstance().jumpBlockColor[3] + jumbBlock.jumpAnim + block.highlightAnimate);
+					blockModel.render(transShader, GL20.GL_TRIANGLES);
+		
+					transShader.setUniformf("a_color",Resources.getInstance().jumpBlockEdgeColor[0], Resources.getInstance().jumpBlockEdgeColor[1],Resources.getInstance().jumpBlockEdgeColor[2], Resources.getInstance().jumpBlockEdgeColor[3] + jumbBlock.jumpAnim);
+					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+					
+					{
+						model.idt();
+						tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y+(jumpani), 0);
+						model.mul(tmp);
+			
+						tmp.setToScaling(0.90f, 0.95f*(1-jumpani), 0.95f);
+						model.mul(tmp);
+								
+						transShader.setUniformMatrix("MMatrix", model);
+						
+						transShader.setUniformf("a_color", Resources.getInstance().jumpBlockColor[0], Resources.getInstance().jumpBlockColor[1], Resources.getInstance().jumpBlockColor[2], Resources.getInstance().jumpBlockColor[3] + jumbBlock.jumpAnim + block.highlightAnimate);
+						blockModel.render(transShader, GL20.GL_TRIANGLES);
+			
+						transShader.setUniformf("a_color",Resources.getInstance().jumpBlockEdgeColor[0], Resources.getInstance().jumpBlockEdgeColor[1],Resources.getInstance().jumpBlockEdgeColor[2], Resources.getInstance().jumpBlockEdgeColor[3] + jumbBlock.jumpAnim);
+						wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);	
+					}
+					
+				} else if(block instanceof EnemySpawner) {	
+					
+					tmp.setToTranslation(block.position.x, block.position.y, 0);
+					model.mul(tmp);
+		
+					tmp.setToScaling(0.8f, 0.95f, 0.95f);
+					model.mul(tmp);
+							
+					transShader.setUniformMatrix("MMatrix", model);
+					
+					transShader.setUniformf("a_color", Resources.getInstance().enemySpawnerColor[0], Resources.getInstance().enemySpawnerColor[1]*blockani, Resources.getInstance().enemySpawnerColor[2], blockani);
+					blockModel.render(transShader, GL20.GL_TRIANGLES);
+		
+					transShader.setUniformf("a_color",Resources.getInstance().enemySpawnerEdgeColor[0], Resources.getInstance().enemySpawnerEdgeColor[1],Resources.getInstance().enemySpawnerEdgeColor[2], Resources.getInstance().enemySpawnerEdgeColor[3]);
+					wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);
+				} else {	
+					
+					tmp.setToTranslation(block.position.x, block.position.y, 0);
+					model.mul(tmp);
+		
+					tmp.setToScaling(0.95f, 0.95f, 0.95f);
+					model.mul(tmp);
+							
+					transShader.setUniformMatrix("MMatrix", model);
 					
 					transShader.setUniformf("a_color", Resources.getInstance().blockColor[0], Resources.getInstance().blockColor[1], Resources.getInstance().blockColor[2], Resources.getInstance().blockColor[3] + block.highlightAnimate);
 					blockModel.render(transShader, GL20.GL_TRIANGLES);

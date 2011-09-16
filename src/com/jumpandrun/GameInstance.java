@@ -436,7 +436,7 @@ public class GameInstance {
 		}
 
 		// le step...
-		world.step(delta, 60, 60);
+		world.step(Gdx.graphics.getDeltaTime(), 60, 60);
 
 		Vector2 vel = player.body.getLinearVelocity();
 		Vector2 pos = player.position.tmp();
