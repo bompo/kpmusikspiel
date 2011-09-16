@@ -445,7 +445,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		if(GameInstance.getInstance().currentHigh >= GameInstance.getInstance().recordHigh) {
 			font.drawMultiLine(fontBatch, GameInstance.getInstance().currentHigh+"m - NEW RECORD! \nLives " +GameInstance.getInstance().player.live + " \n" + Gdx.graphics.getFramesPerSecond() ,  30, 480);
 		} else {
-			font.draw(fontBatch, GameInstance.getInstance().currentHigh+"m - Record: " + GameInstance.getInstance().recordHigh + "m   \nLives " +GameInstance.getInstance().player.live + " \n" + Gdx.graphics.getFramesPerSecond() ,  30, 480);
+			font.drawMultiLine(fontBatch, GameInstance.getInstance().currentHigh+"m - Record: " + GameInstance.getInstance().recordHigh + "m   \nLives " +GameInstance.getInstance().player.live + " \n" + Gdx.graphics.getFramesPerSecond() ,  30, 480);
 		}
 		
 		fontBatch.end();		

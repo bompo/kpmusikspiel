@@ -14,7 +14,7 @@ public class Mine extends Ammo {
 	@Override
 	public void update(float delta) {
 		super.update(delta);
-		size = 0.1f;
+		
 		if(hit) {
 			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().bulletSplashCollideFilter);
 			body.getFixtureList().get(0).getShape().setRadius(body.getFixtureList().get(0).getShape().getRadius()+delta*10);
@@ -22,7 +22,9 @@ public class Mine extends Ammo {
 				kill = true;
 			}
 			body.setLinearVelocity(1, 1);
-		} 
+		} else {
+			size = 0.1f;
+		}
 	}
 	
 }
