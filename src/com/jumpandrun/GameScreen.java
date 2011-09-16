@@ -167,6 +167,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private boolean bulletSplash = false;
 	private float shakeCam = 0;
 
+	private float accumulator;
+
 
 	public GameScreen(Game game) {
 		super(game);
@@ -237,76 +239,19 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	public void show() {
 	}
 
-//	@Override
-//	public void render(float deltaTime) {
-//		accumulator += deltaTime;
-//		while(accumulator > 1.0f / 60.0f) { 
-//		fixedTimeStepRender();
-//		accumulator -= 1.0f / 60.0f;
-//		if(accumulator>0) Gdx.app.log("", "framedrop " + accumulator);
-//		}
-//		
-//	}	
+	@Override
+	public void render(float deltaTime) {
+//		accumulator += Gdx.graphics.getDeltaTime();
+//        while (accumulator > 1.0f / 30.0f) {
+                tick();
+//                accumulator -= 1.0f / 30.0f;
+//        }
+        doRender();
+		
+		
+	}	
 	
-	public void render(float deltaTime) {		
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		ra.update();
-		{	//remove obsolete NoteJumper
-			for(NoteJumper nj: noteJumpers) {
-				if(!nj.bofNote.isPlayedAt(ra.getTick())) {
-					nj.alive = false;
-////					Gdx.app.log("", nj.bofNote.getNote() + "");
-//					if(nj.bofNote.getNote()<40) {
-//						GameInstance.getInstance().addPowerUp(nj.posA.x,nj.posA.y);
-//					}
-				}
-			}
-			//remove from array
-			boolean found;
-			do {
-				found = false;
-				for(int i = 0; i < noteJumpers.size; i++) {
-					if(noteJumpers.get(i) != null && noteJumpers.get(i).alive == false) {
-						noteJumpers.removeIndex(i);
-						found = true;
-						break;
-					}
-				}
-			}while(found);
-		}
-		
-		startTime+=deltaTime;
-		delta = deltaTime;
-		
-		enemySpawnTime -=deltaTime;
-//		if(enemySpawnTime<0) {
-//			enemySpawnTime = MathUtils.random(0, 10f);
-//			GameInstance.getInstance().addEnemy();
-//		}
-		
-		angleXBack += MathUtils.sin(startTime) * delta * 10f;
-		angleYBack += MathUtils.cos(startTime) * delta * 5f;
-
-		angleXFront += MathUtils.sin(startTime) * delta * 10f;
-		angleYFront += MathUtils.cos(startTime) * delta* 5f;
-		
-		startTimeBench = System.nanoTime();		
-		
-		if(GameInstance.getInstance().player.position.y<-1185.0) {
-			cam.position.set(cam.position.x, -1185.0f, 29);
-		} else {
-			cam.position.set(cam.position.x, GameInstance.getInstance().player.position.y, 29);
-		}
-		if(shakeCam>0) {
-			cam.rotate(MathUtils.sin(shakeCam)/10.f, 0, 0, 1);
-			shakeCam =  Math.max(0, shakeCam - (deltaTime*100f));
-		} else {
-			cam.up.set(0,1,0);
-		}
-		
-		cam.update();
-
+	public void doRender() {
 		if (Resources.getInstance().bloomOnOff) {
 			frameBuffer.begin();
 			renderBackground();
@@ -316,35 +261,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			// PostProcessing
 			Gdx.gl.glDisable(GL20.GL_CULL_FACE);
 			Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-			Gdx.gl.glDisable(GL20.GL_BLEND);
-
-			for (int i = 0; i < GameInstance.getInstance().bullets.size; ++i) {
-				Ammo bullet = GameInstance.getInstance().bullets.get(i);
-				bulletSplash  = false;
-				if(bullet instanceof Rocket) {
-					if(((Rocket) bullet).hit) {
-						disortFactor=1;
-						bulletSplash  = true;
-						if(shakeCam==0) {
-							shakeCam = 20;
-						}
-					} 
-				}
-				
-				if(bullet instanceof Mine) {
-					if(((Mine) bullet).hit) {
-						disortFactor=1;
-						bulletSplash  = true;
-						if(shakeCam==0) {
-							shakeCam = 20;
-						}
-					} 
-				}
-			}
-			if(bulletSplash) {
-				disortFactor =  Math.max(0, disortFactor - (deltaTime*5.f));
-			}
-			
+			Gdx.gl.glDisable(GL20.GL_BLEND);			
 			
 			frameBuffer.getColorBufferTexture().bind(0);
 
@@ -399,25 +316,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tvShader.setUniformf("resolution", Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 			quadModel.render(tvShader,GL20.GL_TRIANGLE_FAN);
 			tvShader.end();			
-		}		
-		
-		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
-		renderTimeBench = endTimeBench;
-		 
-		startTimeBench = System.nanoTime();
-		GameInstance.getInstance().update(deltaTime);	
-		endTimeBench = (System.nanoTime() - startTimeBench) / 1000000000.0f;
-		physicTimeBench = endTimeBench;
-		
-		
-		bloomFactor =  Math.max(0, bloomFactor - deltaTime);
-		disortFactor =  Math.max(0, disortFactor - deltaTime);
-		
-		highlightTimer -= delta;
-		if(highlightTimer<0) {
-			highlightCnt++;
-			highlightTimer = 0.0001f;
-		}		
+		}				
 		
 		fontBatch.begin();
 		if (GameInstance.getInstance().showWeaponTextYAnimate < Gdx.graphics.getHeight()+100) {
@@ -432,7 +331,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				font.draw(fontBatch, "Mines Launcher",  300, 250
 						+ GameInstance.getInstance().showWeaponTextYAnimate);
 			}
-			GameInstance.getInstance().showWeaponTextYAnimate = Math.min(Gdx.graphics.getHeight()+100, GameInstance.getInstance().showWeaponTextYAnimate + (deltaTime*300f));
+			
 		}
 		
 		font.setScale(animateFont);
@@ -440,7 +339,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			animateFont = 3;
 			this.score =  GameInstance.getInstance().score;
 		}
-		animateFont = Math.max(1.0f, animateFont - (deltaTime*10.f));
+		
 		font.draw(fontBatch, score+" Points",  680, 480);
 		if(GameInstance.getInstance().currentHigh >= GameInstance.getInstance().recordHigh) {
 			font.drawMultiLine(fontBatch, GameInstance.getInstance().currentHigh+"m - NEW RECORD! \nLives " +GameInstance.getInstance().player.live + " \n" + Gdx.graphics.getFramesPerSecond() ,  30, 480);
@@ -448,7 +347,108 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			font.drawMultiLine(fontBatch, GameInstance.getInstance().currentHigh+"m - Record: " + GameInstance.getInstance().recordHigh + "m   \nLives " +GameInstance.getInstance().player.live + " \n" + Gdx.graphics.getFramesPerSecond() ,  30, 480);
 		}
 		
-		fontBatch.end();		
+		fontBatch.end();	
+	}
+	
+	public void tick() {		
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		ra.update();
+		{	//remove obsolete NoteJumper
+			for(NoteJumper nj: noteJumpers) {
+				if(!nj.bofNote.isPlayedAt(ra.getTick())) {
+					nj.alive = false;
+////					Gdx.app.log("", nj.bofNote.getNote() + "");
+//					if(nj.bofNote.getNote()<40) {
+//						GameInstance.getInstance().addPowerUp(nj.posA.x,nj.posA.y);
+//					}
+				}
+			}
+			//remove from array
+			boolean found;
+			do {
+				found = false;
+				for(int i = 0; i < noteJumpers.size; i++) {
+					if(noteJumpers.get(i) != null && noteJumpers.get(i).alive == false) {
+						noteJumpers.removeIndex(i);
+						found = true;
+						break;
+					}
+				}
+			}while(found);
+		}
+		
+		delta = Gdx.graphics.getDeltaTime();
+
+		GameInstance.getInstance().update(delta);	
+		
+		enemySpawnTime -=1;
+//		if(enemySpawnTime<0) {
+//			enemySpawnTime = MathUtils.random(0, 10f);
+//			GameInstance.getInstance().addEnemy();
+//		}
+		
+		angleXBack += MathUtils.sin(startTime) * delta * 10f;
+		angleYBack += MathUtils.cos(startTime) * delta * 5f;
+
+		angleXFront += MathUtils.sin(startTime) * delta * 10f;
+		angleYFront += MathUtils.cos(startTime) * delta* 5f;
+		
+		
+		if(GameInstance.getInstance().player.position.y<-1185.0) {
+			cam.position.set(cam.position.x, -1185.0f, 29);
+		} else {
+			cam.position.set(cam.position.x, GameInstance.getInstance().player.position.y, 29);
+		}
+		if(shakeCam>0) {
+			cam.rotate(MathUtils.sin(shakeCam)/10.f, 0, 0, 1);
+			shakeCam =  Math.max(0, shakeCam - (delta*100f));
+		} else {
+			cam.up.set(0,1,0);
+		}
+		
+		cam.update();
+		
+		for (int i = 0; i < GameInstance.getInstance().bullets.size; ++i) {
+			Ammo bullet = GameInstance.getInstance().bullets.get(i);
+			bulletSplash  = false;
+			if(bullet instanceof Rocket) {
+				if(((Rocket) bullet).hit) {
+					disortFactor=1;
+					bulletSplash  = true;
+					if(shakeCam==0) {
+						shakeCam = 20;
+					}
+				} 
+			}
+			
+			if(bullet instanceof Mine) {
+				if(((Mine) bullet).hit) {
+					disortFactor=1;
+					bulletSplash  = true;
+					if(shakeCam==0) {
+						shakeCam = 20;
+					}
+				} 
+			}
+		}
+		if(bulletSplash) {
+			disortFactor =  Math.max(0, disortFactor - (delta*5.f));
+		}
+				
+		bloomFactor =  Math.max(0, bloomFactor - delta);
+		disortFactor =  Math.max(0, disortFactor - delta);
+		
+		highlightTimer -= delta;
+		if(highlightTimer<0) {
+			highlightCnt++;
+			highlightTimer = 0.0001f;
+		}			
+		
+		if (GameInstance.getInstance().showWeaponTextYAnimate < Gdx.graphics.getHeight()+100) {
+			GameInstance.getInstance().showWeaponTextYAnimate = Math.min(Gdx.graphics.getHeight()+100, GameInstance.getInstance().showWeaponTextYAnimate + (delta*300f));
+		}
+		animateFont = Math.max(1.0f, animateFont - (delta*10.f));
 	}	
 
 	private void renderScene() {
