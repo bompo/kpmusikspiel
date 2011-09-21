@@ -450,27 +450,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				if(block instanceof JumpBlock) {
 					//TODO quick hack
 					JumpBlock jumbBlock = (JumpBlock)block;
-					jumbBlock.update();
-					
-					{
-						float jani = jumpani;//(jumpani+0.5f)%1;
-						model.idt();
-						tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y+(jani), 0);
-						model.mul(tmp);
-			
-						tmp.setToScaling(0.90f, 0.95f*(1-jani), 0.95f);
-						model.mul(tmp);
-								
-						transShader.setUniformMatrix("MMatrix", model);
-						
-						transShader.setUniformf("a_color", Resources.getInstance().jumpBlockColor[0], Resources.getInstance().jumpBlockColor[1], Resources.getInstance().jumpBlockColor[2], Resources.getInstance().jumpBlockColor[3] + jumbBlock.jumpAnim + block.highlightAnimate);
-						blockModel.render(transShader, GL20.GL_TRIANGLES);
-			
-						transShader.setUniformf("a_color",Resources.getInstance().jumpBlockEdgeColor[0], Resources.getInstance().jumpBlockEdgeColor[1],Resources.getInstance().jumpBlockEdgeColor[2], Resources.getInstance().jumpBlockEdgeColor[3] + jumbBlock.jumpAnim);
-						wireCubeModel.render(transShader, GL20.GL_LINE_STRIP);	
-
-					}
-					
+					jumbBlock.update();					
 				}  else {	
 				
 					if(oldSongCounter!=songCounter) {

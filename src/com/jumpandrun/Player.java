@@ -10,7 +10,7 @@ public class Player {
 	
 	public boolean alive = true;
 	
-	public int live = 5;
+	public int live = 15;
 	
 	public boolean jump = false;	
 	public boolean jumping = false;
