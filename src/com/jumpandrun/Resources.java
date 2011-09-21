@@ -27,6 +27,12 @@ public class Resources {
 	public Sound sound02 = Gdx.audio.newSound(Gdx.files.internal("data/sound02.mp3"));
 	public Sound sound03 = Gdx.audio.newSound(Gdx.files.internal("data/sound03.mp3"));
 	public Sound gunhit = Gdx.audio.newSound(Gdx.files.internal("data/gunhit.mp3"));
+	public Sound gethit = Gdx.audio.newSound(Gdx.files.internal("data/gethit.mp3"));
+	public Sound die = Gdx.audio.newSound(Gdx.files.internal("data/die.mp3"));
+	public Sound grenadelaunch = Gdx.audio.newSound(Gdx.files.internal("data/grenadelaunch.mp3"));
+	public Sound pickup = Gdx.audio.newSound(Gdx.files.internal("data/pickup.mp3"));
+	public Sound spawn = Gdx.audio.newSound(Gdx.files.internal("data/spawn.mp3"));
+	public Sound win = Gdx.audio.newSound(Gdx.files.internal("data/win.mp3"));
 	
 	public Mesh blockModel;
 	public Mesh playerModel;
@@ -204,6 +210,14 @@ public class Resources {
 		if(sound02!=null) sound02.stop();
 		if(sound03!=null) sound03.stop();
 		if(gunhit!=null) gunhit.stop();
+		if(gethit!=null) gethit.stop();
+		if(die!=null) die.stop();
+		if(grenadelaunch!=null) grenadelaunch.stop();
+		if(pickup!=null) pickup.stop();
+		if(spawn!=null) spawn.stop();
+		if(win!=null) win.stop();
+		
+		
 		song01 = Gdx.audio.newSound(Gdx.files.internal("data/out_01.mp3"));
 		song02 = Gdx.audio.newSound(Gdx.files.internal("data/out_02.mp3"));
 		song03 = Gdx.audio.newSound(Gdx.files.internal("data/out_03.mp3"));
@@ -216,6 +230,12 @@ public class Resources {
 		sound02 = Gdx.audio.newSound(Gdx.files.internal("data/sound02.mp3"));
 		sound03 = Gdx.audio.newSound(Gdx.files.internal("data/sound03.mp3"));
 		gunhit = Gdx.audio.newSound(Gdx.files.internal("data/gunhit.mp3"));
+		gethit = Gdx.audio.newSound(Gdx.files.internal("data/gethit.mp3"));
+		die = Gdx.audio.newSound(Gdx.files.internal("data/die.mp3"));
+		grenadelaunch = Gdx.audio.newSound(Gdx.files.internal("data/grenadelaunch.mp3"));
+		pickup = Gdx.audio.newSound(Gdx.files.internal("data/pickup.mp3"));
+		spawn = Gdx.audio.newSound(Gdx.files.internal("data/spawn.mp3"));
+		win = Gdx.audio.newSound(Gdx.files.internal("data/win.mp3"));
 		
 	}
 

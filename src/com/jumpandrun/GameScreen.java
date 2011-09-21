@@ -88,22 +88,15 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private float blockani = 0, jumpani = 0;
 	
 	private AudioEventListener audioListener = new AudioEventListener() {
-		boolean sel = false;
 		@Override
 		public void onEvent(TickEvent te) {
 			
 			if(te.isFullNote()) {
 				//Resources.getInstance().jumpblock.play();
+				GameInstance.getInstance().activateJumpBlocks();
 				GameInstance.getInstance().addPowerUp();
 			}
-			if(te.isHalfNote()) {
-				sel = !sel;
-				if(sel) {
-					GameInstance.getInstance().activateJumpBlocks();
-				} else {
-					GameInstance.getInstance().activateJumpBlocks2();
-				}
-			}
+
 
 			long freq = (long)(te.getFullTicks()*4/Math.pow(2,songCounter));
 			if( freq < te.getFullTicks()*4/Math.pow(2,2))
@@ -113,6 +106,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				//enemySpawnSwitch = ch6;
 				
 				GameInstance.getInstance().addEnemy();
+				Resources.getInstance().spawn.play();
 				
 				if(highlightCnt>500) {
 					highlightCnt = 0;
@@ -496,9 +490,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					
 					{
 						float jani = jumpani;//(jumpani+0.5f)%1;
-						if(jumbBlock.type==1) {
-							jani = (jumpani+0.5f)%1;
-						}
 						model.idt();
 						tmp.setToTranslation(jumbBlock.position.x, jumbBlock.position.y+(jani), 0);
 						model.mul(tmp);

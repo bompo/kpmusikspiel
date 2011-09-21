@@ -51,8 +51,10 @@ public class Player {
 		if(invincible>0) return;
 		live-=1;
 		if(live<0) {
+			Resources.getInstance().die.play();
 			alive = false;
 		} else {
+			Resources.getInstance().gethit.play();
 			invincible = 40;
 		}
 		
