@@ -246,9 +246,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
                 tick();
 //                accumulator -= 1.0f / 60.0f;
 //        }
-        doRender();
-		
-		
+        doRender();		
 	}	
 	
 	public void doRender() {
@@ -460,11 +458,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					JumpBlock jumbBlock = (JumpBlock)block;
 					jumbBlock.update();
 					
-//					{
-//						if(jumbBlock.type==1) {
-//							jumpani = (jumpani+0.5f)%1;
-//						}
-//					}
+					{
+						if(jumbBlock.type==1) {
+							jumpani = (jumpani+0.5f)%1;
+						}
+					}
 					
 				}  else {	
 				
