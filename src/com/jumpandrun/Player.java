@@ -38,11 +38,13 @@ public class Player {
 		angle = -position.x*360/(2*MathUtils.PI);
 		
 		invincible = Math.max(0, invincible-(delta*50.f));
-//		if(invincible >= 0) {
-//			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().enemyCollideFilter);
-//		} else {
-//			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().playerCollideFilter);
-//		}
+		if(invincible > 0) {
+			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().enemyCollideFilter);
+			body.getFixtureList().get(1).setFilterData(GameInstance.getInstance().enemyCollideFilter);
+		} else {
+			body.getFixtureList().get(0).setFilterData(GameInstance.getInstance().playerCollideFilter);
+			body.getFixtureList().get(1).setFilterData(GameInstance.getInstance().playerCollideFilter);
+		}
 		
 		weapon.update(delta);
 	}

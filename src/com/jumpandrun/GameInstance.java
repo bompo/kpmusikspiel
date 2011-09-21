@@ -436,7 +436,7 @@ public class GameInstance {
 		}
 
 		// le step...
-		world.step(delta, 50, 50);
+		world.step(Gdx.graphics.getDeltaTime(), 60, 60);
 
 		Vector2 vel = player.body.getLinearVelocity();
 		Vector2 pos = player.position.tmp();
@@ -459,7 +459,7 @@ public class GameInstance {
 
 		// calculate stilltime & damp
 		if (!Gdx.input.isKeyPressed(Keys.A) && !Gdx.input.isKeyPressed(Keys.D)) {
-			stillTime += Gdx.graphics.getDeltaTime();
+			stillTime +=delta;
 			player.body.setLinearVelocity(vel.x * 0.9f, vel.y);
 		} else {
 			stillTime = 0;
@@ -516,7 +516,7 @@ public class GameInstance {
 		// update platforms
 		for (int i = 0; i < platforms.size; i++) {
 			MovingPlatform platform = platforms.get(i);
-			platform.update(Math.max(1 / 30.0f, Gdx.graphics.getDeltaTime()));
+			platform.update(Math.max(1 / 30.0f,delta));
 		}
 
 		// update jump plattforms
@@ -524,7 +524,7 @@ public class GameInstance {
 			Block block = blocks.get(i);
 			if (block instanceof JumpBlock) {
 				if (((JumpBlock) block).jumpAnim > 0) {
-					((JumpBlock) block).jumpAnim = Math.max(0, ((JumpBlock) block).jumpAnim - Gdx.graphics.getDeltaTime() * 2);
+					((JumpBlock) block).jumpAnim = Math.max(0, ((JumpBlock) block).jumpAnim -delta * 2);
 				}
 			}
 		}
