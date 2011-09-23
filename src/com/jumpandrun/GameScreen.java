@@ -237,10 +237,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	public void render(float deltaTime) {
 //		accumulator += Gdx.graphics.getDeltaTime();
 //        while (accumulator > 1.0f / 60.0f) {
-            if(once) {    
+//            if(once) {    
 			tick();
-			once = false;
-            }
+//			once = false;
+//            }
 //                accumulator -= 1.0f / 60.0f;
 //        }
         doRender();		
